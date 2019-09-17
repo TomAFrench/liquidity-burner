@@ -2085,49 +2085,71 @@ render() {
           </div>
         );
         case 'yourmodule':
-            return (
-              <div>
-                <div className="send-to-address card w-100" style={{zIndex:1}}>
-                  <NavCard title={"Nav Title?"} titleLink={""} goBack={this.goBack.bind(this)}/>
-                  <YourModule
-                    eth={eth}
-                    dai={dai}
-                    xdai={xdai}
-                    ERC20NAME={ERC20NAME}
-                    ERC20IMAGE={ERC20IMAGE}
-                    ERC20TOKEN={ERC20TOKEN}
-                    ERC20VENDOR={ERC20VENDOR}
-                    ethprice={this.state.ethprice}
-                    ethBalance={this.state.ethBalance}
-                    daiBalance={this.state.daiBalance}
-                    xdaiBalance={this.state.xdaiBalance}
-                    mainnetweb3={this.state.mainnetweb3}
-                    xdaiweb3={this.state.xdaiweb3}
-                    daiContract={this.state.daiContract}
-                    ensContract={this.state.ensContract}
-                    isVendor={this.state.isVendor}
-                    isAdmin={this.state.isAdmin}
-                    contracts={this.state.contracts}
-                    buttonStyle={buttonStyle}
-                    changeAlert={this.changeAlert}
-                    setGwei={this.setGwei}
-                    network={this.state.network}
-                    tx={this.state.tx}
-                    web3={this.state.web3}
-                    send={this.state.send}
-                    nativeSend={this.state.nativeSend}
-                    address={account}
-                    balance={balance}
-                    goBack={this.goBack.bind(this)}
-                    dollarDisplay={dollarDisplay}
+            if(!this.state || !this.state.customLoader || !this.state.tx || !this.state.contracts || !this.state.network){
+              return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+            }else{
+              return (
+                <div>
+                  <div className="send-to-address card w-100" style={{zIndex:1}}>
+                    <NavCard title={"Liquidity Network"} titleLink={""} goBack={this.goBack.bind(this)}/>
+                    <YourModule
+                      privateKey={metaAccount.privateKey}
+
+                      web3={this.state.web3}
+                      tx={this.state.tx}
+                      send={this.state.send}
+
+                      address={account}
+                      balance={balance}
+
+                      network={this.state.network}
+                      block={this.state.block}
+
+                      contracts={this.state.contracts}
+                      contractLoader={this.state.customLoader}
+
+                      mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
+
+                      daiContract={this.state.daiContract}
+                      ensContract={this.state.ensContract}
+                      ensLookup={this.ensLookup.bind(this)}
+
+                      ethBalance={this.state.ethBalance}
+                      daiBalance={this.state.daiBalance}
+                      xdaiBalance={this.state.xdaiBalance}
+
+                      eth={eth}
+                      dai={dai}
+                      xdai={xdai}
+                      ERC20NAME={ERC20NAME}
+                      ERC20IMAGE={ERC20IMAGE}
+                      ERC20TOKEN={ERC20TOKEN}
+                      ERC20VENDOR={ERC20VENDOR}
+                      ethprice={this.state.ethprice}
+
+                      isVendor={this.state.isVendor}
+                      isAdmin={this.state.isAdmin}
+
+                      setGwei={this.setGwei}
+                      gwei={this.state.gwei}
+
+                      openScanner={this.openScanner.bind(this)}
+                      scannerState={this.state.scannerState}
+
+                      buttonStyle={buttonStyle}
+                      changeAlert={this.changeAlert}
+                      nativeSend={this.state.nativeSend} //this is used to send xDai when you are running on an ERC20 token
+                      goBack={this.goBack.bind(this)}
+                      dollarDisplay={dollarDisplay}
+                    />
+                  </div>
+                  <Bottom
+                    text={"buttom button"}
+                    action={this.goBack.bind(this)}
                   />
                 </div>
-                <Bottom
-                  text={"buttom button"}
-                  action={this.goBack.bind(this)}
-                />
-              </div>
-            )
+              )
+            }
         case 'exchange':
         return (
           <div>

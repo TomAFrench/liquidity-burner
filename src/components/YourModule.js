@@ -10,9 +10,6 @@ export default class YourModule extends React.Component {
     super(props);
 
     this.state = {
-      yourVar: "",
-      YourContract: false,
-      yourContractBalance: 0,
       toAddress: (props.scannerState ? props.scannerState.toAddress : ""),
     }
   }
@@ -27,11 +24,6 @@ export default class YourModule extends React.Component {
         src/contracts/YourContract.blocknumber.js // the block number it was deployed at (for efficient event loading)
         src/contracts/YourContract.bytecode.js // if you want to deploy the contract from the module (see deployYourContract())
     */
-    this.setState({
-     YourContract: this.props.contractLoader("YourContract")
-    },()=>{
-     console.log("YOURCONTRACT IS LOADED:",this.state.YourContract)
-    })
 
     setInterval(this.pollInterval.bind(this),2500)
     setTimeout(this.pollInterval.bind(this),30)
@@ -39,15 +31,10 @@ export default class YourModule extends React.Component {
 
   async pollInterval(){
     console.log("POLL")
-    if(this.state && this.state.YourContract){
-      let yourVar = await this.state.YourContract.YourVar().call()
-      let yourContractBalance = await this.props.web3.eth.getBalance(this.state.YourContract._address)
-      //let ensName = await this.props.ensLookup("austingriffith.eth")
+    if(this.state){
+      
       let mainnetBlockNumber = await this.props.mainnetweb3.eth.getBlockNumber()
-      let xdaiBlockNumber = await this.props.xdaiweb3.eth.getBlockNumber()
-      yourContractBalance = this.props.web3.utils.fromWei(yourContractBalance,'ether')
-      this.setState({yourVar,yourContractBalance,mainnetBlockNumber,xdaiBlockNumber})
-
+      this.setState({mainnetBlockNumber})
     }
   }
 
@@ -61,34 +48,15 @@ export default class YourModule extends React.Component {
     })
 
   }
-  deployYourContract() {
-    console.log("Deploying YourContract...")
-    //
-    //  as noted above you need src/contracts/YourContract.bytecode.js
-    //  to be there for this to work:
-    //
-    let code = require("../contracts/YourContract.bytecode.js")
-    this.props.tx(this.state.YourContract._contract.deploy({data:code}),640000,(receipt)=>{
-      let yourContract = this.props.contractLoader("YourContract",receipt.contractAddress)
-      this.setState({ YourContract: yourContract})
-    })
-  }
-  render(){
 
-    if(!this.state.YourContract){
-      return (
-        <div>
-          LOADING YOURCONTRACT...
-        </div>
-      )
-    }
+  render(){
 
     return (
       <div>
         <div className="form-group w-100">
 
           <div style={{width:"100%",textAlign:"center"}}>
-            YOURMODULE DISPLAY HERE
+            Free and instant off-chain transactions
             <Ruler/>
             <div style={{padding:20}}>
               The logged in user is
@@ -117,10 +85,7 @@ export default class YourModule extends React.Component {
               Gas price on {this.props.network} is {this.props.gwei} gwei.
             </div>
             <div>
-              mainnetweb3 is on block {this.state.mainnetBlockNumber} and version {this.props.mainnetweb3.version}
-            </div>
-            <div>
-              xdaiweb3 is on block {this.state.xdaiBlockNumber} and version {this.props.xdaiweb3.version}
+              mainnetweb3 is on block {typeof this.state.mainnetBlockNumber !== 'undefined' ? this.state.mainnetBlockNumber : "..."} and version {this.props.mainnetweb3.version}
             </div>
             <div>
               The current price of ETH is {this.props.dollarDisplay(this.props.ethprice)}.
@@ -141,9 +106,6 @@ export default class YourModule extends React.Component {
                 sig = await this.props.web3.eth.personal.sign(""+hashSigned,this.props.address)
               }
 
-              this.props.tx(this.state.YourContract.sign(hashSigned,sig),50000,0,0,(result)=>{
-                console.log("RESULTsssss@&&&#&#&#&# ",result)
-              })
 
             }}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
@@ -155,7 +117,6 @@ export default class YourModule extends React.Component {
 
           <Events
             config={{hide:false}}
-            contract={this.state.YourContract}
             eventName={"Sign"}
             block={this.props.block}
             onUpdate={(eventData,allEvents)=>{
@@ -165,65 +126,6 @@ export default class YourModule extends React.Component {
           />
 
           <Ruler/>
-
-          <button className="btn btn-large w-100" style={this.props.buttonStyle.primary} onClick={this.deployYourContract.bind(this)}>
-            <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              <i className="fas fa-rocket"></i> {"deploy"}
-            </Scaler>
-          </button>
-
-
-          <div className="content bridge row">
-            <div className="col-4 p-1">
-              <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                let toAddress = this.state.YourContract._address
-                let amount = "0.1"
-                this.props.send(toAddress, amount, 120000,"0x00", (result) => {
-                  if(result && result.transactionHash){
-                    console.log("RESULT&&&#&#&#&# ",result)
-                  }
-                })
-              }}>
-                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-arrow-circle-down"></i> {"deposit"}
-                </Scaler>
-              </button>
-            </div>
-            <div className="col-4 p-1">
-            <div style={{padding:20,textAlign:'center'}}>
-              Your contract is
-              <Blockie
-                address={this.state.YourContract._address}
-                config={{size:3}}
-              />
-              {this.state.YourContract._address.substring(0,8)}
-
-              <div style={{padding:5}}>
-                it has {this.props.dollarDisplay(this.state.yourContractBalance)}
-              </div>
-
-              <div style={{padding:5}}>
-                with <b>yourVar:</b>
-                <div>
-                  "{this.state.yourVar}"
-                </div>
-              </div>
-
-            </div>
-            </div>
-            <div className="col-4 p-1">
-            <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-              let amount = this.props.web3.utils.toWei("0.1",'ether')
-              this.props.tx(this.state.YourContract.withdraw(amount),40000,0,0,(result)=>{
-                console.log("RESULT@@@@@@@@@@@@@@@@@&&&#&#&#&# ",result)
-              })
-            }}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-arrow-circle-up"></i> {"withdraw"}
-              </Scaler>
-            </button>
-            </div>
-          </div>
 
           <div className="content bridge row">
             <div className="col-4 p-1">
@@ -262,7 +164,7 @@ export default class YourModule extends React.Component {
             <div className="input-group">
               <input type="text" className="form-control" placeholder="0x..." value={this.state.toAddress}
                 ref={(input) => { this.addressInput = input; }}
-                onChange={event => this.updateState('toAddress', event.target.value)}
+                onChange={event => this.setState({'toAddress': event.target.value})}
               />
               <div className="input-group-append" onClick={() => {
                 this.props.openScanner({view:"yourmodule"})

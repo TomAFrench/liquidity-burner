@@ -58,7 +58,7 @@ export default ({buttonStyle,ERC20TOKEN,address, balance, changeAlert, changeVie
         <div className="col-6 p-1" onClick={() => changeView('yourmodule')}>
           <button className="btn btn-large w-100" onClick={() => changeView('yourmodule')} style={buttonStyle.secondary}>
             <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              <i className="fas fa-share"/> {'Your Module'}
+              <i className="fas fa-share"/> {'Liquidity Network'}
             </Scaler>
           </button>
         </div>
