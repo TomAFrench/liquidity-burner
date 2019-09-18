@@ -8,7 +8,7 @@ import { scroller } from 'react-scroll'
 import i18n from '../i18n';
 const queryString = require('query-string');
 
-export default class SendToAddress extends React.Component {
+export default class LiquiditySendToAddress extends React.Component {
 
   constructor(props) {
     super(props);

@@ -11,14 +11,12 @@ const queryString = require('query-string');
 const { toWei } = require('web3-utils');
 
 
-export default class SendToAddress extends React.Component {
+export default class LiquidityDeposit extends React.Component {
 
   constructor(props) {
     super(props);
 
-
-
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!! window.location.search",window.location.search,parsed)
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!! window.location.search",window.location.search)
 
     let startAmount = props.amount
     if(props.scannerState) startAmount = props.scannerState.amount
@@ -27,59 +25,16 @@ export default class SendToAddress extends React.Component {
     }else{
       cookie.save('sendToStartAmount', startAmount, { path: '/', maxAge: 60 })
     }
-    let startMessage= props.message
-    if(props.scannerState) startMessage = props.scannerState.message
-    if(!startMessage) {
-      startMessage = cookie.load('sendToStartMessage')
-    }else{
-      cookie.save('sendToStartMessage', startMessage, { path: '/', maxAge: 60 })
-    }
-
-    let extraMessage = props.extraMessage
-    if(props.scannerState) extraMessage = props.scannerState.extraMessage
-
-    let toAddress = ""
-    if(props.scannerState) toAddress = props.scannerState.toAddress
-    if(!toAddress) {
-      toAddress = cookie.load('sendToAddress')
-    }else{
-      cookie.save('sendToAddress', toAddress, { path: '/', maxAge: 60 })
-    }
 
     let initialState = {
       amount: startAmount,
-      message: startMessage,
-      toAddress: toAddress,
-      extraMessage: extraMessage,
       fromEns: "",
       canSend: false,
-    }
-
-    let startingAmount = 0.15
-    if(props.amount){
-      startingAmount = props.amount
-    }
-    if(window.location.pathname){
-      if(window.location.pathname.length==43){
-        initialState.toAddress = window.location.pathname.substring(1)
-      }else if(window.location.pathname.length>40) {
-      //    console.log("window.location.pathname",window.location.pathname)
-      //  console.log("parseAndCleanPath...")
-        initialState = Object.assign(initialState,this.props.parseAndCleanPath(window.location.pathname))
-      //  console.log("parseAndCleanPath:",initialState)
-      }
-    }
-
-    const parsed = queryString.parse(window.location.search);
-    if(parsed){
-      initialState.params = parsed
     }
 
     this.state = initialState
   //  console.log("SendToAddress constructor",this.state)
     window.history.pushState({},"", "/");
-
-
 
   }
 
@@ -87,55 +42,14 @@ export default class SendToAddress extends React.Component {
     if(key=="amount"){
       cookie.save('sendToStartAmount', value, { path: '/', maxAge: 60 })
     }
-    else if(key=="message"){
-      cookie.save('sendToStartMessage', value, { path: '/', maxAge: 60 })
-    }
-    else if(key=="toAddress"){
-      cookie.save('sendToAddress', value, { path: '/', maxAge: 60 })
-    }
-    this.setState({ [key]: value },()=>{
-      this.setState({ canSend: this.canSend() },()=>{
-        if(key!="message"){
-          this.bounceToAmountIfReady()
-        }
-      })
-    });
-    if(key=="toAddress"){
-      this.setState({fromEns:""})
-      //setTimeout(()=>{
-      //  this.scrollToBottom()
-      //},30)
-    }
-    if(key=="toAddress"&&value.indexOf(".eth")>=0){
-      console.log("Attempting to look up ",value)
-      let addr = await this.props.ensLookup(value)
-      console.log("Resolved:",addr)
-      if(addr!="0x0000000000000000000000000000000000000000"){
-        this.setState({toAddress:addr,fromEns:value},()=>{
-          if(key!="message"){
-            this.bounceToAmountIfReady()
-          }
-        })
-      }
-    }
+    this.setState({ [key]: value });
   };
-  bounceToAmountIfReady(){
-    if(this.state.toAddress && this.state.toAddress.length === 42){
-      this.amountInput.focus();
-    }
-  }
+
   componentDidMount(){
     this.setState({ canSend: this.canSend() })
     setTimeout(()=>{
-      if(!this.state.toAddress && this.addressInput){
-        this.addressInput.focus();
-      }else if(!this.state.amount && this.amountInput){
+      if(!this.state.amount && this.amountInput){
         this.amountInput.focus();
-      }else if(this.messageInput){
-        this.messageInput.focus();
-        setTimeout(()=>{
-          this.scrollToBottom()
-        },30)
       }
     },350)
   }
@@ -161,7 +75,7 @@ export default class SendToAddress extends React.Component {
   }
 
   send = async () => {
-    let { toAddress, amount } = this.state;
+    let { amount } = this.state;
     let {ERC20TOKEN, dollarDisplay, convertToDollar} = this.props
 
     amount = convertToDollar(amount)
@@ -176,7 +90,7 @@ export default class SendToAddress extends React.Component {
       console.log("ERC20TOKEN",ERC20TOKEN,"this.props.balance",parseFloat(this.props.balance),"amount",parseFloat(amount))
 
       if(!ERC20TOKEN && parseFloat(this.props.balance) <= 0){
-        console.log("No funds!?!",ERC20TOKEN,parseFloat(this.props.balance))
+        console.log("No funds!?!", ERC20TOKEN, parseFloat(this.props.balance))
         this.props.changeAlert({type: 'warning', message: "No Funds."})
       }else if(!ERC20TOKEN && parseFloat(this.props.balance)-0.0001<=parseFloat(amount)){
         let extraHint = ""
@@ -184,29 +98,18 @@ export default class SendToAddress extends React.Component {
           extraHint = "(gas costs)"
         }
         this.props.changeAlert({type: 'warning', message: 'Not enough funds: '+dollarDisplay(Math.floor((parseFloat(this.props.balance)-0.0001)*100)/100)+' '+extraHint})
-      }else if((ERC20TOKEN && (parseFloat(this.props.balance)<parseFloat(amount)))){
-        console.log("SO THE BALANCE IS LESS!")
-        this.props.changeAlert({type: 'warning', message: 'Not enough tokens: $'+parseFloat(this.props.balance)})
       }else{
-        console.log("SWITCH TO LOADER VIEW...",amount)
+        // console.log("SWITCH TO LOADER VIEW...",amount)
         // this.props.changeView('loader')
         // setTimeout(()=>{window.scrollTo(0,0)},60)
 
-        console.log("web3",this.props.web3)
-        let txData
-        if(this.state.message){
-          txData = this.props.web3.utils.utf8ToHex(this.state.message)
-        }
-        console.log("txData",txData)
         let value = 0
         console.log("amount",amount)
         if(amount){
           value=amount
         }
 
-        cookie.remove('sendToStartAmount', { path: '/' })
-        cookie.remove('sendToStartMessage', { path: '/' })
-        cookie.remove('sendToAddress', { path: '/' })        
+        cookie.remove('sendToStartAmount', { path: '/' })        
 
         const gasPrice = toWei("10","gwei")
         const gasLimit = "200000"
@@ -225,30 +128,11 @@ export default class SendToAddress extends React.Component {
     let { canSend, toAddress } = this.state;
     let {dollarSymbol} = this.props
 
-    /*let sendMessage = ""
-    if(this.state.message){
-      sendMessage = (
-        <div className="form-group w-100">
-          <label htmlFor="amount_input">For</label>
-          <div>
-            {decodeURI(this.state.message)}
-          </div>
-        </div>
-      )
-    }*/
-
     let amountInputDisplay = (
       <input type="number" className="form-control" placeholder="0.00" value={this.state.amount}
           ref={(input) => { this.amountInput = input; }}
              onChange={event => this.updateState('amount', event.target.value)} />
     )
-    if(this.props.scannerState&&this.props.scannerState.daiposOrderId){
-      amountInputDisplay = (
-        <input type="number" readOnly className="form-control" placeholder="0.00" value={this.state.amount}
-            ref={(input) => { this.amountInput = input; }}
-               onChange={event => this.updateState('amount', event.target.value)} />
-      )
-    }
 
     return (
       <div>

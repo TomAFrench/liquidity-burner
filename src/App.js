@@ -47,8 +47,6 @@ import Safe from './components/Safe'
 import core, { mainAsset as xdai } from './core';
 
 
-import YourModule from './components/YourModule'
-
 
 import bufficorn from './bufficorn.png';
 import cypherpunk from './cypherpunk.png';
@@ -56,6 +54,7 @@ import ethImg from './images/ethereum.png';
 import daiImg from './images/dai.jpg';
 import xdaiImg from './images/xdai.jpg';
 import Wyre from './services/wyre';
+import LiquidityNetwork from './components/LiquidityNetwork';
 
 //https://github.com/lesnitsky/react-native-webview-messaging/blob/v1/examples/react-native/web/index.js
 //import RNMessageChannel from 'react-native-webview-messaging';
@@ -2090,7 +2089,7 @@ render() {
             }else{
               return (
                 <div>
-                    <YourModule
+                    <LiquidityNetwork
                       privateKey={metaAccount.privateKey}
 
                       web3={this.state.web3}

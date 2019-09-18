@@ -33,7 +33,7 @@ const HUB_API_URL = 'https://rinkeby.liquidity.network/'
 // const HUB_API_URL = 'https://public.liquidity.network/'
 
 const TEST_DAI_ADDRESS = "0xA9F86DD014C001Acd72d5b25831f94FaCfb48717"
-export default class YourModule extends React.Component {
+export default class LiquidityNetwork extends React.Component {
 
   constructor(props) {
     super(props);
@@ -59,6 +59,8 @@ export default class YourModule extends React.Component {
       limboweb3: limboweb3,
       view: "main"
     }
+
+    this.checkBalance()
   }
 
   componentDidMount(){
@@ -72,8 +74,12 @@ export default class YourModule extends React.Component {
         src/contracts/YourContract.bytecode.js // if you want to deploy the contract from the module (see deployYourContract())
     */
 
-    setInterval(this.pollInterval.bind(this),10000)
+    setInterval(this.pollInterval.bind(this),5000)
     setTimeout(this.pollInterval.bind(this),30)
+
+    setInterval(this.longPollInterval.bind(this),15000)
+    setTimeout(this.longPollInterval.bind(this),30)
+
   }
 
   async pollInterval(){
@@ -84,7 +90,14 @@ export default class YourModule extends React.Component {
       const mainnetBlockNumber = await this.props.mainnetweb3.eth.getBlockNumber()
       this.setState({mainnetBlockNumber, limboBlockNumber})
       
+      const rinkebyBalance = await this.state.limboweb3.eth.getBalance(this.props.address)
+      console.log("rinkeby balance:", rinkebyBalance)
     }
+  }
+
+  async longPollInterval(){
+    console.log("LONGPOLL")
+    this.checkBalance()
   }
 
   async checkBalance(){
