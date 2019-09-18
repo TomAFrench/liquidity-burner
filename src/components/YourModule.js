@@ -9,6 +9,7 @@ import i18next from 'i18next';
 import NavCard from './NavCard';
 import Bottom from './Bottom';
 import LiquidityReceive from './LiquidityReceive'
+import LiquiditySendToAddress from './LiquiditySendToAddress'
 
 import Balance from "./Balance";
 
@@ -132,7 +133,7 @@ export default class YourModule extends React.Component {
             </button>
           </div>
           <div className="col-6 p-1">
-            <button className="btn btn-large w-100" onClick={() => this.props.changeView('send_to_address')} style={this.props.buttonStyle.primary}>
+            <button className="btn btn-large w-100" onClick={() => this.changeView('send_to_address')} style={this.props.buttonStyle.primary}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                 <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
               </Scaler>
@@ -369,6 +370,48 @@ export default class YourModule extends React.Component {
 
           </div>
         )
+      case 'send_to_address':
+        return (
+          <div>
+            <div className="send-to-address card w-100" style={{zIndex:1}}>
+            
+              <NavCard title={i18n.t('send_to_address_title')} goBack={this.goBack.bind(this)}/>
+              <Balance
+                icon={ethImg}
+                selected={true}
+                text="fETH"
+                amount={this.state.fethBalance*this.props.ethprice}
+                address={this.props.account}
+                dollarDisplay={this.props.dollarDisplay}
+              />
+              <Ruler/>
+              <LiquiditySendToAddress
+                nocustManager={this.state.nocustManager}
+                convertToDollar={(dollar) => {return dollar}}
+                dollarSymbol={"$"}
+                parseAndCleanPath={this.props.parseAndCleanPath}
+                openScanner={this.props.openScanner}
+                scannerState={this.state.scannerState}
+                ensLookup={this.props.ensLookup}
+                // ERC20TOKEN={ERC20TOKEN}
+                buttonStyle={this.props.buttonStyle}
+                balance={this.state.fethBalance}
+                web3={this.props.web3}
+                address={this.props.address}
+                // send={send}
+                goBack={this.goBack.bind(this)}
+                // changeView={this.props.changeView}
+                setReceipt={this.props.setReceipt}
+                changeAlert={this.props.changeAlert}
+                dollarDisplay={this.props.dollarDisplay}
+              />
+            </div>
+            <Bottom
+              action={this.goBack.bind(this)}
+            />
+            {/* </div> */}
+
+          </div>
         )
     }
 
