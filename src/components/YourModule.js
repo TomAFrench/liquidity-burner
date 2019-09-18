@@ -88,8 +88,8 @@ export default class YourModule extends React.Component {
   }
 
   async checkBalance(){
-    const fethBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.limboweb3.eth.accounts.wallet[0].address)
-    const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.limboweb3.eth.accounts.wallet[0].address, TEST_DAI_ADDRESS)
+    const fethBalance = await this.state.nocustManager.getNOCUSTBalance(this.props.address)
+    const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.props.address, TEST_DAI_ADDRESS)
     this.setState({fethBalance, fdaiBalance})
     console.log("fETH Balance:", fethBalance.toString())
   }
@@ -169,7 +169,7 @@ export default class YourModule extends React.Component {
 
               <div style={{width:"100%",textAlign:"center"}}>
                 Free and instant off-chain transactions
-                <Ruler/>
+                {/* <Ruler/>
                 <div style={{padding:20}}>
                   The logged in user is
                   <Blockie
@@ -180,7 +180,7 @@ export default class YourModule extends React.Component {
                   <div>
                     They {this.state.addressRegistered ? "are" : "aren't"} registered.
                   </div>
-                </div>
+                </div> */}
 
                 <Ruler/>
 
@@ -223,24 +223,6 @@ export default class YourModule extends React.Component {
 
                 {sendButtons}
 
-                <div>
-                  Network {this.props.network} is selected and on block #{this.props.block}.
-                </div>
-                <div>
-                  Gas price on {this.props.network} is {this.props.gwei} gwei.
-                </div>
-                <div>
-                  mainnetweb3 is on block {typeof this.state.mainnetBlockNumber !== 'undefined' ? this.state.mainnetBlockNumber : "..."} and version {this.props.mainnetweb3.version}
-                </div>
-                <div>
-                  limbo is on block {typeof this.state.limboBlockNumber !== 'undefined' ? this.state.limboBlockNumber : "..."} and version {this.state.limboweb3.version}
-                </div>
-                <div>
-                  The current price of ETH is {this.props.dollarDisplay(this.props.ethprice)}.
-                </div>
-
-                <Ruler/>
-
                 <div className="content bridge row">
                   <div className="col-4 p-1">
                     <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
@@ -273,26 +255,25 @@ export default class YourModule extends React.Component {
 
                 <Ruler/>
 
-                <button className="btn btn-large w-50" style={this.props.buttonStyle.secondary} onClick={async ()=>{
+                <div>
+                  Network {this.props.network} is selected and on block #{this.props.block}.
+                </div>
+                <div>
+                  Gas price on {this.props.network} is {this.props.gwei} gwei.
+                </div>
+                <div>
+                  mainnetweb3 is on block {typeof this.state.mainnetBlockNumber !== 'undefined' ? this.state.mainnetBlockNumber : "..."} and version {this.props.mainnetweb3.version}
+                </div>
+                <div>
+                  limbo is on block {typeof this.state.limboBlockNumber !== 'undefined' ? this.state.limboBlockNumber : "..."} and version {this.state.limboweb3.version}
+                </div>
+                <div>
+                  The current price of ETH is {this.props.dollarDisplay(this.props.ethprice)}.
+                </div>
 
-                  let hashSigned = this.props.web3.utils.sha3("jabronie pie"+Math.random())
-                  let sig
-                  //sign the hash using either the meta account OR the etherless account
-                  if(this.props.privateKey){
-                    sig = this.props.web3.eth.accounts.sign(hashSigned, this.props.privateKey);
-                    sig = sig.signature
-                  }else{
-                    sig = await this.props.web3.eth.personal.sign(""+hashSigned,this.props.address)
-                  }
+               
 
-
-                }}>
-                  <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                    <i className="fas fa-pen"></i> {"sign a random hash"}
-                  </Scaler>
-                </button>
-
-              </div>
+                </div>
 
               {/* <Events
                 config={{hide:false}}
@@ -303,51 +284,6 @@ export default class YourModule extends React.Component {
                   this.setState({signEvents:allEvents})
                 }}
               /> */}
-
-              <Ruler/>
-
-              <div className="content row">
-                <label htmlFor="amount_input">{"EXAMPLE ADDRESS INPUT:"}</label>
-                <div className="input-group">
-                  <input type="text" className="form-control" placeholder="0x..." value={this.state.toAddress}
-                    ref={(input) => { this.addressInput = input; }}
-                    onChange={event => this.setState({'toAddress': event.target.value})}
-                  />
-                  <div className="input-group-append" onClick={() => {
-                    this.props.openScanner({view:"yourmodule"})
-                  }}>
-                    <span className="input-group-text" id="basic-addon2" style={this.props.buttonStyle.primary}>
-                      <i style={{color:"#FFFFFF"}} className="fas fa-qrcode" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="content bridge row">
-                <div className="col-6 p-1">
-                  <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                    alert('secondary')}
-                  }>
-                    <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                      <i className="fas fa-bell"></i> {"secondary"}
-                    </Scaler>
-                  </button>
-                </div>
-                <div className="col-6 p-1">
-                <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                  alert('actions')}
-                }>
-                  <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                    <i className="fas fa-hand-holding-usd"></i> {"actions"}
-                  </Scaler>
-                </button>
-                </div>
-              </div>
-
-              <button className={'btn btn-lg w-100'} style={this.props.buttonStyle.primary}
-                      onClick={()=>{alert("do something")}}>
-                Primary CTA
-              </button>
 
             </div>
         </div>
