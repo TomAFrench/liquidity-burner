@@ -10,6 +10,7 @@ import NavCard from './NavCard';
 import Bottom from './Bottom';
 import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
+import LiquidityDeposit from './LiquidityDeposit'
 
 import Balance from "./Balance";
 
@@ -136,6 +137,22 @@ export default class YourModule extends React.Component {
             <button className="btn btn-large w-100" onClick={() => this.changeView('send_to_address')} style={this.props.buttonStyle.primary}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                 <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
+              </Scaler>
+            </button>
+          </div>
+        </div>
+        <div className="content ops row">
+          <div className="col-6 p-1" onClick={() => this.changeView('deposit')}>
+            <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.deposit.title')}
+              </Scaler>
+            </button>
+          </div>
+          <div className="col-6 p-1">
+            <button className="btn btn-large w-100" onClick={() => this.changeView('withdraw')} style={this.props.buttonStyle.secondary}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.withdraw.title')}
               </Scaler>
             </button>
           </div>
@@ -411,6 +428,87 @@ export default class YourModule extends React.Component {
             />
             {/* </div> */}
 
+          </div>
+        )
+      case 'deposit':
+        return (
+          <div>
+            <div className="send-to-address card w-100" style={{zIndex:1}}>
+            
+              <NavCard title={i18n.t('liquidity.deposit.title')} goBack={this.goBack.bind(this)}/>
+              <Balance
+                icon={ethImg}
+                selected={true}
+                text="ETH"
+                amount={this.props.EthBalance*this.props.ethprice}
+                address={this.props.account}
+                dollarDisplay={this.props.dollarDisplay}
+              />
+              <Ruler/>
+              <Balance
+                icon={ethImg}
+                selected={true}
+                text="fETH"
+                amount={this.state.fethBalance*this.props.ethprice}
+                address={this.props.account}
+                dollarDisplay={this.props.dollarDisplay}
+              />
+              <Ruler/>
+              <LiquidityDeposit
+                nocustManager={this.state.nocustManager}
+                convertToDollar={(dollar) => {return dollar}}
+                dollarSymbol={"$"}
+                parseAndCleanPath={this.props.parseAndCleanPath}
+                openScanner={this.props.openScanner}
+                scannerState={this.state.scannerState}
+                ensLookup={this.props.ensLookup}
+                // ERC20TOKEN={ERC20TOKEN}
+                buttonStyle={this.props.buttonStyle}
+                balance={this.state.fethBalance}
+                web3={this.props.web3}
+                address={this.props.address}
+                // send={send}
+                goBack={this.goBack.bind(this)}
+                // changeView={this.props.changeView}
+                setReceipt={this.props.setReceipt}
+                changeAlert={this.props.changeAlert}
+                dollarDisplay={this.props.dollarDisplay}
+              />
+            </div>
+            <Bottom
+              action={this.goBack.bind(this)}
+            />
+          </div>
+        )
+        case 'withdraw':
+        return (
+          <div>
+            <div className="send-to-address card w-100" style={{zIndex:1}}>
+            
+              <NavCard title={i18n.t('liquidity.withdraw.title')} goBack={this.goBack.bind(this)}/>
+              <Balance
+                icon={ethImg}
+                selected={true}
+                text="ETH"
+                amount={this.props.EthBalance*this.props.ethprice}
+                address={this.props.account}
+                dollarDisplay={this.props.dollarDisplay}
+              />
+              <Ruler/>
+              <Balance
+                icon={ethImg}
+                selected={true}
+                text="fETH"
+                amount={this.state.fethBalance*this.props.ethprice}
+                address={this.props.account}
+                dollarDisplay={this.props.dollarDisplay}
+              />
+              <Ruler/>
+              {i18n.t('liquidity.withdraw.warning')}
+            </div>
+            <Bottom
+              action={this.goBack.bind(this)}
+            />
           </div>
         )
     }
