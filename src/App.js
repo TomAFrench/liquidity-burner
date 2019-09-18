@@ -1134,14 +1134,14 @@ render() {
   } = this.state;
 
   let networkOverlay = ""
-  if(web3 && !this.checkNetwork() && view!="exchange"){
-    networkOverlay = (
-      <div>
-      <input style={{zIndex:13,position:'absolute',opacity:0.95,right:48,top:192,width:194}} value="https://dai.poa.network" />
-      <img style={{zIndex:12,position:'absolute',opacity:0.95,right:0,top:0,maxHeight:370}} src={customRPCHint} />
-      </div>
-    )
-  }
+  // if(web3 && !this.checkNetwork() && view!="exchange"){
+  //   networkOverlay = (
+  //     <div>
+  //       <input style={{zIndex:13,position:'absolute',opacity:0.95,right:48,top:192,width:194}} value="https://dai.poa.network" />
+  //       <img style={{zIndex:12,position:'absolute',opacity:0.95,right:0,top:0,maxHeight:370}} src={customRPCHint} />
+  //     </div>
+  //   )
+  // }
 
 
   let web3_setup = ""
@@ -2090,8 +2090,6 @@ render() {
             }else{
               return (
                 <div>
-                  <div className="send-to-address card w-100" style={{zIndex:1}}>
-                    <NavCard title={"Liquidity Network"} titleLink={""} goBack={this.goBack.bind(this)}/>
                     <YourModule
                       privateKey={metaAccount.privateKey}
 
@@ -2142,9 +2140,9 @@ render() {
                       goBack={this.goBack.bind(this)}
                       dollarDisplay={dollarDisplay}
                     />
-                  </div>
+
                   <Bottom
-                    text={"buttom button"}
+                    text={"Exit Liquidity Network"}
                     action={this.goBack.bind(this)}
                   />
                 </div>
