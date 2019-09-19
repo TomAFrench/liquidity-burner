@@ -19,26 +19,31 @@ import { BigNumber } from 'ethers/utils';
 
 import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
+import LiquidityWithdraw from './LiquidityWithdraw';
 
 const { fromWei } = require('web3-utils');
 
-// const HUB_CONTRACT_ADDRESS = '0x9561C133DD8580860B6b7E504bC5Aa500f0f06a7'
-// const HUB_API_URL = 'https://limbo.liquidity.network/'
-// const LIMBO_RPC_URL = 'https://limbo.liquidity.network/ethrpc'
+const HUB_CONTRACT_ADDRESS = '0x9561C133DD8580860B6b7E504bC5Aa500f0f06a7'
+const HUB_API_URL = 'https://limbo.liquidity.network/'
+const RPC_URL = 'https://limbo.liquidity.network/ethrpc'
+const TEST_DAI_ADDRESS = '0xe982E462b094850F12AF94d21D470e21bE9D0E9C'
 
-const HUB_CONTRACT_ADDRESS = '0x66b26B6CeA8557D6d209B33A30D69C11B0993a3a'
-const HUB_API_URL = 'https://rinkeby.liquidity.network/'
+// const HUB_CONTRACT_ADDRESS = '0x66b26B6CeA8557D6d209B33A30D69C11B0993a3a'
+// const HUB_API_URL = 'https://rinkeby.liquidity.network/'
+// const RPC_URL = 'https://rinkeby.infura.io/v3/59f8bd04971b4c8ea113ee02372b0f96'
+
+// const TEST_DAI_ADDRESS = "0xA9F86DD014C001Acd72d5b25831f94FaCfb48717"
+
 
 // const HUB_CONTRACT_ADDRESS = '0x83aFD697144408C344ce2271Ce16F33A74b3d98b'
 // const HUB_API_URL = 'https://public.liquidity.network/'
 
-const TEST_DAI_ADDRESS = "0xA9F86DD014C001Acd72d5b25831f94FaCfb48717"
 export default class LiquidityNetwork extends React.Component {
 
   constructor(props) {
     super(props);
 
-    let limboweb3 = new Web3(new Web3.providers.HttpProvider('https://rinkeby.infura.io/v3/59f8bd04971b4c8ea113ee02372b0f96'))
+    let limboweb3 = new Web3(new Web3.providers.HttpProvider(RPC_URL))
     limboweb3.eth.accounts.wallet.add(props.privateKey)
     console.log("privkey", props.privateKey)
 
@@ -396,7 +401,7 @@ export default class LiquidityNetwork extends React.Component {
                 dollarSymbol={"$"}
                 ensLookup={this.props.ensLookup}
                 buttonStyle={this.props.buttonStyle}
-                balance={this.state.rinkebyBalance}
+                balance={this.state.ethBalance}
                 offchainBalance={this.state.fethBalance}
                 address={this.props.address}
                 goBack={this.goBack.bind(this)}
@@ -415,25 +420,23 @@ export default class LiquidityNetwork extends React.Component {
             <div className="send-to-address card w-100" style={{zIndex:1}}>
             
               <NavCard title={i18n.t('liquidity.withdraw.title')} goBack={this.goBack.bind(this)}/>
-              <Balance
-                icon={ethImg}
-                selected={true}
-                text="ETH"
-                amount={this.props.EthBalance*this.props.ethprice}
-                address={this.props.account}
-                dollarDisplay={this.props.dollarDisplay}
-              />
-              <Ruler/>
-              <Balance
-                icon={ethImg}
-                selected={true}
-                text="fETH"
-                amount={this.state.fethBalance*this.props.ethprice}
-                address={this.props.account}
-                dollarDisplay={this.props.dollarDisplay}
-              />
-              <Ruler/>
               {i18n.t('liquidity.withdraw.warning')}
+              <Ruler/>
+              <LiquidityWithdraw
+                icon={ethImg}
+                text="ETH"
+                nocustManager={this.state.nocustManager}
+                convertToDollar={(dollar) => {return dollar}}
+                dollarSymbol={"$"}
+                ensLookup={this.props.ensLookup}
+                buttonStyle={this.props.buttonStyle}
+                balance={this.state.rinkebyBalance}
+                offchainBalance={this.state.fethBalance}
+                address={this.props.address}
+                goBack={this.goBack.bind(this)}
+                changeAlert={this.props.changeAlert}
+                dollarDisplay={this.props.dollarDisplay}
+              />
             </div>
             <Bottom
               action={this.goBack.bind(this)}
