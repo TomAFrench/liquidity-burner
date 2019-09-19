@@ -101,10 +101,13 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async checkBalance(){
+    const ethBalance = await this.state.nocustManager.getOnChainBalance(this.props.address)
+    const daiBalance = await this.state.nocustManager.getOnChainBalance(this.props.address, TEST_DAI_ADDRESS)
+
     const fethBalance = await this.state.nocustManager.getNOCUSTBalance(this.props.address)
     const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.props.address, TEST_DAI_ADDRESS)
-    this.setState({fethBalance, fdaiBalance})
-    console.log("fETH Balance:", fethBalance.toString())
+    this.setState({ethBalance, daiBalance, fethBalance, fdaiBalance})
+    console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
   }
 
   async checkRegistration(){
@@ -201,7 +204,7 @@ export default class LiquidityNetwork extends React.Component {
                         icon={ethImg}
                         selected={true}
                         text="fETH"
-                        amount={this.state.fethBalance*this.props.ethprice}
+                        amount={this.state.fethBalance}
                         address={this.props.account}
                         dollarDisplay={this.props.dollarDisplay}
                       />
@@ -210,7 +213,7 @@ export default class LiquidityNetwork extends React.Component {
                         icon={ethImg}
                         selected={true}
                         text="ETH"
-                        amount={this.props.ethBalance*this.props.ethprice}
+                        amount={this.state.ethBalance}
                         address={this.props.account}
                         dollarDisplay={this.props.dollarDisplay}
                       />
@@ -219,7 +222,7 @@ export default class LiquidityNetwork extends React.Component {
                         icon={daiImg}
                         selected={true}
                         text="DAI"
-                        amount={this.props.daiBalance}
+                        amount={this.state.daiBalance}
                         address={this.props.account}
                         dollarDisplay={this.props.dollarDisplay}
                       />
