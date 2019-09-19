@@ -62,6 +62,7 @@ export default class LiquidityNetwork extends React.Component {
       nocustManager: nocustManager,
       address: limboweb3.eth.accounts.wallet[0].address,
       addressRegistered: false,
+      blocksToWithdrawal: -1,
       limboweb3: limboweb3,
       view: "main"
     }
@@ -148,12 +149,12 @@ export default class LiquidityNetwork extends React.Component {
     
     let sendButtons = (
       <div>
-        {this.state.blocksToWithdrawal == 0 &&
+        {typeof this.state.blocksToWithdrawal !== 'undefined' && this.state.blocksToWithdrawal != -1 &&
         <div className="content ops row">
           <div className="col-12 p-1" onClick={() => this.confirmWithdrawal()}>
-            <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
+            <button className={`btn btn-large w-100 ${this.state.blocksToWithdrawal == 0 ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-qrcode"  /> {i18next.t('liquidity.withdraw.confirm')}
+                <i className="fas fa-qrcode"  /> {this.state.blocksToWithdrawal == 0 ? i18next.t('liquidity.withdraw.confirm') : this.state.blocksToWithdrawal + " blocks until confirmation"}
               </Scaler>
             </button>
           </div>
@@ -277,8 +278,6 @@ export default class LiquidityNetwork extends React.Component {
                   <div>
                     Blocks until withdrawal confirmation: {this.state.blocksToWithdrawal}.
                   </div>
-
-                
 
                   </div>
 
