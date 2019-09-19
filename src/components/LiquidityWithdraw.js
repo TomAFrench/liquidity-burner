@@ -64,7 +64,7 @@ export default class LiquidityWithdraw extends React.Component {
         toAddress: resolvedAddress
       })
     }*/
-    return (this.state.amount>0 && this.state.amount < this.props.offchainBalance)
+    return (this.state.amount>0 && this.state.amount <= this.props.withdrawLimit)
   }
 
   scrollToBottom(){

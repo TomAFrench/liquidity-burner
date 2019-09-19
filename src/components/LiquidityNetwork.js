@@ -112,6 +112,7 @@ export default class LiquidityNetwork extends React.Component {
   async longPollInterval(){
     console.log("LONGPOLL")
     this.checkBalance()
+    this.checkWithdrawalInfo()
   }
 
   async checkBalance(){
@@ -127,13 +128,21 @@ export default class LiquidityNetwork extends React.Component {
     this.setState({blocksToWithdrawal})
   }
 
-  async confirmWithdrawal () {
+  async checkWithdrawalInfo () {
     const gasPrice = toWei("10","gwei")
+    const withdrawFee = await this.state.nocustManager.getWithdrawalFee(gasPrice)
+    const withdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
+    this.setState({withdrawFee, withdrawLimit})
+  }
+
+  async confirmWithdrawal () {
+    const gasPrice = toWei("1","gwei")
     const gasLimit = "300000"
 
     console.log(this.state.address, gasPrice, gasLimit)
     const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, gasPrice, gasLimit, TEST_DAI_ADDRESS)
     console.log("withdrawal", txhash)
+    this.checkBalance()
   }
 
 
@@ -266,6 +275,12 @@ export default class LiquidityNetwork extends React.Component {
                   <div>
                     Blocks until withdrawal confirmation: {this.state.blocksToWithdrawal}.
                   </div>
+                  <div>
+                    Withdrawal Limit {this.state.withdrawLimit && this.state.withdrawLimit.toString()}.
+                  </div>
+                  <div>
+                    Withdrawal Fee {this.state.withdrawFee && this.state.withdrawFee.toString()}.
+                  </div>
 
                   </div>
 
@@ -397,6 +412,7 @@ export default class LiquidityNetwork extends React.Component {
                 text="Dai"
                 nocustManager={this.state.nocustManager}
                 tokenAddress={TEST_DAI_ADDRESS}
+                withdrawLimit={this.state.withdrawLimit}
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
                 ensLookup={this.props.ensLookup}
