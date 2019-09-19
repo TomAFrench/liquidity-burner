@@ -67,7 +67,10 @@ export default class LiquidityNetwork extends React.Component {
     }
 
     nocustManager.syncWallet(this.state.address)
-    this.checkBalance()
+
+    this.registerWithHub().then(() => {
+      this.checkBalance()
+    })
   }
 
   componentDidMount(){
@@ -80,6 +83,21 @@ export default class LiquidityNetwork extends React.Component {
 
   }
 
+  // async checkRegistration(){
+  //   let addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
+  //   console.log("registration check", addressRegistered)
+  //   this.setState({addressRegistered})
+  //   return addressRegistered 
+  // }
+
+  async registerWithHub(){
+    console.log("just before registration")
+    await this.state.nocustManager.registerAddress(this.state.address)
+    console.log("registered ETH")
+    await this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
+    console.log("Finished registering")
+  }
+
   async pollInterval(){
     console.log("POLL")
     if(this.state){
@@ -87,9 +105,6 @@ export default class LiquidityNetwork extends React.Component {
       const limboBlockNumber = await this.state.limboweb3.eth.getBlockNumber()
       const mainnetBlockNumber = await this.props.mainnetweb3.eth.getBlockNumber()
       this.setState({mainnetBlockNumber, limboBlockNumber})
-      
-      const rinkebyBalance = await this.state.limboweb3.eth.getBalance(this.state.address)
-      console.log("rinkeby balance:", rinkebyBalance)
     }
   }
 
@@ -120,19 +135,6 @@ export default class LiquidityNetwork extends React.Component {
     console.log("withdrawal", txhash)
   }
 
-  async checkRegistration(){
-    let addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
-    console.log("registration check", addressRegistered)
-    this.setState({addressRegistered})
-  }
-
-  async registerWithHub(){
-    console.log("just before registration")
-    await this.state.nocustManager.registerAddress(this.state.address)
-    console.log("registered ETH")
-    await this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
-    console.log("response from registration")
-  }
 
   changeView (view) {
     this.setState({view}, console.log)
@@ -254,36 +256,6 @@ export default class LiquidityNetwork extends React.Component {
                     <Ruler/>
 
                   {sendButtons}
-
-                  <div className="content bridge row">
-                    <div className="col-4 p-1">
-                      <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                        this.registerWithHub()
-                      }}>
-                        <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                          <i className="fas fa-dog"></i> {"register"}
-                        </Scaler>
-                      </button>
-                    </div>
-                    <div className="col-4 p-1">
-                      <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                        this.checkRegistration()
-                      }}>
-                        <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                          <i className="fas fa-bone"></i> {"Check registration"}
-                        </Scaler>
-                      </button>
-                    </div>
-                    <div className="col-4 p-1">
-                    <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                      this.checkBalance()
-                    }}>
-                      <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                        <i className="fas fa-paw"></i> {"Check Balance"}
-                      </Scaler>
-                    </button>
-                    </div>
-                  </div>
 
                   <Ruler/>
 
