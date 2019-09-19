@@ -388,41 +388,18 @@ export default class LiquidityNetwork extends React.Component {
             <div className="send-to-address card w-100" style={{zIndex:1}}>
             
               <NavCard title={i18n.t('liquidity.deposit.title')} goBack={this.goBack.bind(this)}/>
-              <Balance
-                icon={ethImg}
-                selected={true}
-                text="ETH"
-                amount={this.props.EthBalance*this.props.ethprice}
-                address={this.props.account}
-                dollarDisplay={this.props.dollarDisplay}
-              />
-              <Ruler/>
-              <Balance
-                icon={ethImg}
-                selected={true}
-                text="fETH"
-                amount={this.state.fethBalance*this.props.ethprice}
-                address={this.props.account}
-                dollarDisplay={this.props.dollarDisplay}
-              />
-              <Ruler/>
               <LiquidityDeposit
+                icon={ethImg}
+                text="ETH"
                 nocustManager={this.state.nocustManager}
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
-                parseAndCleanPath={this.props.parseAndCleanPath}
-                openScanner={this.props.openScanner}
-                scannerState={this.state.scannerState}
                 ensLookup={this.props.ensLookup}
-                // ERC20TOKEN={ERC20TOKEN}
                 buttonStyle={this.props.buttonStyle}
-                balance={this.state.fethBalance}
-                web3={this.props.web3}
+                balance={this.state.rinkebyBalance}
+                offchainBalance={this.state.fethBalance}
                 address={this.props.address}
-                // send={send}
                 goBack={this.goBack.bind(this)}
-                // changeView={this.props.changeView}
-                setReceipt={this.props.setReceipt}
                 changeAlert={this.props.changeAlert}
                 dollarDisplay={this.props.dollarDisplay}
               />

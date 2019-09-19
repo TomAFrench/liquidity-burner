@@ -136,6 +136,24 @@ export default class LiquidityDeposit extends React.Component {
 
     return (
       <div>
+        <Balance
+          icon={this.props.icon}
+          selected={true}
+          text={this.props.text}
+          amount={this.props.balance}
+          address={this.props.account}
+          dollarDisplay={this.props.dollarDisplay}
+        />
+        <Ruler/>
+        <Balance
+          icon={this.props.icon}
+          selected={true}
+          text={"f"+this.props.text}
+          amount={this.props.offchainBalance}
+          address={this.props.account}
+          dollarDisplay={this.props.dollarDisplay}
+        />
+        <Ruler/>
         <div className="content row">
           <div className="form-group w-100">
             <label htmlFor="amount_input">{i18n.t('liquidity.deposit.deposit_amount')}</label>
