@@ -117,7 +117,7 @@ export default class LiquidityWithdraw extends React.Component {
         const gasLimit = "300000"
 
         console.log(this.props.address, value, gasPrice, gasLimit)
-        const txhash = await this.props.nocustManager.withdrawalRequest(this.props.address, value, gasPrice, gasLimit)
+        const txhash = await this.props.nocustManager.withdrawalRequest(this.props.address, value, gasPrice, gasLimit, this.props.tokenAddress)
         console.log("transaction response", txhash)
         this.props.goBack()
       }
@@ -141,8 +141,8 @@ export default class LiquidityWithdraw extends React.Component {
         <Balance
           icon={this.props.icon}
           selected={true}
-          text={this.props.text}
-          amount={this.props.balance}
+          text={"f"+this.props.text}
+          amount={this.props.offchainBalance}
           address={this.props.account}
           dollarDisplay={this.props.dollarDisplay}
         />
@@ -150,12 +150,13 @@ export default class LiquidityWithdraw extends React.Component {
         <Balance
           icon={this.props.icon}
           selected={true}
-          text={"f"+this.props.text}
-          amount={this.props.offchainBalance}
+          text={this.props.text}
+          amount={this.props.balance}
           address={this.props.account}
           dollarDisplay={this.props.dollarDisplay}
         />
         <Ruler/>
+        {this.props.withdrawLimit.toString()}
         <div className="content row">
           <div className="form-group w-100">
             <label htmlFor="amount_input">{i18n.t('liquidity.withdraw.withdraw_amount')}</label>

@@ -123,7 +123,7 @@ export default class LiquidityNetwork extends React.Component {
     this.setState({ethBalance, daiBalance, fethBalance, fdaiBalance})
     console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
 
-    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address)
+    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, TEST_DAI_ADDRESS)
     this.setState({blocksToWithdrawal})
   }
 
@@ -132,7 +132,7 @@ export default class LiquidityNetwork extends React.Component {
     const gasLimit = "300000"
 
     console.log(this.state.address, gasPrice, gasLimit)
-    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, gasPrice, gasLimit)
+    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, gasPrice, gasLimit, TEST_DAI_ADDRESS)
     console.log("withdrawal", txhash)
   }
 
@@ -203,7 +203,6 @@ export default class LiquidityNetwork extends React.Component {
               <div className="form-group w-100">
 
                 <div style={{width:"100%",textAlign:"center"}}>
-                  Free and instant off-chain transactions
                   {/* <Ruler/>
                   <div style={{padding:20}}>
                     The logged in user is
@@ -217,44 +216,33 @@ export default class LiquidityNetwork extends React.Component {
                     </div>
                   </div> */}
 
+                  <Balance
+                        icon={daiImg}
+                        selected={true}
+                        text="fDAI"
+                        amount={this.state.fdaiBalance}
+                        address={this.props.account}
+                        dollarDisplay={this.props.dollarDisplay}
+                      />
                   <Ruler/>
-
-                    <Balance
-                          icon={ethImg}
-                          selected={true}
-                          text="fETH"
-                          amount={this.state.fethBalance}
-                          address={this.props.account}
-                          dollarDisplay={this.props.dollarDisplay}
-                        />
-                    <Ruler/>
-                    <Balance
-                          icon={ethImg}
-                          selected={true}
-                          text="ETH"
-                          amount={this.state.ethBalance}
-                          address={this.props.account}
-                          dollarDisplay={this.props.dollarDisplay}
-                        />
-                    <Ruler/>
-                    <Balance
-                          icon={daiImg}
-                          selected={true}
-                          text="DAI"
-                          amount={this.state.daiBalance}
-                          address={this.props.account}
-                          dollarDisplay={this.props.dollarDisplay}
-                        />
-                    <Ruler/>
-                    <Balance
-                          icon={daiImg}
-                          selected={true}
-                          text="fDAI"
-                          amount={this.state.fdaiBalance}
-                          address={this.props.account}
-                          dollarDisplay={this.props.dollarDisplay}
-                        />
-                    <Ruler/>
+                  <Balance
+                        icon={daiImg}
+                        selected={true}
+                        text="DAI"
+                        amount={this.state.daiBalance}
+                        address={this.props.account}
+                        dollarDisplay={this.props.dollarDisplay}
+                      />
+                  <Ruler/>
+                  <Balance
+                        icon={ethImg}
+                        selected={true}
+                        text="ETH"
+                        amount={this.state.ethBalance}
+                        address={this.props.account}
+                        dollarDisplay={this.props.dollarDisplay}
+                      />
+                  <Ruler/>
 
                   {sendButtons}
 
@@ -375,9 +363,10 @@ export default class LiquidityNetwork extends React.Component {
             
               <NavCard title={i18n.t('liquidity.deposit.title')} goBack={this.goBack.bind(this)}/>
               <LiquidityDeposit
-                icon={ethImg}
-                text="ETH"
+                icon={daiImg}
+                text="Dai"
                 nocustManager={this.state.nocustManager}
+                tokenAddress={TEST_DAI_ADDRESS}
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
                 ensLookup={this.props.ensLookup}
@@ -404,9 +393,10 @@ export default class LiquidityNetwork extends React.Component {
               {i18n.t('liquidity.withdraw.warning')}
               <Ruler/>
               <LiquidityWithdraw
-                icon={ethImg}
-                text="ETH"
+                icon={daiImg}
+                text="Dai"
                 nocustManager={this.state.nocustManager}
+                tokenAddress={TEST_DAI_ADDRESS}
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
                 ensLookup={this.props.ensLookup}
