@@ -42,7 +42,9 @@ export default class LiquidityDeposit extends React.Component {
     if(key=="amount"){
       cookie.save('sendToStartAmount', value, { path: '/', maxAge: 60 })
     }
-    this.setState({ [key]: value });
+    this.setState({ [key]: value }, ()=>{
+      this.setState({ canSend: this.canSend() })
+    })
   };
 
   componentDidMount(){

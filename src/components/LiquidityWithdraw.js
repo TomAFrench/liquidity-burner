@@ -42,7 +42,9 @@ export default class LiquidityWithdraw extends React.Component {
     if(key=="amount"){
       cookie.save('withdrawStartAmount', value, { path: '/', maxAge: 60 })
     }
-    this.setState({ [key]: value });
+    this.setState({ [key]: value }, ()=>{
+      this.setState({ canSend: this.canSend() })
+    })
   };
 
   componentDidMount(){
