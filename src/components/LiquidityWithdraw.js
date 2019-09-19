@@ -158,7 +158,7 @@ export default class LiquidityWithdraw extends React.Component {
         <Ruler/>
         <div className="content row">
           <div className="form-group w-100">
-            <label htmlFor="amount_input">{i18n.t('liquidity.deposit.deposit_amount')}</label>
+            <label htmlFor="amount_input">{i18n.t('liquidity.withdraw.withdraw_amount')}</label>
             <div className="input-group">
               <div className="input-group-prepend">
                 <div className="input-group-text">{dollarSymbol}</div>
@@ -168,7 +168,7 @@ export default class LiquidityWithdraw extends React.Component {
           </div>
           <button name="theVeryBottom" className={`btn btn-lg w-100 ${canSend ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}
                   onClick={this.send}>
-            Send
+            {i18n.t('liquidity.withdraw.confirm')}
           </button>
         </div>
       </div>

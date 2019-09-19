@@ -2084,64 +2084,61 @@ render() {
           </div>
         );
         case 'yourmodule':
-            if(!this.state || !this.state.customLoader || !this.state.tx || !this.state.contracts || !this.state.network){
-              return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-            }else{
-              return (
-                <div>
-                    <LiquidityNetwork
-                      privateKey={metaAccount.privateKey}
+          if(!this.state || !this.state.customLoader || !this.state.tx || !this.state.contracts || !this.state.network){
+            return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+          }else{
+            return (
+              <div>
+                  <LiquidityNetwork
+                    privateKey={metaAccount.privateKey}
 
-                      web3={this.state.web3}
-                      tx={this.state.tx}
-                      send={this.state.send}
+                    web3={this.state.web3}
+                    tx={this.state.tx}
+                    send={this.state.send}
 
-                      address={account}
-                      balance={balance}
+                    address={account}
+                    balance={balance}
 
-                      network={this.state.network}
-                      block={this.state.block}
+                    network={this.state.network}
+                    block={this.state.block}
 
-                      contracts={this.state.contracts}
-                      contractLoader={this.state.customLoader}
+                    mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
 
-                      mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
+                    daiContract={this.state.daiContract}
+                    ensContract={this.state.ensContract}
+                    ensLookup={this.ensLookup.bind(this)}
 
-                      daiContract={this.state.daiContract}
-                      ensContract={this.state.ensContract}
-                      ensLookup={this.ensLookup.bind(this)}
+                    ethBalance={this.state.ethBalance}
+                    daiBalance={this.state.daiBalance}
+                    xdaiBalance={this.state.xdaiBalance}
 
-                      ethBalance={this.state.ethBalance}
-                      daiBalance={this.state.daiBalance}
-                      xdaiBalance={this.state.xdaiBalance}
+                    eth={eth}
+                    dai={dai}
+                    xdai={xdai}
+                    ERC20NAME={ERC20NAME}
+                    ERC20IMAGE={ERC20IMAGE}
+                    ERC20TOKEN={ERC20TOKEN}
+                    ERC20VENDOR={ERC20VENDOR}
+                    ethprice={this.state.ethprice}
 
-                      eth={eth}
-                      dai={dai}
-                      xdai={xdai}
-                      ERC20NAME={ERC20NAME}
-                      ERC20IMAGE={ERC20IMAGE}
-                      ERC20TOKEN={ERC20TOKEN}
-                      ERC20VENDOR={ERC20VENDOR}
-                      ethprice={this.state.ethprice}
+                    isVendor={this.state.isVendor}
+                    isAdmin={this.state.isAdmin}
 
-                      isVendor={this.state.isVendor}
-                      isAdmin={this.state.isAdmin}
+                    setGwei={this.setGwei}
+                    gwei={this.state.gwei}
 
-                      setGwei={this.setGwei}
-                      gwei={this.state.gwei}
+                    openScanner={this.openScanner.bind(this)}
+                    scannerState={this.state.scannerState}
 
-                      openScanner={this.openScanner.bind(this)}
-                      scannerState={this.state.scannerState}
-
-                      buttonStyle={buttonStyle}
-                      changeAlert={this.changeAlert}
-                      nativeSend={this.state.nativeSend} //this is used to send xDai when you are running on an ERC20 token
-                      goBack={this.goBack.bind(this)}
-                      dollarDisplay={dollarDisplay}
-                    />
-                </div>
-              )
-            }
+                    buttonStyle={buttonStyle}
+                    changeAlert={this.changeAlert}
+                    nativeSend={this.state.nativeSend} //this is used to send xDai when you are running on an ERC20 token
+                    goBack={this.goBack.bind(this)}
+                    dollarDisplay={dollarDisplay}
+                  />
+              </div>
+            )
+          }
         case 'exchange':
         return (
           <div>

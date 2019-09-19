@@ -52,31 +52,25 @@ export default class LiquidityNetwork extends React.Component {
       contractAddress: HUB_CONTRACT_ADDRESS,
       });
 
-    console.log("limbo Acc", limboweb3.eth.accounts.wallet[0])
+    console.log("limbo Acc", limboweb3.eth.accounts.wallet[0].address)
     console.log("acc:", this.props.mainnetweb3.eth.getAccounts())
+    console.log("prop acc:", props.address)
     console.log(nocustManager)
 
     this.state = {
       toAddress: (props.scannerState ? props.scannerState.toAddress : ""),
       nocustManager: nocustManager,
+      address: limboweb3.eth.accounts.wallet[0].address,
       addressRegistered: false,
       limboweb3: limboweb3,
       view: "main"
     }
 
+    nocustManager.syncWallet(this.state.address)
     this.checkBalance()
   }
 
   componentDidMount(){
-    console.log("YOUR MODULE MOUNTED, PROPS:",this.props)
-    /*
-        -- LOAD YOUR CONTRACT --
-        Contract files loaded from:
-        src/contracts/YourContract.abi
-        src/contracts/YourContract.address
-        src/contracts/YourContract.blocknumber.js // the block number it was deployed at (for efficient event loading)
-        src/contracts/YourContract.bytecode.js // if you want to deploy the contract from the module (see deployYourContract())
-    */
 
     setInterval(this.pollInterval.bind(this),5000)
     setTimeout(this.pollInterval.bind(this),30)
@@ -94,7 +88,7 @@ export default class LiquidityNetwork extends React.Component {
       const mainnetBlockNumber = await this.props.mainnetweb3.eth.getBlockNumber()
       this.setState({mainnetBlockNumber, limboBlockNumber})
       
-      const rinkebyBalance = await this.state.limboweb3.eth.getBalance(this.props.address)
+      const rinkebyBalance = await this.state.limboweb3.eth.getBalance(this.state.address)
       console.log("rinkeby balance:", rinkebyBalance)
     }
   }
@@ -105,15 +99,15 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async checkBalance(){
-    const ethBalance = await this.state.nocustManager.getOnChainBalance(this.props.address)
-    const daiBalance = await this.state.nocustManager.getOnChainBalance(this.props.address, TEST_DAI_ADDRESS)
+    const ethBalance = await this.state.nocustManager.getOnChainBalance(this.state.address)
+    const daiBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, TEST_DAI_ADDRESS)
 
-    const fethBalance = await this.state.nocustManager.getNOCUSTBalance(this.props.address)
-    const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.props.address, TEST_DAI_ADDRESS)
+    const fethBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address)
+    const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address, TEST_DAI_ADDRESS)
     this.setState({ethBalance, daiBalance, fethBalance, fdaiBalance})
     console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
 
-    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.props.address)
+    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address)
     this.setState({blocksToWithdrawal})
   }
 
@@ -121,27 +115,22 @@ export default class LiquidityNetwork extends React.Component {
     const gasPrice = toWei("10","gwei")
     const gasLimit = "300000"
 
-    console.log(this.props.address, gasPrice, gasLimit)
-    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.props.address, gasPrice, gasLimit)
+    console.log(this.state.address, gasPrice, gasLimit)
+    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, gasPrice, gasLimit)
     console.log("withdrawal", txhash)
   }
 
   async checkRegistration(){
-    const account = this.state.limboweb3.eth.accounts.wallet[0]
-    console.log(account.address)
-
-    let addressRegistered = await this.state.nocustManager.isAddressRegistered(account.address)
+    let addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
     console.log("registration check", addressRegistered)
     this.setState({addressRegistered})
   }
 
   async registerWithHub(){
-    console.log("trying to register")
-    const account = this.state.limboweb3.eth.accounts.wallet[0]
     console.log("just before registration")
-    await this.state.nocustManager.registerAddress(account.address)
+    await this.state.nocustManager.registerAddress(this.state.address)
     console.log("registered ETH")
-    await this.state.nocustManager.registerAddress(account.address, TEST_DAI_ADDRESS)
+    await this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
     console.log("response from registration")
   }
 
@@ -355,17 +344,9 @@ export default class LiquidityNetwork extends React.Component {
                 ensLookup={this.props.ensLookup}
                 buttonStyle={this.props.buttonStyle}
                 balance={this.props.balance}
-                // web3={this.state.web3}
-                address={this.props.address}
-                send={this.props.send}
-                // goBack={this.goBack.bind(this)}
-                // changeView={this.changeView}
+                address={this.state.address}
                 changeAlert={this.props.changeAlert}
                 dollarDisplay={this.props.dollarDisplay}
-                // transactionsByAddress={this.state.transactionsByAddress}
-                // fullTransactionsByAddress={this.state.fullTransactionsByAddress}
-                // fullRecentTxs={this.state.fullRecentTxs}
-                // recentTxs={this.state.recentTxs}
               />
             </div>
             <Bottom
@@ -400,7 +381,7 @@ export default class LiquidityNetwork extends React.Component {
                 buttonStyle={this.props.buttonStyle}
                 balance={this.state.fethBalance}
                 web3={this.props.web3}
-                address={this.props.address}
+                address={this.state.address}
                 // send={send}
                 goBack={this.goBack.bind(this)}
                 // changeView={this.props.changeView}
@@ -432,7 +413,7 @@ export default class LiquidityNetwork extends React.Component {
                 buttonStyle={this.props.buttonStyle}
                 balance={this.state.ethBalance}
                 offchainBalance={this.state.fethBalance}
-                address={this.props.address}
+                address={this.state.address}
                 goBack={this.goBack.bind(this)}
                 changeAlert={this.props.changeAlert}
                 dollarDisplay={this.props.dollarDisplay}
@@ -461,7 +442,7 @@ export default class LiquidityNetwork extends React.Component {
                 buttonStyle={this.props.buttonStyle}
                 balance={this.state.rinkebyBalance}
                 offchainBalance={this.state.fethBalance}
-                address={this.props.address}
+                address={this.state.address}
                 goBack={this.goBack.bind(this)}
                 changeAlert={this.props.changeAlert}
                 dollarDisplay={this.props.dollarDisplay}
