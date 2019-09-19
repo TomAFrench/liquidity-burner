@@ -2139,11 +2139,6 @@ render() {
                       goBack={this.goBack.bind(this)}
                       dollarDisplay={dollarDisplay}
                     />
-
-                  <Bottom
-                    text={"Exit Liquidity Network"}
-                    action={this.goBack.bind(this)}
-                  />
                 </div>
               )
             }

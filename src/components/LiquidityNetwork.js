@@ -21,7 +21,7 @@ import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
 import LiquidityWithdraw from './LiquidityWithdraw';
 
-const { fromWei } = require('web3-utils');
+const { toWei, fromWei } = require('web3-utils');
 
 const HUB_CONTRACT_ADDRESS = '0x9561C133DD8580860B6b7E504bC5Aa500f0f06a7'
 const HUB_API_URL = 'https://limbo.liquidity.network/'
@@ -31,7 +31,6 @@ const TEST_DAI_ADDRESS = '0xe982E462b094850F12AF94d21D470e21bE9D0E9C'
 // const HUB_CONTRACT_ADDRESS = '0x66b26B6CeA8557D6d209B33A30D69C11B0993a3a'
 // const HUB_API_URL = 'https://rinkeby.liquidity.network/'
 // const RPC_URL = 'https://rinkeby.infura.io/v3/59f8bd04971b4c8ea113ee02372b0f96'
-
 // const TEST_DAI_ADDRESS = "0xA9F86DD014C001Acd72d5b25831f94FaCfb48717"
 
 
@@ -113,6 +112,18 @@ export default class LiquidityNetwork extends React.Component {
     const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.props.address, TEST_DAI_ADDRESS)
     this.setState({ethBalance, daiBalance, fethBalance, fdaiBalance})
     console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
+
+    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.props.address)
+    this.setState({blocksToWithdrawal})
+  }
+
+  async confirmWithdrawal () {
+    const gasPrice = toWei("10","gwei")
+    const gasLimit = "300000"
+
+    console.log(this.props.address, gasPrice, gasLimit)
+    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.props.address, gasPrice, gasLimit)
+    console.log("withdrawal", txhash)
   }
 
   async checkRegistration(){
@@ -146,6 +157,16 @@ export default class LiquidityNetwork extends React.Component {
     
     let sendButtons = (
       <div>
+        {this.state.blocksToWithdrawal == 0 &&
+        <div className="content ops row">
+          <div className="col-12 p-1" onClick={() => this.confirmWithdrawal()}>
+            <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                <i className="fas fa-qrcode"  /> {i18next.t('liquidity.withdraw.confirm')}
+              </Scaler>
+            </button>
+          </div>
+        </div>}
         <div className="content ops row">
           <div className="col-6 p-1" onClick={() => this.changeView('receive')}>
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
@@ -184,130 +205,139 @@ export default class LiquidityNetwork extends React.Component {
     switch(this.state.view){
       case 'main':
         return (
-          <div className="send-to-address card w-100" style={{zIndex:1}}>
-            <NavCard title={"Liquidity Network"} titleLink={""} goBack={this.props.goBack}/>
-            <div className="form-group w-100">
+          <React.Fragment>
+            <div className="send-to-address card w-100" style={{zIndex:1}}>
+              <NavCard title={"Liquidity Network"} titleLink={""} goBack={this.props.goBack}/>
+              <div className="form-group w-100">
 
-              <div style={{width:"100%",textAlign:"center"}}>
-                Free and instant off-chain transactions
-                {/* <Ruler/>
-                <div style={{padding:20}}>
-                  The logged in user is
-                  <Blockie
-                    address={this.props.address}
-                    config={{size:6}}
-                  />
-                  {this.props.address.substring(0,8)}
+                <div style={{width:"100%",textAlign:"center"}}>
+                  Free and instant off-chain transactions
+                  {/* <Ruler/>
+                  <div style={{padding:20}}>
+                    The logged in user is
+                    <Blockie
+                      address={this.props.address}
+                      config={{size:6}}
+                    />
+                    {this.props.address.substring(0,8)}
+                    <div>
+                      They {this.state.addressRegistered ? "are" : "aren't"} registered.
+                    </div>
+                  </div> */}
+
+                  <Ruler/>
+
+                    <Balance
+                          icon={ethImg}
+                          selected={true}
+                          text="fETH"
+                          amount={this.state.fethBalance}
+                          address={this.props.account}
+                          dollarDisplay={this.props.dollarDisplay}
+                        />
+                    <Ruler/>
+                    <Balance
+                          icon={ethImg}
+                          selected={true}
+                          text="ETH"
+                          amount={this.state.ethBalance}
+                          address={this.props.account}
+                          dollarDisplay={this.props.dollarDisplay}
+                        />
+                    <Ruler/>
+                    <Balance
+                          icon={daiImg}
+                          selected={true}
+                          text="DAI"
+                          amount={this.state.daiBalance}
+                          address={this.props.account}
+                          dollarDisplay={this.props.dollarDisplay}
+                        />
+                    <Ruler/>
+                    <Balance
+                          icon={daiImg}
+                          selected={true}
+                          text="fDAI"
+                          amount={this.state.fdaiBalance}
+                          address={this.props.account}
+                          dollarDisplay={this.props.dollarDisplay}
+                        />
+                    <Ruler/>
+
+                  {sendButtons}
+
+                  <div className="content bridge row">
+                    <div className="col-4 p-1">
+                      <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
+                        this.registerWithHub()
+                      }}>
+                        <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                          <i className="fas fa-dog"></i> {"register"}
+                        </Scaler>
+                      </button>
+                    </div>
+                    <div className="col-4 p-1">
+                      <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
+                        this.checkRegistration()
+                      }}>
+                        <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                          <i className="fas fa-bone"></i> {"Check registration"}
+                        </Scaler>
+                      </button>
+                    </div>
+                    <div className="col-4 p-1">
+                    <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
+                      this.checkBalance()
+                    }}>
+                      <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                        <i className="fas fa-paw"></i> {"Check Balance"}
+                      </Scaler>
+                    </button>
+                    </div>
+                  </div>
+
+                  <Ruler/>
+
                   <div>
-                    They {this.state.addressRegistered ? "are" : "aren't"} registered.
+                    Network {this.props.network} is selected and on block #{this.props.block}.
                   </div>
-                </div> */}
-
-                <Ruler/>
-
-                  <Balance
-                        icon={ethImg}
-                        selected={true}
-                        text="fETH"
-                        amount={this.state.fethBalance}
-                        address={this.props.account}
-                        dollarDisplay={this.props.dollarDisplay}
-                      />
-                  <Ruler/>
-                  <Balance
-                        icon={ethImg}
-                        selected={true}
-                        text="ETH"
-                        amount={this.state.ethBalance}
-                        address={this.props.account}
-                        dollarDisplay={this.props.dollarDisplay}
-                      />
-                  <Ruler/>
-                  <Balance
-                        icon={daiImg}
-                        selected={true}
-                        text="DAI"
-                        amount={this.state.daiBalance}
-                        address={this.props.account}
-                        dollarDisplay={this.props.dollarDisplay}
-                      />
-                  <Ruler/>
-                  <Balance
-                        icon={daiImg}
-                        selected={true}
-                        text="fDAI"
-                        amount={this.state.fdaiBalance}
-                        address={this.props.account}
-                        dollarDisplay={this.props.dollarDisplay}
-                      />
-                  <Ruler/>
-
-                {sendButtons}
-
-                <div className="content bridge row">
-                  <div className="col-4 p-1">
-                    <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                      this.registerWithHub()
-                    }}>
-                      <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                        <i className="fas fa-dog"></i> {"register"}
-                      </Scaler>
-                    </button>
+                  <div>
+                    Gas price on {this.props.network} is {this.props.gwei} gwei.
                   </div>
-                  <div className="col-4 p-1">
-                    <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                      this.checkRegistration()
-                    }}>
-                      <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                        <i className="fas fa-bone"></i> {"Check registration"}
-                      </Scaler>
-                    </button>
+                  <div>
+                    mainnetweb3 is on block {typeof this.state.mainnetBlockNumber !== 'undefined' ? this.state.mainnetBlockNumber : "..."} and version {this.props.mainnetweb3.version}
                   </div>
-                  <div className="col-4 p-1">
-                  <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-                    this.checkBalance()
-                  }}>
-                    <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                      <i className="fas fa-paw"></i> {"Check Balance"}
-                    </Scaler>
-                  </button>
+                  <div>
+                    limbo is on block {typeof this.state.limboBlockNumber !== 'undefined' ? this.state.limboBlockNumber : "..."} and version {this.state.limboweb3.version}
                   </div>
-                </div>
+                  <div>
+                    The current price of ETH is {this.props.dollarDisplay(this.props.ethprice)}.
+                  </div>
+                  <div>
+                    Blocks until withdrawal confirmation: {this.state.blocksToWithdrawal}.
+                  </div>
 
-                <Ruler/>
+                
 
-                <div>
-                  Network {this.props.network} is selected and on block #{this.props.block}.
-                </div>
-                <div>
-                  Gas price on {this.props.network} is {this.props.gwei} gwei.
-                </div>
-                <div>
-                  mainnetweb3 is on block {typeof this.state.mainnetBlockNumber !== 'undefined' ? this.state.mainnetBlockNumber : "..."} and version {this.props.mainnetweb3.version}
-                </div>
-                <div>
-                  limbo is on block {typeof this.state.limboBlockNumber !== 'undefined' ? this.state.limboBlockNumber : "..."} and version {this.state.limboweb3.version}
-                </div>
-                <div>
-                  The current price of ETH is {this.props.dollarDisplay(this.props.ethprice)}.
-                </div>
+                  </div>
 
-               
+                {/* <Events
+                  config={{hide:false}}
+                  eventName={"Sign"}
+                  block={this.props.block}
+                  onUpdate={(eventData,allEvents)=>{
+                    console.log("EVENT DATA:",eventData)
+                    this.setState({signEvents:allEvents})
+                  }}
+                /> */}
 
-                </div>
-
-              {/* <Events
-                config={{hide:false}}
-                eventName={"Sign"}
-                block={this.props.block}
-                onUpdate={(eventData,allEvents)=>{
-                  console.log("EVENT DATA:",eventData)
-                  this.setState({signEvents:allEvents})
-                }}
-              /> */}
-
-            </div>
-        </div>
+              </div>
+          </div>
+          <Bottom
+            text={"Exit Liquidity Network"}
+            action={this.props.goBack}
+          />
+        </React.Fragment>
         )
       case 'receive':
         return (
@@ -337,11 +367,10 @@ export default class LiquidityNetwork extends React.Component {
                 // fullRecentTxs={this.state.fullRecentTxs}
                 // recentTxs={this.state.recentTxs}
               />
-              <Bottom
+            </div>
+            <Bottom
               action={this.goBack.bind(this)}
             />
-            </div>
-
           </div>
         )
       case 'send_to_address':

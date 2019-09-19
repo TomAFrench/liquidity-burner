@@ -318,11 +318,11 @@ export default class LiquiditySendToAddress extends React.Component {
               {amountInputDisplay}
             </div>
           </div>
-          <button name="theVeryBottom" className={`btn btn-lg w-100 ${canSend ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}
+        </div>
+        <button name="theVeryBottom" className={`btn btn-lg w-100 ${canSend ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}
                   onClick={this.send}>
             Send
           </button>
-        </div>
       </div>
     )
   }
