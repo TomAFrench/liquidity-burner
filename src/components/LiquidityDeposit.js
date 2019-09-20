@@ -8,7 +8,7 @@ import { scroller } from 'react-scroll'
 import i18n from '../i18n';
 const queryString = require('query-string');
 
-const { toWei } = require('web3-utils');
+const { toWei, fromWei } = require('web3-utils');
 
 
 export default class LiquidityDeposit extends React.Component {
@@ -115,6 +115,7 @@ export default class LiquidityDeposit extends React.Component {
 
         const gasPrice = toWei("10","gwei")
         const gasLimit = "200000"
+        value = toWei(value, 'ether').toString()
 
         console.log(this.props.address, value, gasPrice, gasLimit)
         const txhash = await this.props.nocustManager.approveAndDeposit(this.props.address, value, gasPrice, gasLimit, this.props.tokenAddress)
@@ -142,7 +143,7 @@ export default class LiquidityDeposit extends React.Component {
           icon={this.props.icon}
           selected={true}
           text={"f"+this.props.text}
-          amount={this.props.offchainBalance}
+          amount={this.props.offchainDisplay}
           address={this.props.account}
           dollarDisplay={this.props.dollarDisplay}
         />
@@ -151,7 +152,7 @@ export default class LiquidityDeposit extends React.Component {
           icon={this.props.icon}
           selected={true}
           text={this.props.text}
-          amount={this.props.balance}
+          amount={this.props.onchainDisplay}
           address={this.props.account}
           dollarDisplay={this.props.dollarDisplay}
         />

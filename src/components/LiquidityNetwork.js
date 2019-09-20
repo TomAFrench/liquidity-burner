@@ -37,6 +37,11 @@ const TEST_DAI_ADDRESS = '0xe982E462b094850F12AF94d21D470e21bE9D0E9C'
 // const HUB_CONTRACT_ADDRESS = '0x83aFD697144408C344ce2271Ce16F33A74b3d98b'
 // const HUB_API_URL = 'https://public.liquidity.network/'
 
+function getDisplayValue(value, decimals=2) {
+  const displayVal = fromWei(value.toString(), 'ether');
+  return displayVal.substr(0, displayVal.indexOf('.') + decimals + 1);
+}
+
 export default class LiquidityNetwork extends React.Component {
 
   constructor(props) {
@@ -117,15 +122,25 @@ export default class LiquidityNetwork extends React.Component {
 
   async checkBalance(){
     const ethBalance = await this.state.nocustManager.getOnChainBalance(this.state.address)
-    const daiBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, TEST_DAI_ADDRESS)
-
     const fethBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address)
+
+    const daiBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, TEST_DAI_ADDRESS)
     const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address, TEST_DAI_ADDRESS)
+    
     this.setState({ethBalance, daiBalance, fethBalance, fdaiBalance})
     console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
 
     const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, TEST_DAI_ADDRESS)
     this.setState({blocksToWithdrawal})
+
+    // NOCUST uses big-number.js rather than BN.js so need to convert
+    const displayEth = getDisplayValue(this.state.limboweb3.utils.toBN(ethBalance))
+    const displayfEth = getDisplayValue(this.state.limboweb3.utils.toBN(fethBalance))
+    const displayDai = getDisplayValue(this.state.limboweb3.utils.toBN(daiBalance))
+    const displayfDai = getDisplayValue(this.state.limboweb3.utils.toBN(fdaiBalance))
+    this.setState({displayEth, displayfEth, displayDai, displayfDai})
+    console.log({displayEth, displayfEth, displayDai, displayfDai})
+
   }
 
   async checkWithdrawalInfo () {
@@ -229,7 +244,7 @@ export default class LiquidityNetwork extends React.Component {
                         icon={daiImg}
                         selected={true}
                         text="fDAI"
-                        amount={this.state.fdaiBalance}
+                        amount={this.state.displayfDai}
                         address={this.props.account}
                         dollarDisplay={this.props.dollarDisplay}
                       />
@@ -238,7 +253,7 @@ export default class LiquidityNetwork extends React.Component {
                         icon={daiImg}
                         selected={true}
                         text="DAI"
-                        amount={this.state.daiBalance}
+                        amount={this.state.displayDai}
                         address={this.props.account}
                         dollarDisplay={this.props.dollarDisplay}
                       />
@@ -247,7 +262,7 @@ export default class LiquidityNetwork extends React.Component {
                         icon={ethImg}
                         selected={true}
                         text="ETH"
-                        amount={this.state.ethBalance}
+                        amount={this.state.displayEth}
                         address={this.props.account}
                         dollarDisplay={this.props.dollarDisplay}
                       />
@@ -335,10 +350,10 @@ export default class LiquidityNetwork extends React.Component {
             
               <NavCard title={i18n.t('send_to_address_title')} goBack={this.goBack.bind(this)}/>
               <Balance
-                icon={ethImg}
+                icon={daiImg}
                 selected={true}
-                text="fETH"
-                amount={this.state.fethBalance*this.props.ethprice}
+                text="fDAI"
+                amount={this.state.displayfDai}
                 address={this.props.account}
                 dollarDisplay={this.props.dollarDisplay}
               />
@@ -387,7 +402,9 @@ export default class LiquidityNetwork extends React.Component {
                 ensLookup={this.props.ensLookup}
                 buttonStyle={this.props.buttonStyle}
                 balance={this.state.ethBalance}
+                onchainDisplay={this.state.displayDai}
                 offchainBalance={this.state.fethBalance}
+                offchainDisplay={this.state.displayfDai}
                 address={this.state.address}
                 goBack={this.goBack.bind(this)}
                 changeAlert={this.props.changeAlert}
@@ -418,7 +435,9 @@ export default class LiquidityNetwork extends React.Component {
                 ensLookup={this.props.ensLookup}
                 buttonStyle={this.props.buttonStyle}
                 balance={this.state.rinkebyBalance}
+                onchainDisplay={this.state.displayDai}
                 offchainBalance={this.state.fethBalance}
+                offchainDisplay={this.state.displayfDai}
                 address={this.state.address}
                 goBack={this.goBack.bind(this)}
                 changeAlert={this.props.changeAlert}

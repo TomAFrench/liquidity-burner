@@ -7,6 +7,7 @@ import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
 import i18n from '../i18n';
 const queryString = require('query-string');
+const { toWei, fromWei } = require('web3-utils');
 
 export default class LiquiditySendToAddress extends React.Component {
 
@@ -208,8 +209,10 @@ export default class LiquiditySendToAddress extends React.Component {
         const transaction = {
           to: toAddress,
           from: this.props.address,
-          amount: value,
+          amount: toWei(value, 'ether').toString(),
         }
+
+        console.log(transaction)
         
         this.props.nocustManager.sendTransaction(transaction)
         // console.log("transaction response", response)
