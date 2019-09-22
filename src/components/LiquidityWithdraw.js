@@ -6,7 +6,10 @@ import {CopyToClipboard} from "react-copy-to-clipboard";
 import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
 import i18n from '../i18n';
+import { BigNumber } from 'ethers/utils';
+
 const queryString = require('query-string');
+
 
 const { toWei, fromWei } = require('web3-utils');
 
@@ -78,43 +81,38 @@ export default class LiquidityWithdraw extends React.Component {
 
   send = async () => {
     let { amount } = this.state;
-    let {ERC20TOKEN, dollarDisplay, convertToDollar} = this.props
+    let {dollarDisplay, convertToDollar} = this.props
 
     amount = convertToDollar(amount)
     console.log("CONVERTED TO DOLLAR AMOUNT",amount)
 
     if(this.state.canSend){
-      if(ERC20TOKEN){
-        console.log("this is a token")
-      }else{
-        console.log("this is not a token")
-      }
-      console.log("ERC20TOKEN",ERC20TOKEN,"this.props.balance",parseFloat(this.props.balance),"amount",parseFloat(amount))
 
-      if(!ERC20TOKEN && parseFloat(this.props.offchainBalance) <= 0){
-        console.log("No funds!?!", ERC20TOKEN, parseFloat(this.props.offchainBalance))
-        this.props.changeAlert({type: 'warning', message: "No Offchain Funds."})
-      // }else if(!ERC20TOKEN && parseFloat(this.props.balance)-0.0001<=parseFloat(amount)){
-      //   let extraHint = ""
-      //   if(!ERC20TOKEN && parseFloat(amount)-parseFloat(this.props.balance)<=.01){
-      //     extraHint = "(gas costs)"
-      //   }
-      //   this.props.changeAlert({type: 'warning', message: 'Not enough funds: '+dollarDisplay(Math.floor((parseFloat(this.props.balance)-0.0001)*100)/100)+' '+extraHint})
+      console.log("this.props.offchainBalance",parseFloat(this.props.offchainBalance.toString()),"amount",parseFloat(amount))
+
+      const gasPrice = new BigNumber(toWei("10","gwei"))
+      const gasLimit = new BigNumber("300000")
+      console.log("ethBalance", this.props.ethBalance.toString())
+      console.log("gasprice", gasPrice.toString())
+      const maxGasCost = gasPrice.mul(gasLimit)
+
+      if(this.props.offchainBalance <= 0){
+        console.log("No funds!?!", this.props.offchainBalance.toString())
+        this.props.changeAlert({type: 'warning', message: "No offchain funds."})
+      }else if(this.props.ethBalance <= maxGasCost){
+        this.props.changeAlert({type: 'warning', message: 'Not enough funds: '+dollarDisplay(Math.floor((parseFloat(this.props.balance)-0.0001)*100)/100)})
       }else{
         // console.log("SWITCH TO LOADER VIEW...",amount)
         // this.props.changeView('loader')
         // setTimeout(()=>{window.scrollTo(0,0)},60)
 
         let value = 0
-        console.log("amount",amount)
         if(amount){
           value=amount
         }
 
         cookie.remove('withdrawStartAmount', { path: '/' })        
-
-        const gasPrice = toWei("10","gwei")
-        const gasLimit = "300000"
+        
         value = toWei(value, 'ether').toString()
 
         console.log(this.props.address, value, gasPrice, gasLimit)

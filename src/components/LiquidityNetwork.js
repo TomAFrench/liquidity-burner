@@ -366,12 +366,10 @@ export default class LiquidityNetwork extends React.Component {
                 openScanner={this.props.openScanner}
                 scannerState={this.state.scannerState}
                 ensLookup={this.props.ensLookup}
-                // ERC20TOKEN={ERC20TOKEN}
                 buttonStyle={this.props.buttonStyle}
-                balance={this.state.fethBalance}
-                web3={this.props.web3}
+                offchainBalance={this.state.fdaiBalance}
+                tokenAddress={TEST_DAI_ADDRESS}
                 address={this.state.address}
-                // send={send}
                 goBack={this.goBack.bind(this)}
                 // changeView={this.props.changeView}
                 setReceipt={this.props.setReceipt}
@@ -401,6 +399,7 @@ export default class LiquidityNetwork extends React.Component {
                 dollarSymbol={"$"}
                 ensLookup={this.props.ensLookup}
                 buttonStyle={this.props.buttonStyle}
+                ethBalance={this.state.ethBalance}
                 balance={this.state.ethBalance}
                 onchainDisplay={this.state.displayDai}
                 offchainBalance={this.state.fethBalance}
@@ -434,9 +433,10 @@ export default class LiquidityNetwork extends React.Component {
                 dollarSymbol={"$"}
                 ensLookup={this.props.ensLookup}
                 buttonStyle={this.props.buttonStyle}
-                balance={this.state.rinkebyBalance}
+                ethBalance={this.state.ethBalance}
+                balance={this.state.daiBalance}
                 onchainDisplay={this.state.displayDai}
-                offchainBalance={this.state.fethBalance}
+                offchainBalance={this.state.fdaiBalance}
                 offchainDisplay={this.state.displayfDai}
                 address={this.state.address}
                 goBack={this.goBack.bind(this)}

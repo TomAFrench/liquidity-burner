@@ -25,16 +25,6 @@ export default class LiquiditySendToAddress extends React.Component {
     }else{
       cookie.save('sendToStartAmount', startAmount, { path: '/', maxAge: 60 })
     }
-    let startMessage= props.message
-    if(props.scannerState) startMessage = props.scannerState.message
-    if(!startMessage) {
-      startMessage = cookie.load('sendToStartMessage')
-    }else{
-      cookie.save('sendToStartMessage', startMessage, { path: '/', maxAge: 60 })
-    }
-
-    let extraMessage = props.extraMessage
-    if(props.scannerState) extraMessage = props.scannerState.extraMessage
 
     let toAddress = ""
     if(props.scannerState) toAddress = props.scannerState.toAddress
@@ -46,9 +36,7 @@ export default class LiquiditySendToAddress extends React.Component {
 
     let initialState = {
       amount: startAmount,
-      message: startMessage,
       toAddress: toAddress,
-      extraMessage: extraMessage,
       fromEns: "",
       canSend: false,
     }
@@ -84,9 +72,6 @@ export default class LiquiditySendToAddress extends React.Component {
   updateState = async (key, value) => {
     if(key=="amount"){
       cookie.save('sendToStartAmount', value, { path: '/', maxAge: 60 })
-    }
-    else if(key=="message"){
-      cookie.save('sendToStartMessage', value, { path: '/', maxAge: 60 })
     }
     else if(key=="toAddress"){
       cookie.save('sendToAddress', value, { path: '/', maxAge: 60 })
@@ -146,7 +131,7 @@ export default class LiquiditySendToAddress extends React.Component {
         toAddress: resolvedAddress
       })
     }*/
-    return (this.state.toAddress && this.state.toAddress.length === 42 && (this.state.amount>0 || this.state.message))
+    return (this.state.toAddress && this.state.toAddress.length === 42 && this.state.amount >= 0)
   }
 
   scrollToBottom(){
@@ -160,42 +145,23 @@ export default class LiquiditySendToAddress extends React.Component {
 
   send = async () => {
     let { toAddress, amount } = this.state;
-    let {ERC20TOKEN, dollarDisplay, convertToDollar} = this.props
+    let { dollarDisplay, convertToDollar} = this.props
 
     amount = convertToDollar(amount)
     console.log("CONVERTED TO DOLLAR AMOUNT",amount)
 
     if(this.state.canSend){
-      if(ERC20TOKEN){
-        console.log("this is a token")
-      }else{
-        console.log("this is not a token")
-      }
-      console.log("ERC20TOKEN",ERC20TOKEN,"this.props.balance",parseFloat(this.props.balance),"amount",parseFloat(amount))
 
-      if(!ERC20TOKEN && parseFloat(this.props.balance) <= 0){
-        console.log("No funds!?!",ERC20TOKEN,parseFloat(this.props.balance))
-        this.props.changeAlert({type: 'warning', message: "No Funds."})
-      }else if(!ERC20TOKEN && parseFloat(this.props.balance)-0.0001<=parseFloat(amount)){
-        let extraHint = ""
-        if(!ERC20TOKEN && parseFloat(amount)-parseFloat(this.props.balance)<=.01){
-          extraHint = "(gas costs)"
-        }
-        this.props.changeAlert({type: 'warning', message: 'Not enough funds: '+dollarDisplay(Math.floor((parseFloat(this.props.balance)-0.0001)*100)/100)+' '+extraHint})
-      }else if((ERC20TOKEN && (parseFloat(this.props.balance)<parseFloat(amount)))){
-        console.log("SO THE BALANCE IS LESS!")
-        this.props.changeAlert({type: 'warning', message: 'Not enough tokens: $'+parseFloat(this.props.balance)})
+      console.log("this.props.balance",parseFloat(this.props.offchainBalance),"amount",parseFloat(amount))
+
+      if(this.props.offchainBalance < parseFloat(amount)){
+        console.log("Not enough funds", this.props.offchainBalance.toString())
+        this.props.changeAlert({type: 'warning', message: "Not enough funds"})
       }else{
         console.log("SWITCH TO LOADER VIEW...",amount)
         // this.props.changeView('loader')
         // setTimeout(()=>{window.scrollTo(0,0)},60)
 
-        console.log("web3",this.props.web3)
-        let txData
-        if(this.state.message){
-          txData = this.props.web3.utils.utf8ToHex(this.state.message)
-        }
-        console.log("txData",txData)
         let value = 0
         console.log("amount",amount)
         if(amount){
@@ -210,6 +176,7 @@ export default class LiquiditySendToAddress extends React.Component {
           to: toAddress,
           from: this.props.address,
           amount: toWei(value, 'ether').toString(),
+          tokenAddress: this.props.tokenAddress
         }
 
         console.log(transaction)
@@ -254,24 +221,6 @@ export default class LiquiditySendToAddress extends React.Component {
   render() {
     let { canSend, toAddress } = this.state;
     let {dollarSymbol} = this.props
-
-    /*let sendMessage = ""
-    if(this.state.message){
-      sendMessage = (
-        <div className="form-group w-100">
-          <label htmlFor="amount_input">For</label>
-          <div>
-            {decodeURI(this.state.message)}
-          </div>
-        </div>
-      )
-    }*/
-
-    let messageText = "Message"
-    if(this.state.extraMessage){
-      messageText = this.state.extraMessage
-    }
-
 
     let amountInputDisplay = (
       <input type="number" className="form-control" placeholder="0.00" value={this.state.amount}
