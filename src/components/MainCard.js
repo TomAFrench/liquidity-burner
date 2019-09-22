@@ -54,13 +54,6 @@ export default ({buttonStyle,ERC20TOKEN,address, balance, changeAlert, changeVie
               <i className="fas fa-gamepad"/> Apps
             </Scaler>
         </button>
-      </div>
-        <div className="col-6 p-1" onClick={() => changeView('yourmodule')}>
-          <button className="btn btn-large w-100" onClick={() => changeView('yourmodule')} style={buttonStyle.secondary}>
-            <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              <i className="fas fa-share"/> {'Liquidity Network'}
-            </Scaler>
-          </button>
         </div>
         <div className="col-6 p-1" onClick={() => changeView('send_with_link')}>
           <button className="btn btn-large w-100" style={buttonStyle.secondary}>

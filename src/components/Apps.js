@@ -96,6 +96,7 @@ export default class Apps extends React.Component {
 
     return (
       <div>
+        <AppLink name="Liquidity Network" image={gnosis} onClick={() => {this.props.changeView('liquidity')}} verb="Open" />
         <AppLink name="Gnosis Safe" image={gnosis} onClick={openGnosis} verb="Install" />
         <AppLink name="Helena Prediction Markets" image={helena} url="https://burner.helena.network/" privateKey={this.props.privateKey} />
         <AppLink name="Emojicoin.Exchange" image={emojicoin} url="https://emojicoin.exchange/" privateKey={this.props.privateKey} />

@@ -77,7 +77,7 @@ let ERC20VENDOR
 let ERC20IMAGE
 let ERC20NAME
 let LOADERIMAGE = burnerlogo
-let HARDCODEVIEW = "yourmodule"// = "loader"// = "receipt"
+let HARDCODEVIEW = "liquidity"// = "loader"// = "receipt"
 let FAILCOUNT = 0
 
 let mainStyle = {
@@ -2083,7 +2083,7 @@ render() {
           />
           </div>
         );
-        case 'yourmodule':
+        case 'liquidity':
           if(!this.state || !this.state.customLoader || !this.state.tx || !this.state.contracts || !this.state.network){
             return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
           }else{
