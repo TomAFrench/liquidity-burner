@@ -2127,9 +2127,11 @@ render() {
                     setGwei={this.setGwei}
                     gwei={this.state.gwei}
 
+                    parseAndCleanPath={this.parseAndCleanPath.bind(this)}
                     openScanner={this.openScanner.bind(this)}
                     scannerState={this.state.scannerState}
 
+                    mainStyle={mainStyle}
                     buttonStyle={buttonStyle}
                     changeAlert={this.changeAlert}
                     nativeSend={this.state.nativeSend} //this is used to send xDai when you are running on an ERC20 token

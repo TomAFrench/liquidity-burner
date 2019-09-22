@@ -8,6 +8,7 @@ import i18next from 'i18next';
 
 import NavCard from './NavCard';
 import Bottom from './Bottom';
+import LiquiditySendByScan from './LiquiditySendByScan'
 import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
 import LiquidityDeposit from './LiquidityDeposit'
@@ -179,6 +180,17 @@ export default class LiquidityNetwork extends React.Component {
 
   goBack () {
     this.changeView("main")
+  }
+
+  openScanner(returnState){
+    this.setState({returnState:returnState,view:"send_by_scan"})
+  }
+
+  returnToState(scannerState){
+    let updateState = Object.assign({scannerState:scannerState}, this.state.returnState);
+    updateState.returnState = false
+    console.log("UPDATE FROM RETURN STATE",updateState)
+    this.setState(updateState)
   }
 
   render(){
@@ -369,7 +381,7 @@ export default class LiquidityNetwork extends React.Component {
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
                 parseAndCleanPath={this.props.parseAndCleanPath}
-                openScanner={this.props.openScanner}
+                openScanner={this.openScanner.bind(this)}
                 scannerState={this.state.scannerState}
                 ensLookup={this.props.ensLookup}
                 buttonStyle={this.props.buttonStyle}
@@ -390,6 +402,20 @@ export default class LiquidityNetwork extends React.Component {
 
           </div>
         )
+      case 'send_by_scan':
+        return (
+          <LiquiditySendByScan
+          parseAndCleanPath={this.props.parseAndCleanPath}
+          returnToState={this.returnToState.bind(this)}
+          returnState={this.state.returnState}
+          mainStyle={this.props.mainStyle}
+          goBack={this.goBack.bind(this)}
+          changeView={this.changeView.bind(this)}
+          onError={(error) =>{
+            this.props.changeAlert("danger",error)
+          }}
+          />
+        );
       case 'deposit':
         return (
           <div>
