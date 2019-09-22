@@ -178,7 +178,7 @@ export default class LiquidityNetwork extends React.Component {
           <div className="col-12 p-1" onClick={() => this.confirmWithdrawal()}>
             <button className={`btn btn-large w-100 ${this.state.blocksToWithdrawal == 0 ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-qrcode"  /> {this.state.blocksToWithdrawal == 0 ? i18next.t('liquidity.withdraw.confirm') : this.state.blocksToWithdrawal + " blocks until confirmation"}
+                <i className={`fas ${this.state.blocksToWithdrawal == 0 ? 'fa-check' : 'fa-clock'}`}/> {this.state.blocksToWithdrawal == 0 ? i18next.t('liquidity.withdraw.confirm') : this.state.blocksToWithdrawal + " blocks until confirmation"}
               </Scaler>
             </button>
           </div>
@@ -290,12 +290,6 @@ export default class LiquidityNetwork extends React.Component {
                   <div>
                     Blocks until withdrawal confirmation: {this.state.blocksToWithdrawal}.
                   </div>
-                  <div>
-                    Withdrawal Limit {this.state.withdrawLimit && this.state.withdrawLimit.toString()}.
-                  </div>
-                  <div>
-                    Withdrawal Fee {this.state.withdrawFee && this.state.withdrawFee.toString()}.
-                  </div>
 
                   </div>
 
@@ -392,7 +386,7 @@ export default class LiquidityNetwork extends React.Component {
               <NavCard title={i18n.t('liquidity.deposit.title')} goBack={this.goBack.bind(this)}/>
               <LiquidityDeposit
                 icon={daiImg}
-                text="Dai"
+                text="DAI"
                 nocustManager={this.state.nocustManager}
                 tokenAddress={TEST_DAI_ADDRESS}
                 convertToDollar={(dollar) => {return dollar}}
@@ -425,10 +419,11 @@ export default class LiquidityNetwork extends React.Component {
               <Ruler/>
               <LiquidityWithdraw
                 icon={daiImg}
-                text="Dai"
+                text="DAI"
                 nocustManager={this.state.nocustManager}
                 tokenAddress={TEST_DAI_ADDRESS}
                 withdrawLimit={this.state.withdrawLimit}
+                withdrawFee={this.state.withdrawFee}
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
                 ensLookup={this.props.ensLookup}
