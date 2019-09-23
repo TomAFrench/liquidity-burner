@@ -8,10 +8,10 @@ WORKDIR /app
 COPY package.json /app
 RUN npm install
 COPY . /app
-COPY .env.production /app
+COPY .env.production /app/tempenv.production
 
 # Replace all environment variables which will be set at runtime with placeholders
-RUN cat .env.production | grep = | sort | sed -e 's|REACT_APP_\([a-zA-Z_]*\)=\(.*\)|REACT_APP_\1=NGINX_REPLACE_\1|' > .env.production
+RUN cat tempenv.production | grep = | sort | sed -e 's|REACT_APP_\([a-zA-Z0-9_]*\)=\(.*\)|REACT_APP_\1=NGINX_REPLACE_\1|' > .env.production
 
 RUN npm run build
 
@@ -24,7 +24,7 @@ FROM nginx:alpine
 ENV uri \$uri
 
 WORKDIR /etc/nginx/conf.d
-COPY nginx.conf.sample nginx.conf.sample
+COPY nginx.conf.sample .
 COPY .env.production .
 COPY script.sh .
 COPY --from=react-build /app/build /usr/share/nginx/html

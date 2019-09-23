@@ -29,26 +29,10 @@ let HUB_API_URL
 let RPC_URL 
 let TEST_DAI_ADDRESS
 
-console.log(process.env.REACT_APP_LQD_NET)
-if (process.env.REACT_APP_LQD_NET === 'rinkeby') {
-  console.log("LQD RUNNING ON RINKEBY")
-  HUB_CONTRACT_ADDRESS = '0x66b26B6CeA8557D6d209B33A30D69C11B0993a3a'
-  HUB_API_URL = 'https://rinkeby.liquidity.network/'
-  RPC_URL = 'https://rinkeby.infura.io/v3/59f8bd04971b4c8ea113ee02372b0f96'
-  TEST_DAI_ADDRESS = "0xA9F86DD014C001Acd72d5b25831f94FaCfb48717"
-}else if (process.env.REACT_APP_LQD_NET === 'limbo') {
-  console.log("LQD RUNNING ON LIMBO")
-  HUB_CONTRACT_ADDRESS = '0x9561C133DD8580860B6b7E504bC5Aa500f0f06a7'
-  HUB_API_URL = 'https://limbo.liquidity.network/'
-  RPC_URL = 'https://limbo.liquidity.network/ethrpc'
-  TEST_DAI_ADDRESS = '0xe982E462b094850F12AF94d21D470e21bE9D0E9C'
-} else {
-  console.log("LQD RUNNING ON MAINNET")
-  HUB_CONTRACT_ADDRESS = '0x83aFD697144408C344ce2271Ce16F33A74b3d98b'
-  HUB_API_URL = 'https://public.liquidity.network/'
-  RPC_URL = 'https://rinkeby.infura.io/v3/59f8bd04971b4c8ea113ee02372b0f96'
-  TEST_DAI_ADDRESS = "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
-}
+HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
+HUB_API_URL = process.env.REACT_APP_HUB_API_URL
+RPC_URL = process.env.REACT_APP_RPC_URL
+TEST_DAI_ADDRESS = process.env.REACT_APP_TEST_DAI_ADDRESS
 
 function getDisplayValue(value, decimals=2) {
   const displayVal = fromWei(value.toString(), 'ether');
