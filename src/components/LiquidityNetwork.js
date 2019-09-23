@@ -46,7 +46,6 @@ export default class LiquidityNetwork extends React.Component {
 
     let limboweb3 = new Web3(new Web3.providers.HttpProvider(RPC_URL))
     limboweb3.eth.accounts.wallet.add(props.privateKey)
-    console.log("privkey", props.privateKey)
 
     const nocustManager = new NOCUSTManager({
       rpcApi: limboweb3,
@@ -54,9 +53,6 @@ export default class LiquidityNetwork extends React.Component {
       contractAddress: HUB_CONTRACT_ADDRESS,
       });
 
-    console.log("limbo Acc", limboweb3.eth.accounts.wallet[0].address)
-    console.log("acc:", this.props.mainnetweb3.eth.getAccounts())
-    console.log("prop acc:", props.address)
     console.log(nocustManager)
 
     this.state = {
