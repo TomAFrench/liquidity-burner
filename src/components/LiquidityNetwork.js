@@ -71,8 +71,13 @@ export default class LiquidityNetwork extends React.Component {
 
     nocustManager.syncWallet(this.state.address)
 
-    this.registerWithHub().then(() => {
-      this.checkBalance()
+    this.checkRegistration().then((addressRegistered) => {
+      this.setState({addressRegistered})
+      if (!addressRegistered) {
+        this.registerWithHub().then(() => {
+          this.checkBalance()
+        })
+      }
     })
   }
 
@@ -86,12 +91,12 @@ export default class LiquidityNetwork extends React.Component {
 
   }
 
-  // async checkRegistration(){
-  //   let addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
-  //   console.log("registration check", addressRegistered)
-  //   this.setState({addressRegistered})
-  //   return addressRegistered 
-  // }
+  async checkRegistration(){
+    let addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
+    console.log("registration check", addressRegistered)
+    this.setState({addressRegistered})
+    return addressRegistered 
+  }
 
   async registerWithHub(){
     console.log("just before registration")
@@ -298,6 +303,9 @@ export default class LiquidityNetwork extends React.Component {
                   </div>
                   <div>
                     Blocks until withdrawal confirmation: {this.state.blocksToWithdrawal}.
+                  </div>
+                  <div>
+                    Account Registered?: {this.state.addressRegistered ? "Yes" : "No"}.
                   </div>
 
                   </div>
