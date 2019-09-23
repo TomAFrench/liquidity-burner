@@ -82,7 +82,7 @@ export default class LiquidityNetwork extends React.Component {
     setInterval(this.pollInterval.bind(this),5000)
     setTimeout(this.pollInterval.bind(this),30)
 
-    setInterval(this.longPollInterval.bind(this),15000)
+    setInterval(this.longPollInterval.bind(this),8000)
     setTimeout(this.longPollInterval.bind(this),30)
 
   }
