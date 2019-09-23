@@ -5,6 +5,7 @@ import gnosis from '../gnosis.jpg';
 import helena from '../helena.jpg';
 import emojicoin from '../emojicoin.png';
 import daog from '../daog.png';
+import liquidity from '../liquidity.png'
 import Ruler from "./Ruler";
 import Web3 from "web3";
 import base64url from "base64url";
@@ -96,7 +97,7 @@ export default class Apps extends React.Component {
 
     return (
       <div>
-        <AppLink name="Liquidity Network" image={gnosis} onClick={() => {this.props.changeView('liquidity')}} verb="Open" />
+        <AppLink name="Liquidity Network" image={liquidity} onClick={() => {this.props.changeView('liquidity')}} verb="Open" />
         <AppLink name="Gnosis Safe" image={gnosis} onClick={openGnosis} verb="Install" />
         <AppLink name="Helena Prediction Markets" image={helena} url="https://burner.helena.network/" privateKey={this.props.privateKey} />
         <AppLink name="Emojicoin.Exchange" image={emojicoin} url="https://emojicoin.exchange/" privateKey={this.props.privateKey} />
