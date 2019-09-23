@@ -127,9 +127,6 @@ export default class LiquidityNetwork extends React.Component {
     this.setState({ethBalance, daiBalance, fethBalance, fdaiBalance})
     console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
 
-    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, TEST_DAI_ADDRESS)
-    this.setState({blocksToWithdrawal})
-
     // NOCUST uses big-number.js rather than BN.js so need to convert
     const displayEth = getDisplayValue(this.state.limboweb3.utils.toBN(ethBalance))
     const displayfEth = getDisplayValue(this.state.limboweb3.utils.toBN(fethBalance))
@@ -141,6 +138,10 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async checkWithdrawalInfo () {
+
+    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, TEST_DAI_ADDRESS)
+    this.setState({blocksToWithdrawal})
+
     const gasPrice = toWei("10","gwei")
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(gasPrice)
     const withdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
