@@ -95,9 +95,9 @@ export default class LiquidityNetwork extends React.Component {
 
   async registerWithHub(){
     console.log("just before registration")
-    await this.state.nocustManager.registerAddress(this.state.address)
+    this.state.nocustManager.registerAddress(this.state.address)
     console.log("registered ETH")
-    await this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
+    this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
     console.log("Finished registering")
   }
 
