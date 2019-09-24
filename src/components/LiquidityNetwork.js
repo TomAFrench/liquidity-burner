@@ -69,7 +69,6 @@ export default class LiquidityNetwork extends React.Component {
       view: "main"
     }
 
-    nocustManager.syncWallet(this.state.address)
 
     this.checkRegistration().then((addressRegistered) => {
       this.setState({addressRegistered})
@@ -108,17 +107,11 @@ export default class LiquidityNetwork extends React.Component {
 
   async pollInterval(){
     console.log("POLL")
-    if(this.state){
-      
-      const limboBlockNumber = await this.state.limboweb3.eth.getBlockNumber()
-      const mainnetBlockNumber = await this.props.mainnetweb3.eth.getBlockNumber()
-      this.setState({mainnetBlockNumber, limboBlockNumber})
-    }
+    this.checkBalance()
   }
 
   async longPollInterval(){
     console.log("LONGPOLL")
-    this.checkBalance()
     this.checkWithdrawalInfo()
   }
 
@@ -149,13 +142,12 @@ export default class LiquidityNetwork extends React.Component {
 
   async checkWithdrawalInfo () {
 
-    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, TEST_DAI_ADDRESS)
-    this.setState({blocksToWithdrawal})
-
     const gasPrice = toWei("10","gwei")
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(gasPrice)
     const withdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
-    this.setState({withdrawFee, withdrawLimit})
+    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, TEST_DAI_ADDRESS)
+
+    this.setState({withdrawFee, withdrawLimit, blocksToWithdrawal})
   }
 
   async confirmWithdrawal () {
