@@ -26,7 +26,7 @@
     "helmet": "^3.14.0",
     "i18next": "^13.1.5",
     "i18next-browser-languagedetector": "^2.2.4",
-    "nocust-client": "3.0.0-rc38",
+    "nocust-client": "3.0.0-rc42",
     "qrcode-reader": "^1.0.4",
     "qrcode.react": "^0.8.0",
     "query-string": "^6.3.0",
