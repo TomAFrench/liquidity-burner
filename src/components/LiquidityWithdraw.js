@@ -11,7 +11,7 @@ import { BigNumber } from 'ethers/utils';
 const queryString = require('query-string');
 
 
-const { toWei, fromWei } = require('web3-utils');
+const { toWei, fromWei, toBN } = require('web3-utils');
 
 
 export default class LiquidityWithdraw extends React.Component {
@@ -67,7 +67,11 @@ export default class LiquidityWithdraw extends React.Component {
         toAddress: resolvedAddress
       })
     }*/
-    return (this.state.amount>0 && this.state.amount <= this.props.withdrawLimit)
+    if (!this.state.amount){
+      return false
+    }
+    let amountWei = toBN(toWei(this.state.amount, 'ether'))
+    return (amountWei>0 && amountWei.lte(toBN(this.props.withdrawLimit)))
   }
 
   scrollToBottom(){

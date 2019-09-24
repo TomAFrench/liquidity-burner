@@ -7,7 +7,7 @@ import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
 import i18n from '../i18n';
 const queryString = require('query-string');
-const { toWei, fromWei } = require('web3-utils');
+const { toWei, fromWei, toBN } = require('web3-utils');
 
 export default class LiquiditySendToAddress extends React.Component {
 
@@ -152,9 +152,14 @@ export default class LiquiditySendToAddress extends React.Component {
 
     if(this.state.canSend){
 
-      console.log("this.props.balance",parseFloat(this.props.offchainBalance),"amount",parseFloat(amount))
+      if (!this.state.amount){
+        return false
+      }
+      let amountWei = toBN(toWei(this.state.amount, 'ether'))
 
-      if(this.props.offchainBalance < parseFloat(amount)){
+      console.log("this.props.balance",parseFloat(this.props.offchainBalance),"amountWei",amountWei.toString())
+
+      if(this.props.offchainBalance.lt(amountWei)){
         console.log("Not enough funds", this.props.offchainBalance.toString())
         this.props.changeAlert({type: 'warning', message: "Not enough funds"})
       }else{

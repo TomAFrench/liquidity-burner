@@ -6,11 +6,10 @@ import {CopyToClipboard} from "react-copy-to-clipboard";
 import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
 import i18n from '../i18n';
-import { BigNumber } from 'ethers/utils';
 
 const queryString = require('query-string');
 
-const { toWei, fromWei } = require('web3-utils');
+const { toWei, fromWei, toBN } = require('web3-utils');
 
 
 export default class LiquidityDeposit extends React.Component {
@@ -88,16 +87,24 @@ export default class LiquidityDeposit extends React.Component {
     if(this.state.canSend){
       
       console.log("this.props.balance",parseFloat(this.props.balance),"amount",parseFloat(amount))
-      const gasPrice = new BigNumber(toWei("10","gwei"))
-      const gasLimit = new BigNumber("200000")
+      const gasPrice = toBN(toWei("10","gwei"))
+      const gasLimit = toBN("200000")
       const maxGasCost = gasPrice.mul(gasLimit)
 
-      if(this.props.balance <= 0){
+      if (!this.state.amount){
+        return false
+      }
+      let amountWei = toBN(toWei(this.state.amount, 'ether'))
+
+      if(this.props.balance.lte(0)){
         console.log("No funds!?!", this.props.balance.toString())
         this.props.changeAlert({type: 'warning', message: "No Funds."})
-      }else if(this.props.ethBalance <= maxGasCost) {
+      }else if(this.props.balance.lt(amountWei)){
+        console.log("Not enough funds", this.props.balance.toString())
+        this.props.changeAlert({type: 'warning', message: "Not Enough Funds."})
+      }else if(this.props.ethBalance.lte(maxGasCost)) {
         this.props.changeAlert({type: 'warning', message: 'Not enough ETH for gas'})
-      }else if(this.props.text === "ETH" && this.props.ethBalance <= (this.amount + maxGasCost)) {
+      }else if(this.props.text === "ETH" && this.props.ethBalance.lte(this.amount.add(maxGasCost))) {
         this.props.changeAlert({type: 'warning', message: "Can't deposit this much ETH after gas costs"})
       }else{
         // console.log("SWITCH TO LOADER VIEW...",amount)
