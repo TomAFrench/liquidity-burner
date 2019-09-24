@@ -9,66 +9,54 @@ export default ({dollarDisplay, view, max, buttonStyle, address, recentTxs, chan
   let count=0
   if(!max) max=9999
   for(let r in recentTxs){
-    let thisValue = parseFloat(recentTxs[r].amount)
-    if(thisValue>=0.0){
 
-      let extraUp = 0
-      if(view=="receive"){
-        extraUp=-10
-      }
+    let dollarView = (
+      <span>
+        <span style={{opacity:0.33}}>-</span>{fromWei(recentTxs[r].amount.toString(), 'ether')}<span style={{opacity:0.33}}>-></span>
+      </span>
+    )
 
-      let dollarView = (
-        <span>
-          <span style={{opacity:0.33}}>-</span>{fromWei(recentTxs[r].amount.toString(), 'ether')}<span style={{opacity:0.33}}>-></span>
-        </span>
-      )
+    let toBlockie = (
+      <Blockie
+        address={recentTxs[r].recipient.address}
+        config={{size:4}}
+      />
+    )
 
-      let toBlockie = (
-        <Blockie
-          address={recentTxs[r].recipient.address}
-          config={{size:4}}
-        />
-      )
-
-      if(count++<max){
-        //if(txns.length>0){
-          txns.push(
-            <hr key={"ruler"+recentTxs[r].tx_id} style={{ "color": "#DFDFDF",marginTop:0,marginBottom:7 }}/>
-          )
-        //}
-
-        let blockAge = (Date.now() - recentTxs[r].timestamp) / 1000
-
+    if(count++<max){
+      //if(txns.length>0){
         txns.push(
-          // <div key={count} style={{position:'relative',cursor:'pointer'}} key={recentTxs[r].hash} className="content bridge row" >
-          <div key={count} style={{position:'relative'}} key={recentTxs[r].hash} className="content bridge row" >
-            <div className="col-3 p-1" style={{textAlign:'center'}}>
-              <Blockie
-                address={recentTxs[r].wallet.address}
-                config={{size:4}}
-              />
-            </div>
-            <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
-              <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
-                {dollarView}
-              </Scaler>
-            </div>
-            <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
-              {toBlockie}
-            </div>
-            <div className="col-2 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
-              <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
-                <span style={{marginLeft:5,marginTop:-5,opacity:0.4,fontSize:12}}>{cleanTime((blockAge))} ago</span>
-              </Scaler>
-            </div>
-
-          </div>
+          <hr key={"ruler"+recentTxs[r].tx_id} style={{ "color": "#DFDFDF",marginTop:0,marginBottom:7 }}/>
         )
+      //}
 
+      let blockAge = (Date.now() - recentTxs[r].timestamp) / 1000
 
+      txns.push(
+        // <div key={count} style={{position:'relative',cursor:'pointer'}} key={recentTxs[r].hash} className="content bridge row" >
+        <div key={recentTxs[r].tx_id} style={{position:'relative'}}  className="content bridge row" >
+          <div className="col-3 p-1" style={{textAlign:'center'}}>
+            <Blockie
+              address={recentTxs[r].wallet.address}
+              config={{size:4}}
+            />
+          </div>
+          <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
+            <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
+              {dollarView}
+            </Scaler>
+          </div>
+          <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
+            {toBlockie}
+          </div>
+          <div className="col-2 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
+            <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
+              <span style={{marginLeft:5,marginTop:-5,opacity:0.4,fontSize:12}}>{cleanTime((blockAge))} ago</span>
+            </Scaler>
+          </div>
 
-      }
-
+        </div>
+      )
     }
   }
   if(txns.length>0){
