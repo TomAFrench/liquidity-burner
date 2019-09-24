@@ -37,7 +37,10 @@ TEST_DAI_ADDRESS = process.env.REACT_APP_TEST_DAI_ADDRESS
 
 function getDisplayValue(value, decimals=4) {
   const displayVal = fromWei(value.toString(), 'ether');
-  return displayVal.substr(0, displayVal.indexOf('.') + decimals + 1);
+  if (displayVal.indexOf('.') >= 0){
+    return displayVal.substr(0, displayVal.indexOf('.') + decimals + 1);
+  }
+  return displayVal
 }
 
 export default class LiquidityNetwork extends React.Component {
