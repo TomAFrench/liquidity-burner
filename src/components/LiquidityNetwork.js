@@ -35,7 +35,7 @@ HUB_API_URL = process.env.REACT_APP_HUB_API_URL
 RPC_URL = process.env.REACT_APP_RPC_URL
 TEST_DAI_ADDRESS = process.env.REACT_APP_TEST_DAI_ADDRESS
 
-function getDisplayValue(value, decimals=2) {
+function getDisplayValue(value, decimals=4) {
   const displayVal = fromWei(value.toString(), 'ether');
   return displayVal.substr(0, displayVal.indexOf('.') + decimals + 1);
 }
@@ -262,7 +262,7 @@ export default class LiquidityNetwork extends React.Component {
                         text="fDAI"
                         amount={this.state.displayfDai}
                         address={this.props.account}
-                        dollarDisplay={this.props.dollarDisplay}
+                        dollarDisplay={(balance)=>{return balance}}
                       />
                   <Ruler/>
                   <Balance
@@ -271,7 +271,7 @@ export default class LiquidityNetwork extends React.Component {
                         text="DAI"
                         amount={this.state.displayDai}
                         address={this.props.account}
-                        dollarDisplay={this.props.dollarDisplay}
+                        dollarDisplay={(balance)=>{return balance}}
                       />
                   <Ruler/>
                   <Balance
@@ -280,7 +280,7 @@ export default class LiquidityNetwork extends React.Component {
                         text="ETH"
                         amount={this.state.displayEth}
                         address={this.props.account}
-                        dollarDisplay={this.props.dollarDisplay}
+                        dollarDisplay={(balance)=>{return balance}}
                       />
                   <Ruler/>
 
@@ -312,7 +312,7 @@ export default class LiquidityNetwork extends React.Component {
 
                   </div>
                   <LiquidityTransaction
-                    dollarDisplay={this.props.dollarDisplay}
+                    dollarDisplay={(balance)=>{return balance}}
                     view={this.state.view}
                     buttonStyle={this.props.buttonStyle}
                     changeView={this.changeView.bind(this)}
@@ -347,7 +347,7 @@ export default class LiquidityNetwork extends React.Component {
               <LiquidityReceive
                 hubContract={HUB_CONTRACT_ADDRESS}
                 hubApiUrl={HUB_API_URL}
-                dollarDisplay={this.props.dollarDisplay}
+                dollarDisplay={(balance)=>{return balance}}
                 view={this.state.view}
                 block={this.state.block}
                 ensLookup={this.props.ensLookup}
@@ -355,7 +355,6 @@ export default class LiquidityNetwork extends React.Component {
                 balance={this.props.balance}
                 address={this.state.address}
                 changeAlert={this.props.changeAlert}
-                dollarDisplay={this.props.dollarDisplay}
               />
             </div>
             <Bottom
@@ -375,7 +374,7 @@ export default class LiquidityNetwork extends React.Component {
                 text="fDAI"
                 amount={this.state.displayfDai}
                 address={this.props.account}
-                dollarDisplay={this.props.dollarDisplay}
+                dollarDisplay={(balance)=>{return balance}}
               />
               <Ruler/>
               <LiquiditySendToAddress
@@ -394,7 +393,7 @@ export default class LiquidityNetwork extends React.Component {
                 // changeView={this.props.changeView}
                 setReceipt={this.props.setReceipt}
                 changeAlert={this.props.changeAlert}
-                dollarDisplay={this.props.dollarDisplay}
+                dollarDisplay={(balance)=>{return balance}}
               />
             </div>
             <Bottom
@@ -441,7 +440,7 @@ export default class LiquidityNetwork extends React.Component {
                 address={this.state.address}
                 goBack={this.goBack.bind(this)}
                 changeAlert={this.props.changeAlert}
-                dollarDisplay={this.props.dollarDisplay}
+                dollarDisplay={(balance)=>{return balance}}
               />
             </div>
             <Bottom
@@ -476,7 +475,7 @@ export default class LiquidityNetwork extends React.Component {
                 address={this.state.address}
                 goBack={this.goBack.bind(this)}
                 changeAlert={this.props.changeAlert}
-                dollarDisplay={this.props.dollarDisplay}
+                dollarDisplay={(balance)=>{return balance}}
               />
             </div>
             <Bottom
