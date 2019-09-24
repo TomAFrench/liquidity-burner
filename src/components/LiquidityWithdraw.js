@@ -155,9 +155,9 @@ export default class LiquidityWithdraw extends React.Component {
           dollarDisplay={this.props.dollarDisplay}
         />
         <Ruler/>
-        Withdrawal Limit: {fromWei(this.props.withdrawLimit.toString(), 'ether').toString()} {this.props.text}
+        Withdrawal Limit: {typeof this.props.withdrawLimit !== 'undefined' ? fromWei(this.props.withdrawLimit.toString(), 'ether').toString() : 0} {this.props.text}
         <br/>
-        Withdrawal Fee: {fromWei(this.props.withdrawFee.toString(), 'ether').toString()} ETH
+        Withdrawal Fee: {typeof this.props.withdrawLimit !== 'undefined' ? fromWei(this.props.withdrawFee.toString(), 'ether').toString() : 0} ETH
         <div className="content row">
           <div className="form-group w-100">
             <label htmlFor="amount_input">{i18n.t('liquidity.withdraw.withdraw_amount')}</label>
