@@ -12,7 +12,7 @@ import LiquiditySendByScan from './LiquiditySendByScan'
 import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
 import LiquidityDeposit from './LiquidityDeposit'
-import LiquidityTransaction from './LiquidityTransactions'
+import LiquidityTransactions from './LiquidityTransactions'
 
 import Balance from "./Balance";
 
@@ -311,7 +311,7 @@ export default class LiquidityNetwork extends React.Component {
                   </div> */}
 
                   </div>
-                  <LiquidityTransaction
+                  <LiquidityTransactions
                     dollarDisplay={(balance)=>{return balance}}
                     view={this.state.view}
                     buttonStyle={this.props.buttonStyle}
