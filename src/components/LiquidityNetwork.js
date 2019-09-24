@@ -22,6 +22,7 @@ import { BigNumber } from 'ethers/utils';
 import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
 import LiquidityWithdraw from './LiquidityWithdraw';
+import SwapBar from './SwapBar';
 
 const { toWei, fromWei, toBN } = require('web3-utils');
 
@@ -144,8 +145,8 @@ export default class LiquidityNetwork extends React.Component {
 
     const gasPrice = toWei("10","gwei")
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(gasPrice)
-    const withdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
-    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, TEST_DAI_ADDRESS)
+    const withdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, HUB_CONTRACT_ADDRESS)
+    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, HUB_CONTRACT_ADDRESS)
 
     this.setState({withdrawFee, withdrawLimit, blocksToWithdrawal})
   }
@@ -155,7 +156,7 @@ export default class LiquidityNetwork extends React.Component {
     const gasLimit = "300000"
 
     console.log(this.state.address, gasPrice, gasLimit)
-    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, gasPrice, gasLimit, TEST_DAI_ADDRESS)
+    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, gasPrice, gasLimit, HUB_CONTRACT_ADDRESS)
     console.log("withdrawal", txhash)
     this.checkBalance()
   }
@@ -272,12 +273,30 @@ export default class LiquidityNetwork extends React.Component {
                   <Balance
                         icon={ethImg}
                         selected={true}
+                        text="fETH"
+                        amount={this.state.displayfEth}
+                        address={this.props.account}
+                        dollarDisplay={(balance)=>{return balance}}
+                      />
+                  <Ruler/>
+                  <Balance
+                        icon={ethImg}
+                        selected={true}
                         text="ETH"
                         amount={this.state.displayEth}
                         address={this.props.account}
                         dollarDisplay={(balance)=>{return balance}}
                       />
                   <Ruler/>
+                  <SwapBar
+                    buttonStyle={this.props.buttonStyle}
+                    text={"ETH"}
+                    ethBalance={this.state.ethBalance}
+                    onchainBalance={this.state.ethBalance}
+                    offchainBalance={this.state.fethBalance}
+                    deposit={(amount) => {this.state.nocustManager.approveAndDeposit(this.state.address, amount, toWei("1", "gwei"), "300000", HUB_CONTRACT_ADDRESS)}}
+                    requestWithdraw={(amount) => {this.state.nocustManager.withdrawalRequest(this.state.address, amount, toWei("1", "gwei"), "300000", HUB_CONTRACT_ADDRESS)}}
+                  />
 
                   {sendButtons}
 
