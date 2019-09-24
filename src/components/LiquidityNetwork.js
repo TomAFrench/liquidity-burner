@@ -23,7 +23,7 @@ import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
 import LiquidityWithdraw from './LiquidityWithdraw';
 
-const { toWei, fromWei } = require('web3-utils');
+const { toWei, fromWei, toBN } = require('web3-utils');
 
 let HUB_CONTRACT_ADDRESS
 let HUB_API_URL
@@ -133,10 +133,10 @@ export default class LiquidityNetwork extends React.Component {
     console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
 
     // NOCUST uses big-number.js rather than BN.js so need to convert
-    const displayEth = getDisplayValue(this.state.limboweb3.utils.toBN(ethBalance))
-    const displayfEth = getDisplayValue(this.state.limboweb3.utils.toBN(fethBalance))
-    const displayDai = getDisplayValue(this.state.limboweb3.utils.toBN(daiBalance))
-    const displayfDai = getDisplayValue(this.state.limboweb3.utils.toBN(fdaiBalance))
+    const displayEth = getDisplayValue(toBN(ethBalance))
+    const displayfEth = getDisplayValue(toBN(fethBalance))
+    const displayDai = getDisplayValue(toBN(daiBalance))
+    const displayfDai = getDisplayValue(toBN(fdaiBalance))
     this.setState({displayEth, displayfEth, displayDai, displayfDai})
     console.log({displayEth, displayfEth, displayDai, displayfDai})
 
