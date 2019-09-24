@@ -12,6 +12,7 @@ import LiquiditySendByScan from './LiquiditySendByScan'
 import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
 import LiquidityDeposit from './LiquidityDeposit'
+import LiquidityTransaction from './LiquidityTransactions'
 
 import Balance from "./Balance";
 
@@ -136,6 +137,11 @@ export default class LiquidityNetwork extends React.Component {
     this.setState({displayEth, displayfEth, displayDai, displayfDai})
     console.log({displayEth, displayfEth, displayDai, displayfDai})
 
+    let transactions = await this.state.nocustManager.getTransactionsForAddress(this.state.address, TEST_DAI_ADDRESS)
+    if (transactions.length) {
+      transactions = transactions.reverse()
+    }
+    this.setState({transactions})
   }
 
   async checkWithdrawalInfo () {
@@ -280,9 +286,9 @@ export default class LiquidityNetwork extends React.Component {
 
                   {sendButtons}
 
-                  <Ruler/>
+                  {/* <Ruler/> */}
 
-                  <div>
+                  {/* <div>
                     Network {this.props.network} is selected and on block #{this.props.block}.
                   </div>
                   <div>
@@ -302,10 +308,17 @@ export default class LiquidityNetwork extends React.Component {
                   </div>
                   <div>
                     Account Registered?: {this.state.addressRegistered ? "Yes" : "No"}.
-                  </div>
+                  </div> */}
 
                   </div>
-
+                  <LiquidityTransaction
+                    dollarDisplay={this.props.dollarDisplay}
+                    view={this.state.view}
+                    buttonStyle={this.props.buttonStyle}
+                    changeView={this.changeView.bind(this)}
+                    address={this.state.account}
+                    recentTxs={this.state.transactions}
+                  />
                 {/* <Events
                   config={{hide:false}}
                   eventName={"Sign"}
