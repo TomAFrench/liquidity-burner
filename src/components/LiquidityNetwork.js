@@ -13,6 +13,8 @@ import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
 import LiquidityDeposit from './LiquidityDeposit'
 import LiquidityTransactions from './LiquidityTransactions'
+import LiquidityWithdraw from './LiquidityWithdraw';
+import LiquidityBridge from './LiquidityBridge';
 
 import Balance from "./Balance";
 
@@ -21,8 +23,6 @@ import { BigNumber } from 'ethers/utils';
 
 import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
-import LiquidityWithdraw from './LiquidityWithdraw';
-import SwapBar from './SwapBar';
 
 const { toWei, fromWei, toBN } = require('web3-utils');
 
@@ -227,6 +227,15 @@ export default class LiquidityNetwork extends React.Component {
             </button>
           </div>
         </div>
+        <div className="content ops row">
+          <div className="col-6 p-1" onClick={() => this.changeView('bridge')}>
+            <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.bridge.title')}
+              </Scaler>
+            </button>
+          </div>
+        </div>
       </div>
     )
 
@@ -288,15 +297,6 @@ export default class LiquidityNetwork extends React.Component {
                         dollarDisplay={(balance)=>{return balance}}
                       />
                   <Ruler/>
-                  <SwapBar
-                    buttonStyle={this.props.buttonStyle}
-                    text={"ETH"}
-                    ethBalance={this.state.ethBalance}
-                    onchainBalance={this.state.ethBalance}
-                    offchainBalance={this.state.fethBalance}
-                    deposit={(amount) => {this.state.nocustManager.approveAndDeposit(this.state.address, amount, toWei("1", "gwei"), "300000", HUB_CONTRACT_ADDRESS)}}
-                    requestWithdraw={(amount) => {this.state.nocustManager.withdrawalRequest(this.state.address, amount, toWei("1", "gwei"), "300000", HUB_CONTRACT_ADDRESS)}}
-                  />
 
                   {sendButtons}
 
@@ -350,6 +350,45 @@ export default class LiquidityNetwork extends React.Component {
             action={this.props.goBack}
           />
         </React.Fragment>
+        )
+      case 'bridge':
+        return (
+          <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
+
+              <NavCard title={i18n.t('liquidity.bridge.title')} goBack={this.goBack.bind(this)}/>
+              <LiquidityBridge
+                text={"ETH"}
+                image={ethImg}
+                tokenAddress={HUB_CONTRACT_ADDRESS}
+                address={this.state.address}
+                buttonStyle={this.props.buttonStyle}
+                nocust={this.state.nocustManager}
+                ethBalance={this.state.ethBalance}
+                onchainBalance={this.state.ethBalance}
+                offchainBalance={this.state.fethBalance}
+                onchainDisplay={this.state.displayEth}
+                offchainDisplay={this.state.displayfEth}
+              />
+              <Ruler/>
+              <LiquidityBridge
+                text={"DAI"}
+                image={daiImg}
+                tokenAddress={TEST_DAI_ADDRESS}
+                address={this.state.address}
+                buttonStyle={this.props.buttonStyle}
+                nocust={this.state.nocustManager}
+                ethBalance={this.state.ethBalance}
+                onchainBalance={this.state.daiBalance}
+                offchainBalance={this.state.fdaiBalance}
+                onchainDisplay={this.state.displayDai}
+                offchainDisplay={this.state.displayfDai}
+              />
+            </div>
+            <Bottom
+              action={this.goBack.bind(this)}
+            />
+          </div>
         )
       case 'receive':
         return (

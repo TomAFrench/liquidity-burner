@@ -115,6 +115,9 @@
         "withdraw_amount": "Withdrawal Amount",
         "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first.",
         "confirm": "Confirm Withdrawal"
+      },
+      "bridge": {
+        "title": "Bridge"
       }
     }
   }
