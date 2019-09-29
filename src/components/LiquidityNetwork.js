@@ -11,9 +11,7 @@ import Bottom from './Bottom';
 import LiquiditySendByScan from './LiquiditySendByScan'
 import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
-import LiquidityDeposit from './LiquidityDeposit'
 import LiquidityTransactions from './LiquidityTransactions'
-import LiquidityWithdraw from './LiquidityWithdraw';
 import LiquidityBridge from './LiquidityBridge';
 
 import Balance from "./Balance";
@@ -207,22 +205,6 @@ export default class LiquidityNetwork extends React.Component {
             <button className="btn btn-large w-100" onClick={() => this.changeView('send_to_address')} style={this.props.buttonStyle.primary}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                 <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
-              </Scaler>
-            </button>
-          </div>
-        </div>
-        <div className="content ops row">
-          <div className="col-6 p-1" onClick={() => this.changeView('deposit')}>
-            <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.deposit.title')}
-              </Scaler>
-            </button>
-          </div>
-          <div className="col-6 p-1">
-            <button className="btn btn-large w-100" onClick={() => this.changeView('withdraw')} style={this.props.buttonStyle.secondary}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.withdraw.title')}
               </Scaler>
             </button>
           </div>
@@ -474,72 +456,6 @@ export default class LiquidityNetwork extends React.Component {
           }}
           />
         );
-      case 'deposit':
-        return (
-          <div>
-            <div className="send-to-address card w-100" style={{zIndex:1}}>
-            
-              <NavCard title={i18n.t('liquidity.deposit.title')} goBack={this.goBack.bind(this)}/>
-              <LiquidityDeposit
-                icon={daiImg}
-                text="DAI"
-                nocustManager={this.state.nocustManager}
-                tokenAddress={TEST_DAI_ADDRESS}
-                convertToDollar={(dollar) => {return dollar}}
-                dollarSymbol={"$"}
-                ensLookup={this.props.ensLookup}
-                buttonStyle={this.props.buttonStyle}
-                ethBalance={this.state.ethBalance}
-                balance={this.state.ethBalance}
-                onchainDisplay={this.state.displayDai}
-                offchainBalance={this.state.fethBalance}
-                offchainDisplay={this.state.displayfDai}
-                address={this.state.address}
-                goBack={this.goBack.bind(this)}
-                changeAlert={this.props.changeAlert}
-                dollarDisplay={(balance)=>{return balance}}
-              />
-            </div>
-            <Bottom
-              action={this.goBack.bind(this)}
-            />
-          </div>
-        )
-        case 'withdraw':
-        return (
-          <div>
-            <div className="send-to-address card w-100" style={{zIndex:1}}>
-            
-              <NavCard title={i18n.t('liquidity.withdraw.title')} goBack={this.goBack.bind(this)}/>
-              {i18n.t('liquidity.withdraw.warning')}
-              <Ruler/>
-              <LiquidityWithdraw
-                icon={daiImg}
-                text="DAI"
-                nocustManager={this.state.nocustManager}
-                tokenAddress={TEST_DAI_ADDRESS}
-                withdrawLimit={this.state.ethWithdrawLimit}
-                withdrawFee={this.state.withdrawFee}
-                convertToDollar={(dollar) => {return dollar}}
-                dollarSymbol={"$"}
-                ensLookup={this.props.ensLookup}
-                buttonStyle={this.props.buttonStyle}
-                ethBalance={this.state.ethBalance}
-                balance={this.state.daiBalance}
-                onchainDisplay={this.state.displayDai}
-                offchainBalance={this.state.fdaiBalance}
-                offchainDisplay={this.state.displayfDai}
-                address={this.state.address}
-                goBack={this.goBack.bind(this)}
-                changeAlert={this.props.changeAlert}
-                dollarDisplay={(balance)=>{return balance}}
-              />
-            </div>
-            <Bottom
-              action={this.goBack.bind(this)}
-            />
-          </div>
-        )
     }
 
   }
