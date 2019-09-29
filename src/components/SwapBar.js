@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Ruler from "./Ruler";
 import Blockies from 'react-blockies';
 import { Scaler } from "dapparatus";
@@ -22,13 +22,78 @@ const colStyle = {
   whiteSpace:"nowrap"
 }
 
+const AmountBar = (props) => {
+  return (
+    <div className="col-6 p-1" style={colStyle}>
+    <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+    <div className="input-group">
+      <div className="input-group-prepend">
+        <div className="input-group-text">$</div>
+      </div>
+      <input type="number" step="0.1" className="form-control" placeholder="0.00" value={props.value}
+              onChange={event => props.updateValue(event.target.value)} />
+        <div className="input-group-append" onClick={ event => {props.updateValue(fromWei(props.maxValue.toString(), "ether"))}}>
+          <span className="input-group-text" id="basic-addon2" style={props.buttonStyle.secondary}>
+            max
+          </span>
+        </div>
+      </div>
+      </Scaler>
+    </div>
+  )
+}
+
+const Swapper = (props) => {
+  
+  const [amount, setAmount] = useState("");
+
+  let cancelButton = (
+    <span style={{padding:10,whiteSpace:"nowrap"}}>
+      <a href="#" style={{color:"#000000"}} onClick={() => props.cancelAction()}>
+        <i className="fas fa-times"/> {i18n.t('cancel')}
+      </a>
+    </span>
+  )
+
+  return (
+    <div className="content ops row">
+
+      <div className="col-1 p-1"  style={colStyle}>
+        <i className={`fas ${props.icon}`}  />
+      </div>
+      <AmountBar
+        buttonStyle={props.buttonStyle}
+        value={amount}
+        updateValue={amount => setAmount(amount)}
+        maxValue={props.maxValue}
+      />
+      <div className="col-2 p-1"  style={colStyle}>
+        <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
+        {cancelButton}
+        </Scaler>
+      </div>
+      <div className="col-3 p-1">
+        <button className="btn btn-large w-100" disabled={props.buttonsDisabled} style={props.buttonStyle.primary} onClick={async ()=>{
+          props.successAction(amount)
+        }}>
+          <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
+            <i className={`fas ${props.icon}`} /> Send
+          </Scaler>
+        </button>
+
+      </div>
+    </div>
+  )
+}
+
+
 export default class SwapBar extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      ethToDaiMode: false,
+      swapMode: false,
       loaderBarStatusText: i18n.t('loading'),
       loaderBarStartTime:Date.now(),
       loaderBarPercent: 2,
@@ -38,35 +103,21 @@ export default class SwapBar extends React.Component {
       withdrawalExplanation: i18n.t('exchange.withdrawal_explanation'),
     }
   }
-  updateState = (key, value) => {
-    this.setState({ [key]: value },()=>{
-    });
-  };
 
   render() {
-    let {ethToDaiMode} = this.state
-
-    let ethCancelButton = (
-      <span style={{padding:10,whiteSpace:"nowrap"}}>
-        <a href="#" style={{color:"#000000"}} onClick={()=>{
-          this.setState({amount:"",ethToDaiMode:false})
-        }}>
-          <i className="fas fa-times"/> {i18n.t('cancel')}
-        </a>
-      </span>
-    )
+    let {swapMode} = this.state
 
     let buttonsDisabled = (
-      ethToDaiMode=="depositing" || ethToDaiMode=="withdrawing"
+      swapMode=="depositing" || swapMode=="withdrawing"
     )
 
     let adjustedFontSize = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*24)
     let adjustedTop = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*-20)+9
 
-    let ethToDaiDisplay =  i18n.t('loading')
+    let display =  i18n.t('loading')
 
-    if(ethToDaiMode=="depositing" || ethToDaiMode=="withdrawing"){
-      ethToDaiDisplay = (
+    if(swapMode=="depositing" || swapMode=="withdrawing"){
+      display = (
         <div className="content ops row" style={{position:"relative"}}>
           <button style={{width:Math.min(100,this.state.loaderBarPercent)+"%",backgroundColor:this.state.loaderBarColor,color:"#000000"}}
             className="btn btn-large"
@@ -78,139 +129,59 @@ export default class SwapBar extends React.Component {
         </div>
       )
 
-    }else if(ethToDaiMode=="deposit"){
-      ethToDaiDisplay = (
-        <div className="content ops row">
-
-          <div className="col-1 p-1"  style={colStyle}>
-            <i className="fas fa-arrow-up"  />
-          </div>
-          <div className="col-6 p-1" style={colStyle}>
-            <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-            <div className="input-group">
-              <div className="input-group-prepend">
-                <div className="input-group-text">$</div>
-              </div>
-              <input type="number" step="0.1" className="form-control" placeholder="0.00" value={this.state.amount}
-                      onChange={event => this.updateState('amount', event.target.value)} />
-                <div className="input-group-append" onClick={ event => this.updateState('amount', fromWei(this.props.onchainBalance, "ether"))}>
-                  <span className="input-group-text" id="basic-addon2" style={this.props.buttonStyle.secondary}>
-                    max
-                  </span>
-                </div>
-            </div>
-            </Scaler>
-          </div>
-          <div className="col-2 p-1"  style={colStyle}>
-            <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
-            {ethCancelButton}
-            </Scaler>
-          </div>
-          <div className="col-3 p-1">
-            <button className="btn btn-large w-100" disabled={buttonsDisabled} style={this.props.buttonStyle.primary} onClick={async ()=>{
-
-              //Deposit onto hub
-
-              // this.setState({
-              //   ethToDaiMode:"depositing",
-              //   loaderBarColor:"#3efff8",
-              //   loaderBarStatusText: i18n.t('exchange.calculate_gas_price'),
-              //   loaderBarPercent:0,
-              //   loaderBarStartTime: Date.now(),
-              //   loaderBarClick:()=>{
-              //     alert(i18n.t('exchange.go_to_etherscan'))
-              //   }
-              // })
-              this.props.deposit(toWei(this.state.amount, "ether"))
-              this.setState({ethToDaiMode:false})
-            }}>
-              <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
-                <i className="fas fa-arrow-up" /> Send
-              </Scaler>
-            </button>
-
-          </div>
-        </div>
+    }else if(swapMode=="deposit"){
+      display = (
+        <Swapper 
+          icon={"fa-arrow-up"}
+          buttonStyle={this.props.buttonStyle}
+          maxValue={this.props.onchainBalance}
+          buttonsDisabled={buttonsDisabled}
+          successAction={(amount) => {
+            this.props.deposit(toWei(amount, "ether"))
+            this.setState({swapMode:false})
+          }}
+          cancelAction={() => {
+            this.setState({swapMode:false})
+          }}
+        />
       )
-
-    }else if(ethToDaiMode=="withdraw"){
+    }else if(swapMode=="withdraw"){
       if(this.props.ethBalance<=0){
-        ethToDaiDisplay = (
+        display = (
           <div className="content ops row" style={{textAlign:'center'}}>
             <div className="col-12 p-1">
-              Error: You must have ETH to withdraw DAI.
-              <a href="#" onClick={()=>{this.setState({ethToDaiMode:false})}} style={{marginLeft:40,color:"#666666"}}>
+              Error: You must have ETH to withdraw {this.props.text}.
+              <a href="#" onClick={()=>{this.setState({swapMode:false})}} style={{marginLeft:40,color:"#666666"}}>
                 <i className="fas fa-times"/> dismiss
               </a>
             </div>
           </div>
         )
       }else{
-        ethToDaiDisplay = (
-          <div className="content ops row">
-
-            <div className="col-1 p-1"  style={colStyle}>
-              <i className="fas fa-arrow-down"  />
-            </div>
-            <div className="col-6 p-1" style={colStyle}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              <div className="input-group">
-                <div className="input-group-prepend">
-                  <div className="input-group-text">$</div>
-                </div>
-                <input type="number" step="0.1" className="form-control" placeholder="0.00" value={this.state.amount}
-                       onChange={event => this.updateState('amount', event.target.value)} />
-               <div className="input-group-append" onClick={event => this.updateState('amount', fromWei(this.props.offchainBalance, "ether"))}>
-                 <span className="input-group-text" id="basic-addon2" style={this.props.buttonStyle.secondary}>
-                   max
-                 </span>
-               </div>
-              </div>
-              </Scaler>
-            </div>
-            <div className="col-2 p-1"  style={colStyle}>
-              <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
-              {ethCancelButton}
-              </Scaler>
-            </div>
-            <div className="col-3 p-1">
-              <button className="btn btn-large w-100" disabled={buttonsDisabled} style={this.props.buttonStyle.primary} onClick={async ()=>{
-
-                //Withdraw from hub
-
-                // this.setState({
-                //   ethToDaiMode:"withdrawing",
-                //   loaderBarColor:"#3efff8",
-                //   loaderBarStatusText: i18n.t('exchange.calculate_gas_price'),
-                //   loaderBarPercent:0,
-                //   loaderBarStartTime: Date.now(),
-                //   loaderBarClick:()=>{
-                //     alert(i18n.t('exchange.go_to_etherscan'))
-                //   }
-                // })
-
-                
-                this.props.requestWithdraw(toWei(this.state.amount, "ether"))
-                this.setState({ethToDaiMode:false})
-              }
-
-              }>
-                <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
-                  <i className="fas fa-arrow-down" /> Send
-                </Scaler>
-              </button>
-            </div>
-          </div>
+        display = (
+          <Swapper 
+            icon={"fa-arrow-down"}
+            buttonStyle={this.props.buttonStyle}
+            maxValue={this.props.withdrawLimit}
+            buttonsDisabled={buttonsDisabled}
+            successAction={(amount) => {
+              this.props.requestWithdraw(toWei(amount, "ether"))
+              this.setState({swapMode:false})
+            }}
+            cancelAction={() => {
+              this.setState({swapMode:false})
+            }}
+          />
         )
       }
 
     }else{
-      ethToDaiDisplay = (
+      display = (
          <div className="content ops row">
 
            <div className="col-6 p-1">
              <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary} disabled={buttonsDisabled}  onClick={()=>{
-               this.setState({ethToDaiMode:"deposit"})
+               this.setState({swapMode:"deposit"})
              }}>
                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                 <i className="fas fa-arrow-up"  /> {this.props.text} to f{this.props.text}
@@ -220,7 +191,7 @@ export default class SwapBar extends React.Component {
 
            <div className="col-6 p-1">
              <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary} disabled={buttonsDisabled}  onClick={()=>{
-               this.setState({ethToDaiMode:"withdraw"})
+               this.setState({swapMode:"withdraw"})
              }}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                <i className="fas fa-arrow-down" /> f{this.props.text} to {this.props.text}
@@ -232,11 +203,9 @@ export default class SwapBar extends React.Component {
 
     }
 
-  
-    //console.log("eth price ",this.props.ethBalance,this.props.ethprice)
     return (
       <div className="main-card card w-100">
-        {ethToDaiDisplay}
+        {display}
       </div>
     )
   }

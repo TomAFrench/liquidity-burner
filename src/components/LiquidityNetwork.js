@@ -19,7 +19,6 @@ import LiquidityBridge from './LiquidityBridge';
 import Balance from "./Balance";
 
 import { NOCUSTManager } from 'nocust-client'
-import { BigNumber } from 'ethers/utils';
 
 import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
@@ -145,10 +144,11 @@ export default class LiquidityNetwork extends React.Component {
 
     const gasPrice = toWei("10","gwei")
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(gasPrice)
-    const withdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, HUB_CONTRACT_ADDRESS)
+    const ethWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, HUB_CONTRACT_ADDRESS)
+    const daiWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
     const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, HUB_CONTRACT_ADDRESS)
 
-    this.setState({withdrawFee, withdrawLimit, blocksToWithdrawal})
+    this.setState({withdrawFee, ethWithdrawLimit, daiWithdrawLimit, blocksToWithdrawal})
   }
 
   async confirmWithdrawal () {
@@ -355,8 +355,9 @@ export default class LiquidityNetwork extends React.Component {
         return (
           <div>
             <div className="main-card card w-100" style={{zIndex:1}}>
-
               <NavCard title={i18n.t('liquidity.bridge.title')} goBack={this.goBack.bind(this)}/>
+              Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
+              <Ruler/>
               <LiquidityBridge
                 text={"ETH"}
                 image={ethImg}
@@ -369,6 +370,7 @@ export default class LiquidityNetwork extends React.Component {
                 offchainBalance={this.state.fethBalance}
                 onchainDisplay={this.state.displayEth}
                 offchainDisplay={this.state.displayfEth}
+                withdrawLimit={this.state.ethWithdrawLimit}
               />
               <Ruler/>
               <LiquidityBridge
@@ -383,6 +385,8 @@ export default class LiquidityNetwork extends React.Component {
                 offchainBalance={this.state.fdaiBalance}
                 onchainDisplay={this.state.displayDai}
                 offchainDisplay={this.state.displayfDai}
+                withdrawLimit={this.state.daiWithdrawLimit}
+
               />
             </div>
             <Bottom
@@ -514,7 +518,7 @@ export default class LiquidityNetwork extends React.Component {
                 text="DAI"
                 nocustManager={this.state.nocustManager}
                 tokenAddress={TEST_DAI_ADDRESS}
-                withdrawLimit={this.state.withdrawLimit}
+                withdrawLimit={this.state.ethWithdrawLimit}
                 withdrawFee={this.state.withdrawFee}
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
