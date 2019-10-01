@@ -79,15 +79,6 @@ class TEXSwapBar extends React.Component {
   }
 
   render() {
-    let {swapMode} = this.state
-
-    let buttonsDisabled = (
-      swapMode=="depositing" || swapMode=="withdrawing"
-    )
-
-    let adjustedFontSize = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*24)
-    let adjustedTop = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*-20)+9
-
     let display =  i18n.t('loading')
 
     if (this.state.swapMode === "AtoB"){
@@ -98,7 +89,6 @@ class TEXSwapBar extends React.Component {
           assetSellText={this.props.assetAText}
           assetBuyText={this.props.assetBText}
           assetBalance={this.props.assetABalance}
-          buttonsDisabled={buttonsDisabled}
           successAction={(buyAmount, sellAmount) => {
             console.log("Buying ", buyAmount, this.props.assetBText, " for ", sellAmount, this.props.assetAText)
             this.props.AtoBTrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
@@ -117,7 +107,6 @@ class TEXSwapBar extends React.Component {
           assetSellText={this.props.assetBText}
           assetBuyText={this.props.assetAText}
           assetBalance={this.props.assetBBalance}
-          buttonsDisabled={buttonsDisabled}
           successAction={(buyAmount, sellAmount) => {
             console.log("Buying ", buyAmount, this.props.assetAText, " for ", sellAmount, this.props.assetBText)
             this.props.BtoATrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
@@ -133,9 +122,13 @@ class TEXSwapBar extends React.Component {
           <div className="content ops row">
 
             <div className="col-6 p-1">
-              <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary} disabled={buttonsDisabled}  onClick={()=>{
-                this.setState({swapMode:"BtoA"})
-              }}>
+              <button
+                className="btn btn-large w-100"
+                style={this.props.buttonStyle.primary}
+                onClick={()=>{
+                  this.setState({swapMode:"BtoA"})
+                }}
+              >
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                 <i className="fas fa-arrow-up"  /> {this.props.assetBText} to {this.props.assetAText}
                 </Scaler>
@@ -143,12 +136,16 @@ class TEXSwapBar extends React.Component {
             </div>
 
             <div className="col-6 p-1">
-              <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary} disabled={buttonsDisabled}  onClick={()=>{
-                this.setState({swapMode:"AtoB"})
-              }}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-arrow-down" /> {this.props.assetAText} to {this.props.assetBText}
-              </Scaler>
+              <button
+                className="btn btn-large w-100"
+                style={this.props.buttonStyle.primary}
+                onClick={()=>{
+                  this.setState({swapMode:"AtoB"})
+                  }}
+              >
+                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                  <i className="fas fa-arrow-down" /> {this.props.assetAText} to {this.props.assetBText}
+                </Scaler>
               </button>
             </div>  
           </div>
@@ -172,6 +169,11 @@ export default class LiquidityExchange extends React.Component {
     this.getOrderBook()
   }
 
+  componentDidMount(props) {
+    setInterval(this.syncSwaps.bind(this),10000)
+    setTimeout(this.syncSwaps.bind(this),30)
+  }
+
   async getOrderBook(){
     const orderbook = await this.props.nocust.getOrderBook(this.props.assetBAddress, this.props.assetAAddress)
     this.setState({orderbook})
@@ -192,7 +194,6 @@ export default class LiquidityExchange extends React.Component {
   }
 
   render() {
-    // this.syncSwaps()
     return (
       <div>
         <DisplayBar
@@ -207,8 +208,6 @@ export default class LiquidityExchange extends React.Component {
           buttonStyle={this.props.buttonStyle}
           assetAText={this.props.assetAText}
           assetBText={this.props.assetBText}
-          // assetAAddress={HUB_CONTRACT_ADDRESS}
-          // assetBAddress={TEST_DAI_ADDRESS}
           assetABalance={this.props.assetABalance}
           assetBBalance={this.props.assetBBalance}
           assetADisplay={this.props.assetADisplay}
