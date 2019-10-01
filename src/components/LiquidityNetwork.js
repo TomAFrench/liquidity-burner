@@ -148,8 +148,7 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async checkWithdrawalInfo () {
-
-    const gasPrice = toWei("10","gwei")
+    const gasPrice = toWei("1","gwei")
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(gasPrice)
     const ethWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, HUB_CONTRACT_ADDRESS)
     const daiWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
