@@ -90,6 +90,8 @@ export default class LiquidityNetwork extends React.Component {
       }, 
       'all'
     ).then((unsubscribe) => this.setState({unsubscribe}))
+    this.checkBalance()
+    this.getTransactions()
 
     setInterval(this.longPollInterval.bind(this),8000)
     setTimeout(this.longPollInterval.bind(this),30)
