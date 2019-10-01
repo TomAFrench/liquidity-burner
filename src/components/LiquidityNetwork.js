@@ -247,19 +247,6 @@ export default class LiquidityNetwork extends React.Component {
               <div className="form-group w-100">
 
                 <div style={{width:"100%",textAlign:"center"}}>
-                  {/* <Ruler/>
-                  <div style={{padding:20}}>
-                    The logged in user is
-                    <Blockie
-                      address={this.props.address}
-                      config={{size:6}}
-                    />
-                    {this.props.address.substring(0,8)}
-                    <div>
-                      They {this.state.addressRegistered ? "are" : "aren't"} registered.
-                    </div>
-                  </div> */}
-
                   <Balance
                         icon={daiImg}
                         selected={true}
@@ -299,30 +286,6 @@ export default class LiquidityNetwork extends React.Component {
 
                   {sendButtons}
 
-                  {/* <Ruler/> */}
-
-                  {/* <div>
-                    Network {this.props.network} is selected and on block #{this.props.block}.
-                  </div>
-                  <div>
-                    Gas price on {this.props.network} is {this.props.gwei} gwei.
-                  </div>
-                  <div>
-                    mainnetweb3 is on block {typeof this.state.mainnetBlockNumber !== 'undefined' ? this.state.mainnetBlockNumber : "..."} and version {this.props.mainnetweb3.version}
-                  </div>
-                  <div>
-                    limbo is on block {typeof this.state.limboBlockNumber !== 'undefined' ? this.state.limboBlockNumber : "..."} and version {this.state.limboweb3.version}
-                  </div>
-                  <div>
-                    The current price of ETH is {this.props.dollarDisplay(this.props.ethprice)}.
-                  </div>
-                  <div>
-                    Blocks until withdrawal confirmation: {this.state.blocksToWithdrawal}.
-                  </div>
-                  <div>
-                    Account Registered?: {this.state.addressRegistered ? "Yes" : "No"}.
-                  </div> */}
-
                   </div>
                   <LiquidityTransactions
                     dollarDisplay={(balance)=>{return balance}}
@@ -332,16 +295,6 @@ export default class LiquidityNetwork extends React.Component {
                     address={this.state.account}
                     recentTxs={this.state.transactions}
                   />
-                {/* <Events
-                  config={{hide:false}}
-                  eventName={"Sign"}
-                  block={this.props.block}
-                  onUpdate={(eventData,allEvents)=>{
-                    console.log("EVENT DATA:",eventData)
-                    this.setState({signEvents:allEvents})
-                  }}
-                /> */}
-
               </div>
           </div>
           <Bottom
@@ -424,7 +377,6 @@ export default class LiquidityNetwork extends React.Component {
             <div className="main-card card w-100" style={{zIndex:1}}>
 
               <NavCard title={i18n.t('receive_title')} goBack={this.goBack.bind(this)}/>
-              {/* {defaultBalanceDisplay} */}
               <LiquidityReceive
                 hubContract={HUB_CONTRACT_ADDRESS}
                 hubApiUrl={HUB_API_URL}
