@@ -434,8 +434,6 @@ export default class LiquidityNetwork extends React.Component {
             <Bottom
               action={this.goBack.bind(this)}
             />
-            {/* </div> */}
-
           </div>
         )
       case 'send_by_scan':
