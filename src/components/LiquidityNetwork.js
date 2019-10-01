@@ -13,6 +13,7 @@ import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
 import LiquidityTransactions from './LiquidityTransactions'
 import LiquidityBridge from './LiquidityBridge';
+import LiquidityExchange from './LiquidityExchange'
 
 import Balance from "./Balance";
 
@@ -217,6 +218,13 @@ export default class LiquidityNetwork extends React.Component {
               </Scaler>
             </button>
           </div>
+          <div className="col-6 p-1" onClick={() => this.changeView('tex')}>
+            <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                <i className="fas fa-hand-holding-usd"/> {i18next.t('exchange_title')}
+              </Scaler>
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -368,7 +376,32 @@ export default class LiquidityNetwork extends React.Component {
                 onchainDisplay={this.state.displayDai}
                 offchainDisplay={this.state.displayfDai}
                 withdrawLimit={this.state.daiWithdrawLimit}
-
+              />
+            </div>
+            <Bottom
+              action={this.goBack.bind(this)}
+            />
+          </div>
+        )
+      case 'tex':
+        return (
+          <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
+              <NavCard title={i18n.t('exchange_title')} goBack={this.goBack.bind(this)}/>
+              <LiquidityExchange
+                assetAText={"fETH"}
+                assetBText={"fDAI"}
+                assetAAddress={HUB_CONTRACT_ADDRESS}
+                assetBAddress={TEST_DAI_ADDRESS}
+                assetAImage={ethImg}
+                assetBImage={daiImg}
+                assetABalance={this.state.fethBalance}
+                assetBBalance={this.state.fdaiBalance}
+                assetADisplay={this.state.displayfEth}
+                assetBDisplay={this.state.displayfDai}
+                address={this.state.address}
+                buttonStyle={this.props.buttonStyle}
+                nocust={this.state.nocustManager}
               />
             </div>
             <Bottom

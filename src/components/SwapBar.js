@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
-import Ruler from "./Ruler";
-import Blockies from 'react-blockies';
 import { Scaler } from "dapparatus";
 
 import i18n from '../i18n';
 
-import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
-import core from '../core';
 
+import AmountBar from './AmountBar'
 const { toWei, fromWei, toBN } = require('web3-utils');
 
 
@@ -20,27 +17,6 @@ const logoStyle = {
 const colStyle = {
   textAlign:"center",
   whiteSpace:"nowrap"
-}
-
-const AmountBar = (props) => {
-  return (
-    <div className="col-6 p-1" style={colStyle}>
-    <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-    <div className="input-group">
-      <div className="input-group-prepend">
-        <div className="input-group-text">$</div>
-      </div>
-      <input type="number" step="0.1" className="form-control" placeholder="0.00" value={props.value}
-              onChange={event => props.updateValue(event.target.value)} />
-        <div className="input-group-append" onClick={ event => {props.updateValue(fromWei(props.maxValue.toString(), "ether"))}}>
-          <span className="input-group-text" id="basic-addon2" style={props.buttonStyle.secondary}>
-            max
-          </span>
-        </div>
-      </div>
-      </Scaler>
-    </div>
-  )
 }
 
 const Swapper = (props) => {
@@ -61,12 +37,14 @@ const Swapper = (props) => {
       <div className="col-1 p-1"  style={colStyle}>
         <i className={`fas ${props.icon}`}  />
       </div>
-      <AmountBar
-        buttonStyle={props.buttonStyle}
-        value={amount}
-        updateValue={amount => setAmount(amount)}
-        maxValue={props.maxValue}
-      />
+      <div className="col-6 p-1" style={colStyle}>
+        <AmountBar
+          buttonStyle={props.buttonStyle}
+          value={amount}
+          updateValue={amount => setAmount(amount)}
+          maxValue={props.maxValue}
+        />
+      </div>
       <div className="col-2 p-1"  style={colStyle}>
         <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
         {cancelButton}
