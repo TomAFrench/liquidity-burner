@@ -426,8 +426,10 @@ export default class LiquidityNetwork extends React.Component {
                 changeAlert={this.props.changeAlert}
                 dollarDisplay={(balance)=>{return balance}}
                 onSend={() => {
-                  this.checkBalance()
-                  this.getTransactions()
+                  setTimeout(() => {
+                    this.checkBalance()
+                    this.getTransactions()
+                  }, 2000)
                 }}
               />
             </div>
