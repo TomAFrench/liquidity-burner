@@ -81,12 +81,24 @@ export default class LiquidityNetwork extends React.Component {
 
   componentDidMount(){
 
-    setInterval(this.pollInterval.bind(this),5000)
-    setTimeout(this.pollInterval.bind(this),30)
+    this.state.nocustManager.subscribeToIncomingTransfer(
+      this.state.address,
+      tx => {
+        console.log(`Incoming transaction from: ${tx.wallet.address} of: ${tx.amount.toString()} wei of token ${tx.wallet.token}.`)
+        this.checkBalance()
+        this.getTransactions()
+      }, 
+      'all'
+    ).then((unsubscribe) => this.setState({unsubscribe}))
 
     setInterval(this.longPollInterval.bind(this),8000)
     setTimeout(this.longPollInterval.bind(this),30)
 
+  }
+  
+  componentWillUnmount(){
+    console.log("Unsubscribing from incoming transactions")
+    this.state.unsubscribe()
   }
 
   async checkRegistration(){
@@ -102,11 +114,6 @@ export default class LiquidityNetwork extends React.Component {
     console.log("registered ETH")
     this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
     console.log("Finished registering")
-  }
-
-  async pollInterval(){
-    console.log("POLL")
-    this.checkBalance()
   }
 
   async longPollInterval(){
@@ -131,7 +138,9 @@ export default class LiquidityNetwork extends React.Component {
     const displayfDai = getDisplayValue(toBN(fdaiBalance))
     this.setState({displayEth, displayfEth, displayDai, displayfDai})
     console.log({displayEth, displayfEth, displayDai, displayfDai})
+  }
 
+  async getTransactions() {
     let transactions = await this.state.nocustManager.getTransactionsForAddress(this.state.address, TEST_DAI_ADDRESS)
     if (transactions.length) {
       transactions = transactions.reverse()
@@ -466,6 +475,10 @@ export default class LiquidityNetwork extends React.Component {
                 setReceipt={this.props.setReceipt}
                 changeAlert={this.props.changeAlert}
                 dollarDisplay={(balance)=>{return balance}}
+                onSend={() => {
+                  this.checkBalance()
+                  this.getTransactions()
+                }}
               />
             </div>
             <Bottom

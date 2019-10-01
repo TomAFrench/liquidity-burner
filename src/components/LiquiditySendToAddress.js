@@ -188,6 +188,9 @@ export default class LiquiditySendToAddress extends React.Component {
         
         this.props.nocustManager.sendTransaction(transaction)
         // console.log("transaction response", response)
+        if (typeof this.props.onSend === 'function') {
+          this.props.onSend()
+        }
         this.props.goBack()
         
         // this.props.send(toAddress, value, 120000, txData, (result) => {
