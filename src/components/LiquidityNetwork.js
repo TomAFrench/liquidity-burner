@@ -95,7 +95,6 @@ export default class LiquidityNetwork extends React.Component {
 
     setInterval(this.longPollInterval.bind(this),8000)
     setTimeout(this.longPollInterval.bind(this),30)
-
   }
   
   componentWillUnmount(){
@@ -104,18 +103,16 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async checkRegistration(){
-    let addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
-    console.log("registration check", addressRegistered)
+    const addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
+    console.log(addressRegistered ? "Already registered" : "Address hasn't registered with the hub")
     this.setState({addressRegistered})
     return addressRegistered 
   }
 
   async registerWithHub(){
-    console.log("just before registration")
+    console.log("Registering with hub")
     this.state.nocustManager.registerAddress(this.state.address)
-    console.log("registered ETH")
     this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
-    console.log("Finished registering")
   }
 
   async longPollInterval(){
