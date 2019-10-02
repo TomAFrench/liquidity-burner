@@ -150,6 +150,29 @@ const TEXSwapBar = (props) => {
   )
 }
 
+const getAmountOut = (orders, amountIn) => {
+  let amountRemaining = toBN(amountIn)
+  let orderIdx = 0
+  let amountOut = toBN("0")
+  while (amountRemaining.gt(toBN("0"))) {
+    try{
+      const order = orders[orderIdx]
+      amountOut.iadd((toBN(order.remaining_out).mul(amountRemaining)).div(toBN(order.remaining_out)))
+      amountRemaining.isub(toBN(order.remaining_in))
+      orderIdx += 1
+    }
+    catch(e) {
+      throw "Not enough liquidity on exchange"
+    }
+  }
+  return amountOut
+}
+
+const getPrice = (orders, amountIn) => {
+  const amountOut = getAmountOut(orders, amountIn)
+  return amountOut.div(toBN(amountIn, 'ether'))
+}
+
 export default class LiquidityExchange extends React.Component {
 
   constructor(props) {
