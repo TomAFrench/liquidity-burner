@@ -67,97 +67,87 @@ const TEXSwapper = (props) => {
   )
 }
 
-class TEXSwapBar extends React.Component {
+const TEXSwapBar = (props) => {
 
-  constructor(props) {
-    super(props);
+  const [swapMode, setSwapMode] = useState(false)
 
-    this.state = {
-      swapMode: false,
-      withdrawalExplanation: i18n.t('exchange.withdrawal_explanation'),
-    }
-  }
+  let display =  i18n.t('loading')
 
-  render() {
-    let display =  i18n.t('loading')
-
-    if (this.state.swapMode === "AtoB"){
-      display = (
-        <TEXSwapper 
-          icon={"fa-arrow-down"}
-          buttonStyle={this.props.buttonStyle}
-          assetSellText={this.props.assetAText}
-          assetBuyText={this.props.assetBText}
-          assetBalance={this.props.assetABalance}
-          successAction={(buyAmount, sellAmount) => {
-            console.log("Buying ", buyAmount, this.props.assetBText, " for ", sellAmount, this.props.assetAText)
-            this.props.AtoBTrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
-            this.setState({swapMode:false})
-          }}
-          cancelAction={() => {
-            this.setState({swapMode:false})
-          }}
-        />
-      )
-    } else if (this.state.swapMode === "BtoA") {
-      display = (
-        <TEXSwapper 
-          icon={"fa-arrow-up"}
-          buttonStyle={this.props.buttonStyle}
-          assetSellText={this.props.assetBText}
-          assetBuyText={this.props.assetAText}
-          assetBalance={this.props.assetBBalance}
-          successAction={(buyAmount, sellAmount) => {
-            console.log("Buying ", buyAmount, this.props.assetAText, " for ", sellAmount, this.props.assetBText)
-            this.props.BtoATrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
-            this.setState({swapMode:false})
-          }}
-          cancelAction={() => {
-            this.setState({swapMode:false})
-          }}
-        />
-      )
-    } else { 
-      display = (
-          <div className="content ops row">
-
-            <div className="col-6 p-1">
-              <button
-                className="btn btn-large w-100"
-                style={this.props.buttonStyle.primary}
-                onClick={()=>{
-                  this.setState({swapMode:"BtoA"})
-                }}
-              >
-                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-arrow-up"  /> {this.props.assetBText} to {this.props.assetAText}
-                </Scaler>
-              </button>
-            </div>
-
-            <div className="col-6 p-1">
-              <button
-                className="btn btn-large w-100"
-                style={this.props.buttonStyle.primary}
-                onClick={()=>{
-                  this.setState({swapMode:"AtoB"})
-                  }}
-              >
-                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-arrow-down" /> {this.props.assetAText} to {this.props.assetBText}
-                </Scaler>
-              </button>
-            </div>  
-          </div>
-        )
-    }
-
-    return (
-      <div className="main-card card w-100">
-        {display}
-      </div>
+  if (swapMode === "AtoB"){
+    display = (
+      <TEXSwapper 
+        icon={"fa-arrow-down"}
+        buttonStyle={props.buttonStyle}
+        assetSellText={props.assetAText}
+        assetBuyText={props.assetBText}
+        assetBalance={props.assetABalance}
+        successAction={(buyAmount, sellAmount) => {
+          console.log("Buying ", buyAmount, props.assetBText, " for ", sellAmount, props.assetAText)
+          props.AtoBTrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
+          setSwapMode(false)
+        }}
+        cancelAction={() => {
+          setSwapMode(false)
+        }}
+      />
     )
+  } else if (swapMode === "BtoA") {
+    display = (
+      <TEXSwapper 
+        icon={"fa-arrow-up"}
+        buttonStyle={props.buttonStyle}
+        assetSellText={props.assetBText}
+        assetBuyText={props.assetAText}
+        assetBalance={props.assetBBalance}
+        successAction={(buyAmount, sellAmount) => {
+          console.log("Buying ", buyAmount, props.assetAText, " for ", sellAmount, props.assetBText)
+          props.BtoATrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
+          setSwapMode(false)
+        }}
+        cancelAction={() => {
+          setSwapMode(false)
+        }}
+      />
+    )
+  } else { 
+    display = (
+        <div className="content ops row">
+          <div className="col-6 p-1">
+            <button
+              className="btn btn-large w-100"
+              style={props.buttonStyle.primary}
+              onClick={()=>{
+                setSwapMode("BtoA")
+              }}
+            >
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+              <i className="fas fa-arrow-up"  /> {props.assetBText} to {props.assetAText}
+              </Scaler>
+            </button>
+          </div>
+
+          <div className="col-6 p-1">
+            <button
+              className="btn btn-large w-100"
+              style={props.buttonStyle.primary}
+              onClick={()=>{
+                setSwapMode("AtoB")
+                }}
+            >
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                <i className="fas fa-arrow-down" /> {props.assetAText} to {props.assetBText}
+              </Scaler>
+            </button>
+          </div>  
+        </div>
+      )
   }
+
+  return (
+    <div className="main-card card w-100">
+      {display}
+    </div>
+  )
 }
 
 export default class LiquidityExchange extends React.Component {
