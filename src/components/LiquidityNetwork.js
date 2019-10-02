@@ -24,15 +24,10 @@ import daiImg from '../images/dai.jpg';
 
 const { toWei, fromWei, toBN } = require('web3-utils');
 
-let HUB_CONTRACT_ADDRESS
-let HUB_API_URL
-let RPC_URL 
-let TEST_DAI_ADDRESS
-
-HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
-HUB_API_URL = process.env.REACT_APP_HUB_API_URL
-RPC_URL = process.env.REACT_APP_RPC_URL
-TEST_DAI_ADDRESS = process.env.REACT_APP_TEST_DAI_ADDRESS
+const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
+const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
+const RPC_URL = process.env.REACT_APP_RPC_URL
+const TEST_DAI_ADDRESS = process.env.REACT_APP_TEST_DAI_ADDRESS
 
 function getDisplayValue(value, decimals=4) {
   const displayVal = fromWei(value.toString(), 'ether');
