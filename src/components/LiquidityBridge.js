@@ -5,6 +5,7 @@ import Blockies from 'react-blockies'
 import DisplayBar from './DisplayBar'
 import SwapBar from './SwapBar'
 import AddressBar from './AddressBar';
+import AmountBar from './AmountBar';
 
 
 const { toWei, toBN } = require('web3-utils');
@@ -32,18 +33,12 @@ const TransactionBar = (props) => {
           </div>
           <div>  { validAddress && <Blockies seed={address.toLowerCase()} scale={10} /> }</div>
           <label htmlFor="amount_input">Send Amount</label>
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <div className="input-group-text">$</div>
-            </div>
-            <input type="number" step="0.1" className="form-control" placeholder="0.00" value={amount}
-                  onChange={event => setAmount(event.target.value)} />
-                  <div className="input-group-append" onClick={() => {setAmount(props.totalBalance)}}>
-                    <span className="input-group-text" id="basic-addon2" style={props.buttonStyle.secondary}>
-                      max
-                    </span>
-                  </div>
-          </div>
+          <AmountBar
+            buttonStyle={props.buttonStyle}
+            value={amount}
+            updateValue={amount => setAmount(amount)}
+            maxValue={props.totalBalance}
+          />
           <button style={props.buttonStyle.primary} disabled={!canSend} className={`btn btn-success btn-lg w-100 ${canSend ? '' : 'disabled'}`}
                   onClick={() => props.onSend(address, toWei(amount, 'ether'))}>
             Send
