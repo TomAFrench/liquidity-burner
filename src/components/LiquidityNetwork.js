@@ -88,13 +88,18 @@ export default class LiquidityNetwork extends React.Component {
     this.checkBalance()
     this.getTransactions()
 
-    setInterval(this.longPollInterval.bind(this),8000)
+
     setTimeout(this.longPollInterval.bind(this),30)
+    const longPollingIntervalId = setInterval(this.longPollInterval.bind(this),8000)
+    this.setState({longPollingIntervalId})
   }
   
   componentWillUnmount(){
     console.log("Unsubscribing from incoming transactions")
     this.state.unsubscribe()
+
+    console.log("No longer polling NOCUST")
+    clearInterval(this.state.longPollingIntervalId)
   }
 
   async checkRegistration(){

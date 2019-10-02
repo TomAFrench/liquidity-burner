@@ -170,8 +170,15 @@ export default class LiquidityExchange extends React.Component {
   }
 
   componentDidMount(props) {
-    setInterval(this.syncSwaps.bind(this),10000)
-    setTimeout(this.syncSwaps.bind(this),30)
+    this.syncSwaps()
+
+    const syncIntervalId = setInterval(this.syncSwaps.bind(this),10000)
+    this.setState({syncIntervalId})
+  }
+
+  componentWillUnmount() {
+    console.log("Stopping checking for fulfilled swaps")
+    clearInterval(this.state.syncIntervalId)
   }
 
   async getOrderBook(){
