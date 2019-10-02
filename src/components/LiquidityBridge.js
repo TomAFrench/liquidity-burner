@@ -4,6 +4,8 @@ import Ruler from "./Ruler";
 import Blockies from 'react-blockies'
 import DisplayBar from './DisplayBar'
 import SwapBar from './SwapBar'
+import AddressBar from './AddressBar';
+
 
 const { toWei, toBN } = require('web3-utils');
 
@@ -22,8 +24,11 @@ const TransactionBar = (props) => {
         <div className="form-group w-100">
           <div className="form-group w-100">
             <label htmlFor="amount_input">To Address</label>
-            <input type="text" className="form-control" placeholder="0x..." value={address}
-                  onChange={event => setAddress(event.target.value)} />
+            <AddressBar
+              buttonStyle={props.buttonStyle}
+              toAddress={address}
+              setToAddress={(toAddress) => { setAddress(toAddress) }}
+            />
           </div>
           <div>  { validAddress && <Blockies seed={address.toLowerCase()} scale={10} /> }</div>
           <label htmlFor="amount_input">Send Amount</label>

@@ -6,6 +6,7 @@ import {CopyToClipboard} from "react-copy-to-clipboard";
 import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
 import i18n from '../i18n';
+import AddressBar from './AddressBar';
 const queryString = require('query-string');
 const { toWei, fromWei, toBN } = require('web3-utils');
 
@@ -249,18 +250,13 @@ export default class LiquiditySendToAddress extends React.Component {
           <div className="form-group w-100">
             <div className="form-group w-100">
               <label htmlFor="amount_input">{i18n.t('send_to_address.to_address')}</label>
-              <div className="input-group">
-                <input type="text" className="form-control" placeholder="0x..." value={this.state.toAddress}
-                  ref={(input) => { this.addressInput = input; }}
-                       onChange={event => this.updateState('toAddress', event.target.value)} />
-                <div className="input-group-append" onClick={() => {
-                  this.props.openScanner({view:"send_to_address"})
-                }}>
-                  <span className="input-group-text" id="basic-addon2" style={this.props.buttonStyle.primary}>
-                    <i style={{color:"#FFFFFF"}} className="fas fa-qrcode" />
-                  </span>
-                </div>
-              </div>
+              <AddressBar
+                buttonStyle={this.props.buttonStyle}
+                toAddress={this.state.toAddress}
+                setToAddress={(toAddress) => { this.setState({toAddress}) }}
+                openScanner={this.props.openScanner}
+                addressInput={(input) => {this.addressInput = input}}
+              />
             </div>
             <div>  { this.state.toAddress && this.state.toAddress.length==42 &&
               <CopyToClipboard text={toAddress.toLowerCase()}>
