@@ -412,6 +412,7 @@ export default class LiquidityNetwork extends React.Component {
                 nocustManager={this.state.nocustManager}
                 convertToDollar={(dollar) => {return dollar}}
                 dollarSymbol={"$"}
+                text={"fDAI"}
                 parseAndCleanPath={this.props.parseAndCleanPath}
                 openScanner={this.openScanner.bind(this)}
                 scannerState={this.state.scannerState}

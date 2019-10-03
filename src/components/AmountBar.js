@@ -10,7 +10,7 @@ export default (props) => {
     <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
     <div className="input-group">
       <div className="input-group-prepend">
-        <div className="input-group-text">$</div>
+        <div className="input-group-text">{props.unit}</div>
       </div>
       <input type="number" step="0.1" className="form-control" placeholder="0.00" value={props.value}
               onChange={event => props.updateValue(event.target.value)} />

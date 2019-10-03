@@ -40,6 +40,7 @@ const Swapper = (props) => {
       <div className="col-6 p-1" style={colStyle}>
         <AmountBar
           buttonStyle={props.buttonStyle}
+          unit={props.text}
           value={amount}
           updateValue={amount => setAmount(amount)}
           maxValue={props.maxValue}
@@ -111,6 +112,7 @@ export default class SwapBar extends React.Component {
       display = (
         <Swapper 
           icon={"fa-arrow-up"}
+          text={this.props.text}
           buttonStyle={this.props.buttonStyle}
           maxValue={this.props.onchainBalance}
           buttonsDisabled={buttonsDisabled}
@@ -139,6 +141,7 @@ export default class SwapBar extends React.Component {
         display = (
           <Swapper 
             icon={"fa-arrow-down"}
+            text={this.props.text}
             buttonStyle={this.props.buttonStyle}
             maxValue={this.props.withdrawLimit}
             buttonsDisabled={buttonsDisabled}

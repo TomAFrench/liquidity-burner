@@ -35,6 +35,7 @@ const TransactionBar = (props) => {
           <label htmlFor="amount_input">Send Amount</label>
           <AmountBar
             buttonStyle={props.buttonStyle}
+            unit={props.unit}
             value={amount}
             updateValue={amount => setAmount(amount)}
             maxValue={props.totalBalance}
@@ -74,6 +75,7 @@ export default class LiquidityBridge extends React.Component {
         {this.state.sending &&
         <TransactionBar
         buttonStyle={this.props.buttonStyle}
+        unit={"f"+this.props.text}
         totalBalance={this.props.offchainBalance}
         onSend={(address, amount) => {
           this.props.nocust.sendTransaction({to: address, from: this.props.address, tokenAddress: this.props.tokenAddress, amount: amount})

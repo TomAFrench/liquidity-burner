@@ -12,10 +12,27 @@ const colStyle = {
   whiteSpace:"nowrap"
 }
 
+const rowStyle = {
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  alignItems: 'center',
+  justifyContent: 'space-between'
+}
+
+const flexColStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  justifyContent: 'space-evenly'
+}
+
 const TEXSwapper = (props) => {
   
   const [buyAmount, setBuyAmount] = useState("");
   const [sellAmount, setSellAmount] = useState("");
+
+  const [maxInput, maxOutput] = getMaxOutputs(props.orders, props.assetBalance)
 
   let cancelButton = (
     <span style={{padding:10,whiteSpace:"nowrap"}}>
@@ -25,29 +42,53 @@ const TEXSwapper = (props) => {
     </span>
   )
 
+  const buyAmountBar = (
+    <AmountBar
+      buttonStyle={props.buttonStyle}
+      unit={props.assetBuyText}
+      value={buyAmount}
+      updateValue={amount => {
+        setBuyAmount(amount)
+        if (amount && typeof props.orders !== 'undefined') {
+          setSellAmount(fromWei(getAmountIn(props.orders, toWei(amount,'ether')),'ether'))
+        }
+        }
+      }
+      maxValue={maxOutput}
+    />
+  )
+
+  const sellAmountBar = (
+    <AmountBar
+      buttonStyle={props.buttonStyle}
+      unit={props.assetSellText}
+      value={sellAmount}
+      updateValue={amount => {
+        setSellAmount(amount)
+        if (amount && typeof props.orders !== 'undefined') {
+          setBuyAmount(fromWei(getAmountOut(props.orders, toWei(amount,'ether')),'ether'))
+        }
+        }
+      }
+      maxValue={maxInput}
+    />
+  )
+
   return (
-    <div className="content ops row">
+    <div className="content ops row" style={rowStyle}>
 
       <div className="col-1 p-1"  style={colStyle}>
         <i className={`fas ${props.icon}`}  />
       </div>
-      <div className="col-3 p-1" style={colStyle}>
-      {props.assetBuyText}
-        <AmountBar
-          buttonStyle={props.buttonStyle}
-          value={buyAmount}
-          updateValue={amount => setBuyAmount(amount)}
-        />
+      <div className="col-6 p-1" style={flexColStyle}>
+        <div style={{flexGrow: 1}}>
+          {props.reversed ? buyAmountBar : sellAmountBar}
+        </div>
+        <div style={{flexGrow: 1}}>
+          {props.reversed ? sellAmountBar : buyAmountBar}
+        </div>
       </div>
-      <div className="col-3 p-1" style={colStyle}>
-        {props.assetSellText}
-        <AmountBar
-          buttonStyle={props.buttonStyle}
-          value={sellAmount}
-          updateValue={amount => setSellAmount(amount)}
-          maxValue={props.assetBalance}
-        />
-      </div>
+
       <div className="col-2 p-1"  style={colStyle}>
         <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
         {cancelButton}
@@ -61,7 +102,6 @@ const TEXSwapper = (props) => {
             <i className={`fas ${props.icon}`} /> Send
           </Scaler>
         </button>
-
       </div>
     </div>
   )
@@ -75,9 +115,10 @@ const TEXSwapBar = (props) => {
 
   if (swapMode === "AtoB"){
     display = (
-      <TEXSwapper 
+      <TEXSwapper
         icon={"fa-arrow-down"}
         buttonStyle={props.buttonStyle}
+        orders={props.orderbook.sell_orders}
         assetSellText={props.assetAText}
         assetBuyText={props.assetBText}
         assetBalance={props.assetABalance}
@@ -93,9 +134,11 @@ const TEXSwapBar = (props) => {
     )
   } else if (swapMode === "BtoA") {
     display = (
-      <TEXSwapper 
+      <TEXSwapper
+        reversed
         icon={"fa-arrow-up"}
         buttonStyle={props.buttonStyle}
+        orders={props.orderbook.buy_orders}
         assetSellText={props.assetBText}
         assetBuyText={props.assetAText}
         assetBalance={props.assetBBalance}
@@ -150,35 +193,76 @@ const TEXSwapBar = (props) => {
   )
 }
 
+const getMaxOutputs = (orders, amount) => {
+  if (!orders.length) {
+    return ['0', '0']
+  }
+  let amountRemaining = (typeof amount !== 'undefined' ? toBN(amount) : toBN('0'))
+  let maxIn = toBN("0")
+  let maxOut = toBN("0")
+  for (var i = 0; i < orders.length; i++) {
+    const order = orders[i]
+
+    if (amountRemaining.gte(toBN(order.remaining_in))) {
+      maxIn.iadd(toBN(order.remaining_in))
+      maxOut.iadd(toBN(order.remaining_out))
+    } else {
+      maxIn.iadd(toBN(amountRemaining))
+      maxOut.iadd((toBN(order.remaining_out).mul(amountRemaining)).div(toBN(order.remaining_in)))
+    }
+
+    amountRemaining.isub(toBN(order.remaining_in))
+    if (amountRemaining.lte(toBN('0'))){
+      break
+    }
+  }
+  return [maxIn, maxOut]
+}
+
+const getAmountIn = (orders, amountOut) => {
+  return getOtherAmount(orders, amountOut, 'out')
+}
+
 const getAmountOut = (orders, amountIn) => {
-  let amountRemaining = toBN(amountIn)
+  return getOtherAmount(orders, amountIn, 'in')
+}
+
+const getOtherAmount = (orders, amount, knownQuantity) => {
+  let unknownQuantity
+  if (knownQuantity === 'in') {
+    knownQuantity = 'remaining_in'
+    unknownQuantity = 'remaining_out'
+  } else {
+    knownQuantity = 'remaining_out'
+    unknownQuantity = 'remaining_in'
+  }
+
+  let amountRemaining = toBN(amount)
   let orderIdx = 0
-  let amountOut = toBN("0")
+  let output = toBN("0")
   while (amountRemaining.gt(toBN("0"))) {
     try{
       const order = orders[orderIdx]
-      amountOut.iadd((toBN(order.remaining_out).mul(amountRemaining)).div(toBN(order.remaining_out)))
-      amountRemaining.isub(toBN(order.remaining_in))
+      if (amountRemaining.gte(toBN(order[knownQuantity]))) {
+        output.iadd(toBN(order[unknownQuantity]))
+      } else {
+        output.iadd((toBN(order[unknownQuantity]).mul(amountRemaining)).div(toBN(order[knownQuantity])))
+      }
+      amountRemaining.isub(toBN(order[knownQuantity]))
       orderIdx += 1
     }
     catch(e) {
       throw "Not enough liquidity on exchange"
     }
   }
-  return amountOut
-}
-
-const getPrice = (orders, amountIn) => {
-  const amountOut = getAmountOut(orders, amountIn)
-  return amountOut.div(toBN(amountIn, 'ether'))
+  return output
 }
 
 export default class LiquidityExchange extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-    }
+    this.state = {}
     this.getOrderBook()
   }
 
@@ -226,6 +310,7 @@ export default class LiquidityExchange extends React.Component {
         <Ruler/>
         <TEXSwapBar
           buttonStyle={this.props.buttonStyle}
+          orderbook={this.state.orderbook}
           assetAText={this.props.assetAText}
           assetBText={this.props.assetBText}
           assetABalance={this.props.assetABalance}

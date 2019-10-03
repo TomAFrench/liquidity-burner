@@ -269,7 +269,7 @@ export default class LiquiditySendToAddress extends React.Component {
             <label htmlFor="amount_input">{i18n.t('send_to_address.send_amount')}</label>
             <div className="input-group">
               <div className="input-group-prepend">
-                <div className="input-group-text">{dollarSymbol}</div>
+                <div className="input-group-text">{this.props.text}</div>
               </div>
               {amountInputDisplay}
             </div>
