@@ -2,9 +2,12 @@ import React from 'react';
 import { Blockie } from "dapparatus";
 import Ruler from "./Ruler";
 import { Scaler } from "dapparatus";
+import {CopyToClipboard} from "react-copy-to-clipboard";
+import i18n from '../i18n';
+
 const { toWei, fromWei } = require('web3-utils');
 
-export default ({dollarDisplay, view, max, buttonStyle, address, recentTxs, changeView}) => {
+export default ({dollarDisplay, view, max, buttonStyle, address, recentTxs, changeView, changeAlert}) => {
   let txns = []
   let count=0
   if(!max) max=9999
@@ -16,11 +19,30 @@ export default ({dollarDisplay, view, max, buttonStyle, address, recentTxs, chan
       </span>
     )
 
+    let fromBlockie = (
+      <CopyToClipboard text={recentTxs[r].wallet.address} onCopy={() => {
+        changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
+      }}>
+        <div style={{cursor:"pointer"}}>
+          <Blockie
+            address={recentTxs[r].wallet.address}
+            config={{size:4}}
+          />
+        </div>
+      </CopyToClipboard>
+    )
+
     let toBlockie = (
-      <Blockie
-        address={recentTxs[r].recipient.address}
-        config={{size:4}}
-      />
+      <CopyToClipboard text={recentTxs[r].recipient.address} onCopy={() => {
+        changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
+      }}>
+        <div style={{cursor:"pointer"}}>
+          <Blockie
+            address={recentTxs[r].recipient.address}
+            config={{size:4}}
+          />
+        </div>
+      </CopyToClipboard>
     )
 
     if(count++<max){
@@ -36,10 +58,7 @@ export default ({dollarDisplay, view, max, buttonStyle, address, recentTxs, chan
         // <div key={count} style={{position:'relative',cursor:'pointer'}} key={recentTxs[r].hash} className="content bridge row" >
         <div key={recentTxs[r].tx_id} style={{position:'relative'}}  className="content bridge row" >
           <div className="col-3 p-1" style={{textAlign:'center'}}>
-            <Blockie
-              address={recentTxs[r].wallet.address}
-              config={{size:4}}
-            />
+            {fromBlockie}
           </div>
           <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
             <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>

@@ -287,6 +287,7 @@ export default class LiquidityNetwork extends React.Component {
                     view={this.state.view}
                     buttonStyle={this.props.buttonStyle}
                     changeView={this.changeView.bind(this)}
+                    changeAlert={this.props.changeAlert.bind(this)}
                     address={this.state.account}
                     recentTxs={this.state.transactions}
                   />
