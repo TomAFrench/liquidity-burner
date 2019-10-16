@@ -54,7 +54,8 @@ const TEXSwapper = (props) => {
         }
         }
       }
-      maxValue={maxOutput}
+      maxValue={fromWei(maxOutput.toString(), 'ether')}
+      minValue={"0"}
     />
   )
 
@@ -70,7 +71,8 @@ const TEXSwapper = (props) => {
         }
         }
       }
-      maxValue={maxInput}
+      maxValue={fromWei(maxInput.toString(), 'ether')}
+      minValue={"0"}
     />
   )
 

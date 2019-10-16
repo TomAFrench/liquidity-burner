@@ -8,7 +8,7 @@ import AddressBar from './AddressBar';
 import AmountBar from './AmountBar';
 
 
-const { toWei, toBN } = require('web3-utils');
+const { fromWei, toWei, toBN } = require('web3-utils');
 
 const TransactionBar = (props) => {
 
@@ -38,7 +38,8 @@ const TransactionBar = (props) => {
             unit={props.unit}
             value={amount}
             updateValue={amount => setAmount(amount)}
-            maxValue={props.totalBalance}
+            maxValue={typeof props.totalBalance !== 'undefined' ? fromWei(props.totalBalance.toString(), 'ether') : undefined}
+            minValue={"0"}
           />
           <button style={props.buttonStyle.primary} disabled={!canSend} className={`btn btn-success btn-lg w-100 ${canSend ? '' : 'disabled'}`}
                   onClick={() => props.onSend(address, toWei(amount, 'ether'))}>

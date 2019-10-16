@@ -232,13 +232,13 @@ export default class LiquiditySendToAddress extends React.Component {
     let {dollarSymbol} = this.props
 
     let amountInputDisplay = (
-      <input type="number" className="form-control" placeholder="0.00" value={this.state.amount}
+      <input type="number" className="form-control" placeholder="0.00" value={this.state.amount} min="0"
           ref={(input) => { this.amountInput = input; }}
              onChange={event => this.updateState('amount', event.target.value)} />
     )
     if(this.props.scannerState&&this.props.scannerState.daiposOrderId){
       amountInputDisplay = (
-        <input type="number" readOnly className="form-control" placeholder="0.00" value={this.state.amount}
+        <input type="number" readOnly className="form-control" placeholder="0.00" value={this.state.amount} min="0"
             ref={(input) => { this.amountInput = input; }}
                onChange={event => this.updateState('amount', event.target.value)} />
       )
