@@ -148,8 +148,7 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async checkWithdrawalInfo () {
-    const gasPrice = toWei("1","gwei")
-    const withdrawFee = await this.state.nocustManager.getWithdrawalFee(gasPrice)
+    const withdrawFee = await this.state.nocustManager.getWithdrawalFee(toWei(this.props.gwei.toString(), "gwei"))
     const ethWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, HUB_CONTRACT_ADDRESS)
     const daiWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
     const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, HUB_CONTRACT_ADDRESS)
@@ -158,11 +157,9 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async confirmWithdrawal () {
-    const gasPrice = toWei("1","gwei")
     const gasLimit = "300000"
 
-    console.log(this.state.address, gasPrice, gasLimit)
-    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, gasPrice, gasLimit, HUB_CONTRACT_ADDRESS)
+    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, toWei(this.props.gwei.toString(), "gwei"), gasLimit, HUB_CONTRACT_ADDRESS)
     console.log("withdrawal", txhash)
     this.checkBalance()
   }
@@ -320,6 +317,7 @@ export default class LiquidityNetwork extends React.Component {
                 offchainBalance={this.state.fethBalance}
                 onchainDisplay={this.state.displayEth}
                 offchainDisplay={this.state.displayfEth}
+                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                 withdrawLimit={this.state.ethWithdrawLimit}
               />
               <Ruler/>
@@ -335,6 +333,7 @@ export default class LiquidityNetwork extends React.Component {
                 offchainBalance={this.state.fdaiBalance}
                 onchainDisplay={this.state.displayDai}
                 offchainDisplay={this.state.displayfDai}
+                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                 withdrawLimit={this.state.daiWithdrawLimit}
               />
             </div>

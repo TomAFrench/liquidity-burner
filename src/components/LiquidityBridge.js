@@ -61,6 +61,7 @@ export default class LiquidityBridge extends React.Component {
   }
 
   render() {
+    const gasLimit = "300000"
     return (
       <div>
         <DisplayBar
@@ -90,8 +91,8 @@ export default class LiquidityBridge extends React.Component {
           onchainBalance={this.props.onchainBalance}
           offchainBalance={this.props.offchainBalance}
           withdrawLimit={this.props.withdrawLimit}
-          deposit={(amount) => {this.props.nocust.approveAndDeposit(this.props.address, amount, toWei("1", "gwei"), "300000", this.props.tokenAddress)}}
-          requestWithdraw={(amount) => {this.props.nocust.withdrawalRequest(this.props.address, amount, toWei("1", "gwei"), "300000", this.props.tokenAddress)}}
+          deposit={(amount) => {this.props.nocust.approveAndDeposit(this.props.address, amount, this.props.gasPrice, gasLimit, this.props.tokenAddress)}}
+          requestWithdraw={(amount) => {this.props.nocust.withdrawalRequest(this.props.address, amount, this.props.gasPrice, gasLimit, this.props.tokenAddress)}}
         />
         <DisplayBar
           icon={this.props.image}
