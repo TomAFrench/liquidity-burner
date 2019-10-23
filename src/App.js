@@ -68,11 +68,11 @@ const POA_XDAI_NODE = "https://dai.poa.network"
 
 const MAINNET_CHAIN_ID = '1';
 
-let XDAI_PROVIDER = POA_XDAI_NODE
+let XDAI_PROVIDER = process.env.REACT_APP_POA_XDAI_NODE
 
-let WEB3_PROVIDER
-let CLAIM_RELAY
-let ERC20TOKEN
+let WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
+let CLAIM_RELAY = 'https://x.xdai.io'
+let ERC20TOKEN = false
 let ERC20VENDOR
 let ERC20IMAGE
 let ERC20NAME
@@ -94,96 +94,6 @@ let title = i18n.t('app_name')
 let titleImage = (
   <span style={{paddingRight:20,paddingLeft:16}}><i className="fas fa-fire" /></span>
 )
-
-//<i className="fas fa-fire" />
-if (window.location.hostname.indexOf("localhost") >= 0 || window.location.hostname.indexOf("10.0.0.107") >= 0) {
-  //XDAI_PROVIDER = "http://localhost:8545"
-  WEB3_PROVIDER = "http://localhost:8545";
-  CLAIM_RELAY = 'http://localhost:18462'
-  if(true){
-    ERC20NAME = false
-    ERC20TOKEN = false
-    ERC20IMAGE = false
-  }else{
-    ERC20NAME = 'BUFF'
-    ERC20VENDOR = 'VendingMachine'
-    ERC20TOKEN = 'ERC20Vendable'
-    ERC20IMAGE = bufficorn
-    //XDAI_PROVIDER = "http://localhost:8545"
-    WEB3_PROVIDER = "http://localhost:8545";
-    LOADERIMAGE = bufficorn
-  }
-
-}
-else if (window.location.hostname.indexOf("s.xdai.io") >= 0) {
-  WEB3_PROVIDER = POA_XDAI_NODE;
-  CLAIM_RELAY = 'https://x.xdai.io'
-  ERC20TOKEN = false//'Burner'
-}
-else if (window.location.hostname.indexOf("wallet.galleass.io") >= 0) {
-  //WEB3_PROVIDER = "https://rinkeby.infura.io/v3/e0ea6e73570246bbb3d4bd042c4b5dac";
-  WEB3_PROVIDER = "http://localhost:8545"
-  //CLAIM_RELAY = 'https://x.xdai.io'
-  ERC20TOKEN = false//'Burner'
-  document.domain = 'galleass.io'
-}
-else if (window.location.hostname.indexOf("qreth") >= 0) {
-  WEB3_PROVIDER = "https://mainnet.infura.io/v3/e0ea6e73570246bbb3d4bd042c4b5dac"
-  CLAIM_RELAY = false
-  ERC20TOKEN = false
-}
-else if (window.location.hostname.indexOf("xdai") >= 0) {
-  WEB3_PROVIDER = POA_XDAI_NODE;
-  CLAIM_RELAY = 'https://x.xdai.io'
-  ERC20TOKEN = false
-}
-else if (window.location.hostname.indexOf("buffidai") >= 0) {
-  WEB3_PROVIDER = POA_XDAI_NODE;
-  CLAIM_RELAY = 'https://x.xdai.io'
-  ERC20NAME = 'BUFF'
-  ERC20VENDOR = 'VendingMachine'
-  ERC20TOKEN = 'ERC20Vendable'
-  ERC20IMAGE = bufficorn
-  LOADERIMAGE = bufficorn
-}
-else if (window.location.hostname.indexOf("burnerwithrelays") >= 0) {
-  WEB3_PROVIDER = "https://dai.poa.network";
-  ERC20NAME = false
-  ERC20TOKEN = false
-  ERC20IMAGE = false
-}
-
-
-if(ERC20NAME=="BUFF"){
-  mainStyle.backgroundImage = "linear-gradient(#540d48, #20012d)"
-  mainStyle.backgroundColor = "#20012d"
-  mainStyle.mainColor = "#b6299e"
-  mainStyle.mainColorAlt = "#de3ec3"
-  title = "BuffiDai.io"
-  titleImage = (
-    <img src={bufficorn} style={{
-      maxWidth:50,
-      maxHeight:50,
-      marginRight:15,
-      marginTop:-10
-    }}/>
-  )
-} else if(ERC20NAME=="BURN"){
-  mainStyle.backgroundImage = "linear-gradient(#4923d8, #6c0664)"
-  mainStyle.backgroundColor = "#6c0664"
-  mainStyle.mainColor = "#e72da3"
-  mainStyle.mainColorAlt = "#f948b8"
-  title = "Burner"
-  titleImage = (
-    <img src={cypherpunk} style={{
-      maxWidth:50,
-      maxHeight:50,
-      marginRight:15,
-      marginTop:-10
-    }}/>
-  )
-}
-
 
 let innerStyle = {
   maxWidth:740,
