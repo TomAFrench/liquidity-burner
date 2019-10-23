@@ -225,7 +225,7 @@ export default class LiquidityNetwork extends React.Component {
           <div className="col-6 p-1" onClick={() => this.changeView('tex')}>
             <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-hand-holding-usd"/> {i18next.t('exchange_title')}
+                <i className="fas fa-random"/> {i18next.t('exchange_title')}
               </Scaler>
             </button>
           </div>
