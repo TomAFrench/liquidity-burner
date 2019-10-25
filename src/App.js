@@ -602,8 +602,6 @@ class App extends Component {
       )
     }
 
-    let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance)
-
     let header = (
       <div style={{height:50}}>
       </div>
@@ -614,7 +612,6 @@ class App extends Component {
         <Header
         openScanner={this.openScanner.bind(this)}
         network={this.state.network}
-        total={totalBalance}
         ens={this.state.ens}
         title={this.state.title}
         titleImage={titleImage}
