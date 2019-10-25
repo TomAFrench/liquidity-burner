@@ -236,69 +236,62 @@ export default class LiquidityNetwork extends React.Component {
     switch(this.state.view){
       case 'main':
         return (
-          <React.Fragment>
-            <div className="send-to-address card w-100" style={{zIndex:1}}>
-              <NavCard title={"Liquidity Network"} titleLink={""} goBack={this.props.goBack}/>
-              <div className="form-group w-100">
+          <div className="send-to-address card w-100" style={{zIndex:1}}>
+            <div className="form-group w-100">
 
-                <div style={{width:"100%",textAlign:"center"}}>
-                  <Balance
-                        icon={daiImg}
-                        selected={true}
-                        text="fDAI"
-                        amount={this.state.displayfDai}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
-                  <Ruler/>
-                  <Balance
-                        icon={daiImg}
-                        selected={true}
-                        text="DAI"
-                        amount={this.state.displayDai}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
-                  <Ruler/>
-                  <Balance
-                        icon={ethImg}
-                        selected={true}
-                        text="fETH"
-                        amount={this.state.displayfEth}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
-                  <Ruler/>
-                  <Balance
-                        icon={ethImg}
-                        selected={true}
-                        text="ETH"
-                        amount={this.state.displayEth}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
-                  <Ruler/>
+              <div style={{width:"100%",textAlign:"center"}}>
+                <Balance
+                      icon={daiImg}
+                      selected={true}
+                      text="fDAI"
+                      amount={this.state.displayfDai}
+                      address={this.props.account}
+                      dollarDisplay={(balance)=>{return balance}}
+                    />
+                <Ruler/>
+                <Balance
+                      icon={daiImg}
+                      selected={true}
+                      text="DAI"
+                      amount={this.state.displayDai}
+                      address={this.props.account}
+                      dollarDisplay={(balance)=>{return balance}}
+                    />
+                <Ruler/>
+                <Balance
+                      icon={ethImg}
+                      selected={true}
+                      text="fETH"
+                      amount={this.state.displayfEth}
+                      address={this.props.account}
+                      dollarDisplay={(balance)=>{return balance}}
+                    />
+                <Ruler/>
+                <Balance
+                      icon={ethImg}
+                      selected={true}
+                      text="ETH"
+                      amount={this.state.displayEth}
+                      address={this.props.account}
+                      dollarDisplay={(balance)=>{return balance}}
+                    />
+                <Ruler/>
 
-                  {sendButtons}
+                {sendButtons}
 
-                  </div>
-                  <LiquidityTransactions
-                    dollarDisplay={(balance)=>{return balance}}
-                    view={this.state.view}
-                    buttonStyle={this.props.buttonStyle}
-                    changeView={this.changeView.bind(this)}
-                    changeAlert={this.props.changeAlert.bind(this)}
-                    address={this.state.account}
-                    recentTxs={this.state.transactions}
-                  />
-              </div>
-          </div>
-          <Bottom
-            text={"Exit Liquidity Network"}
-            action={this.props.goBack}
-          />
-        </React.Fragment>
-        )
+                </div>
+                <LiquidityTransactions
+                  dollarDisplay={(balance)=>{return balance}}
+                  view={this.state.view}
+                  buttonStyle={this.props.buttonStyle}
+                  changeView={this.changeView.bind(this)}
+                  changeAlert={this.props.changeAlert.bind(this)}
+                  address={this.state.account}
+                  recentTxs={this.state.transactions}
+                />
+            </div>
+        </div>
+      )
       case 'bridge':
         return (
           <div>

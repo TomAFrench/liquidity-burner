@@ -568,9 +568,6 @@ class App extends Component {
       {header}
 
       {web3 /*&& this.checkNetwork()*/ && (() => {
-        //console.log("VIEW:",view)
-
-        let selected = "DAI"
 
         switch(view) {
           case 'main':
@@ -627,52 +624,49 @@ class App extends Component {
               )
             }
           case 'advanced':
-          return (
-            <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-
-            <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
-            <Advanced
-            buttonStyle={buttonStyle}
-            address={account}
-            changeView={this.changeView}
-            privateKey={metaAccount.privateKey}
-            changeAlert={this.changeAlert}
-            goBack={this.goBack.bind(this)}
-            setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
-            />
-            </div>
-            <Bottom
-            action={()=>{
-              this.changeView('main')
-            }}
-            />
-            </div>
-          )
+            return (
+              <div>
+                <div className="main-card card w-100" style={{zIndex:1}}>
+                  <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
+                  <Advanced
+                  buttonStyle={buttonStyle}
+                  address={account}
+                  changeView={this.changeView}
+                  privateKey={metaAccount.privateKey}
+                  changeAlert={this.changeAlert}
+                  goBack={this.goBack.bind(this)}
+                  setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
+                  />
+                </div>
+                <Bottom
+                action={()=>{
+                  this.changeView('main')
+                }}
+                />
+              </div>
+            )
           case 'loader':
-          return (
-            <div>
-            <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
-
-            <NavCard title={"Sending..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-            </div>
-            <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-            </div>
-          );
+            return (
+              <div>
+                <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+                  <NavCard title={"Sending..."} goBack={this.goBack.bind(this)} darkMode={true}/>
+                </div>
+                <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+              </div>
+            );
           case 'reader':
-          return (
-            <div>
-            <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
-
-            <NavCard title={"Reading QRCode..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-            </div>
-            <Loader loaderImage={LOADERIMAGE}  mainStyle={mainStyle}/>
-            </div>
-          );
+            return (
+              <div>
+                <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+                  <NavCard title={"Reading QRCode..."} goBack={this.goBack.bind(this)} darkMode={true}/>
+                </div>
+                <Loader loaderImage={LOADERIMAGE}  mainStyle={mainStyle}/>
+              </div>
+            );
           default:
-          return (
-            <div>unknown view</div>
-          )
+            return (
+              <div>unknown view</div>
+            )
         }
 
       })()}
