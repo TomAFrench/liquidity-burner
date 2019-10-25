@@ -366,10 +366,9 @@ class App extends Component {
         console.log("Checking on pk import...")
         console.log("this.state.metaAccount",this.state.metaAccount)
         console.log("this.state.daiBalance",this.state.daiBalance)
-        console.log("this.state.isVendor",this.state.isVendor)
         
 
-        if(!this.state.metaAccount || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05 || (this.state.isVendor&&this.state.isVendor.isAllowed)){
+        if(!this.state.metaAccount || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05){
           this.setState({possibleNewPrivateKey:false,withdrawFromPrivateKey:this.state.possibleNewPrivateKey},()=>{
             this.changeView('withdraw_from_private')
           })
@@ -642,7 +641,6 @@ class App extends Component {
 
             <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
             <Advanced
-            isVendor={this.state.isVendor && this.state.isVendor.isAllowed}
             buttonStyle={buttonStyle}
             address={account}
             changeView={this.changeView}
@@ -675,7 +673,6 @@ class App extends Component {
             daiBalance={this.state.daiBalance}
             daiContract={this.state.daiContract}
             ensContract={this.state.ensContract}
-            isVendor={this.state.isVendor}
             isAdmin={this.state.isAdmin}
             contracts={this.state.contracts}
             buttonStyle={buttonStyle}
