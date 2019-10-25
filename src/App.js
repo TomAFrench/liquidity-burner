@@ -213,11 +213,6 @@ class App extends Component {
     //console.log("STATE",state)
     return state;
   }
-  selectBadge(id){
-    this.setState({selectedBadge:id},()=>{
-      this.changeView('send_badge')
-    })
-  }
   openScanner(returnState){
     this.setState({returnState:returnState,view:"send_by_scan"})
   }
@@ -226,11 +221,6 @@ class App extends Component {
     updateState.returnState = false
     console.log("UPDATE FROM RETURN STATE",updateState)
     this.setState(updateState)
-  }
-  clearBadges() {
-    this.setState({badges:{}},()=>{
-      console.log("BADGES CLEARED",this.state.badges)
-    })
   }
   updateDimensions() {
     //force it to rerender when the window is resized to make sure qr fits etc
