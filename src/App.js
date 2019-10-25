@@ -132,12 +132,10 @@ class App extends Component {
       account: false,
       gwei: 1.1,
       view: view,
-      sendKey: "",
       alert: null,
       loadingTitle:'loading...',
       title: title,
       extraHeadroom:0,
-      balance: 0.00,
       ethprice: 0.00,
       hasUpdateOnce: false,
     };
@@ -366,13 +364,12 @@ class App extends Component {
       }else{
 
         console.log("Checking on pk import...")
-        console.log("this.state.balance",this.state.balance)
         console.log("this.state.metaAccount",this.state.metaAccount)
         console.log("this.state.daiBalance",this.state.daiBalance)
         console.log("this.state.isVendor",this.state.isVendor)
         
 
-        if(!this.state.metaAccount || this.state.balance>=0.05 || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05 || (this.state.isVendor&&this.state.isVendor.isAllowed)){
+        if(!this.state.metaAccount || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05 || (this.state.isVendor&&this.state.isVendor.isAllowed)){
           this.setState({possibleNewPrivateKey:false,withdrawFromPrivateKey:this.state.possibleNewPrivateKey},()=>{
             this.changeView('withdraw_from_private')
           })
@@ -497,7 +494,7 @@ class App extends Component {
 
   render() {
     let {
-      web3, account, tx, gwei, block, avgBlockTime, etherscan, balance, metaAccount, burnMetaAccount, view, alert, send
+      web3, account, tx, gwei, block, avgBlockTime, etherscan, metaAccount, burnMetaAccount, view, alert, send
     } = this.state;
 
     let web3_setup = ""
@@ -573,7 +570,6 @@ class App extends Component {
         mainStyle={mainStyle}
         address={this.state.account}
         changeView={this.changeView}
-        balance={balance}
         view={this.state.view}
         dollarDisplay={dollarDisplay}
         />
@@ -624,7 +620,6 @@ class App extends Component {
             <MainCard
             buttonStyle={buttonStyle}
             address={account}
-            balance={balance}
             changeAlert={this.changeAlert}
             changeView={this.changeView}
             dollarDisplay={dollarDisplay}
@@ -650,7 +645,6 @@ class App extends Component {
             isVendor={this.state.isVendor && this.state.isVendor.isAllowed}
             buttonStyle={buttonStyle}
             address={account}
-            balance={balance}
             changeView={this.changeView}
             privateKey={metaAccount.privateKey}
             changeAlert={this.changeAlert}
@@ -691,7 +685,6 @@ class App extends Component {
             web3={this.state.web3}
             nativeSend={this.state.nativeSend}
             address={account}
-            balance={balance}
             goBack={this.goBack.bind(this)}
             dollarDisplay={dollarDisplay}
             />
@@ -713,7 +706,6 @@ class App extends Component {
                       web3={this.state.web3}
 
                       address={account}
-                      balance={balance}
 
                       network={this.state.network}
                       block={this.state.block}
