@@ -44,10 +44,6 @@ const MAINNET_CHAIN_ID = '1';
 
 
 let WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
-let ERC20TOKEN = false
-let ERC20VENDOR
-let ERC20IMAGE
-let ERC20NAME
 let LOADERIMAGE = burnerlogo
 let HARDCODEVIEW = "liquidity"// = "loader"// = "receipt"
 let FAILCOUNT = 0
@@ -632,7 +628,6 @@ class App extends Component {
             changeAlert={this.changeAlert}
             changeView={this.changeView}
             dollarDisplay={dollarDisplay}
-            ERC20TOKEN={ERC20TOKEN}
             />
 
             </div>
@@ -681,10 +676,6 @@ class App extends Component {
             customLoader={this.state.customLoader}
             changeView={this.changeView}
             mainStyle={mainStyle}
-            ERC20NAME={ERC20NAME}
-            ERC20IMAGE={ERC20IMAGE}
-            ERC20TOKEN={ERC20TOKEN}
-            ERC20VENDOR={ERC20VENDOR}
             ethprice={this.state.ethprice}
             ethBalance={this.state.ethBalance}
             daiBalance={this.state.daiBalance}
