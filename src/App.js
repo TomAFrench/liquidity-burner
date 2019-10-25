@@ -42,8 +42,6 @@ import Bottom from './components/Bottom';
 import customRPCHint from './customRPCHint.png';
 import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
-import gnosis from './gnosis.jpg';
-import Safe from './components/Safe'
 import core, { mainAsset as xdai } from './core';
 
 
@@ -365,17 +363,7 @@ class App extends Component {
     clearInterval(intervalLong)
     window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
-  setSafeContract(target) {
-    console.log("INSTALLING SAFE AS ",target)
-    let safeContract = this.state.customLoader("GnosisSafe",target)
-    console.log("safeContract",safeContract)
-    this.setState({
-      safeContract: safeContract,
-      safe:target
-    },()=>{
-      this.safeCall(this.state.safeContract._address,0,this.state.safeContract.setupBeacon(this.state.contracts['SafeBeacon']._address).encodeABI())
-    })
-  }
+
   async poll() {
 
     //console.log(">>>>>>> <<< >>>>>> Looking into iframe...")
@@ -450,7 +438,6 @@ class App extends Component {
             transactionsByAddress:{},
             fullRecentTxs:[],
             fullTransactionsByAddress:{},
-            safe:""
           })
 
         }
@@ -690,52 +677,7 @@ async decryptInput(input){
   return false
 }
 
-async safeCall(to,value,data,cb) {
-  let operation = 0
-  let safeTxGas = 200000
-  let baseGas = 100000
-  let gasPrice = 0
-  let gasToken = "0x0000000000000000000000000000000000000000"
-  let refundReceiver = "0x0000000000000000000000000000000000000000"
-  let nonce = await this.state.safeContract.nonce().call()
-  console.log("nonce",nonce)
-  let txHash = await this.state.safeContract.getTransactionHash(
-    to, value, data, operation, // Transaction info
-    safeTxGas, baseGas, gasPrice, gasToken, refundReceiver, // Payment info
-    nonce
-  ).call();
-  console.log("txHash",txHash)
-  let signatures
-  if(this.state.metaAccount.privateKey){
-    console.log(this.state.metaAccount.privateKey)
-    signatures = this.state.web3.eth.accounts.sign(""+txHash, this.state.metaAccount.privateKey);
-    signatures = signatures.signature
-  }else{
-    signatures = await this.state.web3.eth.personal.sign(""+txHash,this.state.account)
-  }
-  console.log("signatures",signatures)
-  console.log("calling on ",this.state.safeContract._address)
-  this.state.tx(
-    this.state.safeContract.execTransaction(
-      to,
-      value,
-      data,
-      operation,
-      safeTxGas,
-      baseGas,
-      gasPrice,
-      gasToken,
-      refundReceiver,
-      signatures
-    ),2000000,"0x00",0,
-    (result)=>{
-      console.log("RRRRRRESULT",result)
-      if(typeof cb == "function"){
-        cb(result)
-      }
-    }
-  )
-}
+
 render() {
   let {
     web3, account, tx, gwei, block, avgBlockTime, etherscan, balance, metaAccount, burnMetaAccount, view, alert, send
@@ -768,12 +710,6 @@ render() {
         this.setState({contracts: contracts,customLoader: customLoader}, async () => {
           console.log("Contracts Are Ready:", contracts)
           this.checkClaim(tx, contracts);
-          let safeAddress = localStorage.getItem(this.state.account+"safe")
-          if(safeAddress){
-            this.setState({
-              safeContract: this.state.customLoader("GnosisSafe",safeAddress)
-            })
-          }
         })
       }}
       />
@@ -824,37 +760,6 @@ render() {
     totalBalance += parseFloat(this.state.balance)
   }
 
-  let safeBeacon = ""
-  if(this.state.contracts && this.state.contracts["SafeBeacon"]){
-    safeBeacon = (
-      <div>
-      <Events
-      contract={this.state.contracts["SafeBeacon"]}
-      eventName={"SafeUpdate"}
-      block={this.state.block}
-      filter={{account:this.state.account}}
-      onUpdate={async (eventData,allEvents)=>{
-        console.log("UPDATE FROM SAFE BEACON",eventData)
-        let safeContract = this.state.customLoader("GnosisSafe",eventData.safe)
-        let owners = await safeContract.getOwners().call()
-        for(let o in owners){
-          if(owners[0].toLowerCase() == this.state.account){
-            localStorage.setItem(this.state.account+"safe",eventData.safe)
-            this.setState({
-              safeContract: safeContract,
-              safe:eventData.safe
-            })
-            break;
-          }
-        }
-
-      }}
-      />
-      </div>
-    )
-
-  }
-
   let header = (
     <div style={{height:50}}>
     </div>
@@ -876,7 +781,6 @@ render() {
       view={this.state.view}
       dollarDisplay={dollarDisplay}
       />
-      {safeBeacon}
       </div>
     )
   }
@@ -998,7 +902,6 @@ render() {
           <NavCard title={"Apps & Games"} goBack={this.goBack.bind(this)} />
           <Apps
             privateKey={metaAccount.privateKey}
-          setSafeContract={this.setSafeContract.bind(this)}
           customLoader={this.state.customLoader}
           changeView={this.changeView}
           mainStyle={mainStyle}
@@ -1145,9 +1048,6 @@ render() {
 
       if (state.web3Provider) {
         state.web3 = new Web3(state.web3Provider)
-
-
-        state.safe = localStorage.getItem(state.account+"safe")
 
         this.setState(state,()=>{
           this.detectContext()
