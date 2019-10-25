@@ -378,112 +378,8 @@ class App extends Component {
   }
   async poll() {
 
-    if(this.state.web3 && this.state.safe && this.state.customLoader){
-      if(this.state.safeContract){
-        let safeVersion = await this.state.safeContract.VERSION().call()
-        let safeOwners = await this.state.safeContract.getOwners().call()
-        //if(safeVersion){
-          this.setState({
-            safeVersion: safeVersion+"x",
-            safeOwners: safeOwners
-          })
-        //}else{
-        //  console.log("Contract not returning version, missing safe? Delete it?")
-        //  localStorage.removeItem("safe")
-        //}
-      }
-
-      //there is a gnosis safe deployed for this address
-      this.setState({
-        safeBalance: (await this.state.web3.eth.getBalance(this.state.safe))/10**18
-      })
-    }
-
-    let badgeBalance = 0
-    let singleBadgeId
-    if(this.state.contracts&&(this.state.network=="xDai"||this.state.network=="Unknown") && this.state.contracts.Badges){
-      //check for badges for this user
-      badgeBalance = await this.state.contracts.Badges.balanceOf(this.state.account).call()
-      if(badgeBalance>0){
-        let update = false
-        for(let b = 0;b<badgeBalance;b++){
-          let thisBadgeId = await this.state.contracts.Badges.tokenOfOwnerByIndex(this.state.account,b).call()
-          singleBadgeId = thisBadgeId
-          if(!this.state.badges[thisBadgeId]){
-
-            let thisBadgeData = await this.state.contracts.Badges.tokenURI(thisBadgeId).call()
-            //console.log("BADGE",b,thisBadgeId,thisBadgeData)
-            if(!this.state.badges[thisBadgeId]){
-              console.log("Getting badge data ",thisBadgeData)
-              let response = axios.get(thisBadgeData).then((response)=>{
-                console.log("RESPONSE:",response)
-                if(response && response.data){
-                  this.state.badges[thisBadgeId] = response.data
-                  this.state.badges[thisBadgeId].id = thisBadgeId
-                  update=true
-                }
-              })
-
-            }
-          }
-        }
-        if(update){
-          //console.log("Saving badges state...")
-          this.setState({badges:this.state.badges})
-        }
-
-      }
-
-    }
-
-
     //console.log(">>>>>>> <<< >>>>>> Looking into iframe...")
     //console.log(document.getElementById('galleassFrame').contentWindow['web3'])
-
-    if(ERC20TOKEN&&this.state.contracts&&(this.state.network=="xDai"||this.state.network=="Unknown")){
-      let gasBalance = await this.state.web3.eth.getBalance(this.state.account)
-      gasBalance = this.state.web3.utils.fromWei(""+gasBalance,'ether')
-      //console.log("Getting balanceOf "+this.state.account+" in contract ",this.state.contracts[ERC20TOKEN])
-      let tokenBalance = await this.state.contracts[ERC20TOKEN].balanceOf(this.state.account).call()
-      //console.log("balance is ",tokenBalance)
-      tokenBalance = this.state.web3.utils.fromWei(""+tokenBalance,'ether')
-
-      //console.log("Getting admin from ",this.state.contracts[ERC20VENDOR])
-      let isAdmin = await this.state.contracts[ERC20VENDOR].isAdmin(this.state.account).call()
-      //console.log("ISADMIN",this.state.account,isAdmin)
-      let isVendor = await this.state.contracts[ERC20VENDOR].vendors(this.state.account).call()
-      //console.log("isVendor",isVendor)
-
-      let vendorObject = this.state.vendorObject
-      let products = []//this.state.products
-      if(isVendor.isAllowed){
-        //console.log("LOADING VENDOR PRODUCTS")
-        let id = 0
-        if(!vendorObject){
-          let vendorData = await this.state.contracts[ERC20VENDOR].vendors(this.state.account).call()
-          //console.log("vendorData",vendorData)
-          vendorData.name = this.state.web3.utils.hexToUtf8(vendorData.name)
-          vendorObject = vendorData
-        }
-        //console.log("Looking up products for vendor ",this.state.account)
-        if(!products){
-          products = []
-        }
-        let found = true
-        while(found){
-          let nextProduct = await this.state.contracts[ERC20VENDOR].products(this.state.account,id).call()
-          if(nextProduct.exists){
-            products[id++] = nextProduct
-          }else{
-            found=false
-          }
-        }
-      }
-      //console.log("isVendor",isVendor,"SAVING PRODUCTS",products)
-
-      this.setState({gasBalance:gasBalance,balance:tokenBalance,isAdmin:isAdmin,isVendor:isVendor,hasUpdateOnce:true,vendorObject,products})
-    }
-
 
     if(this.state.account){
       const ethBalance = await eth.getDisplayBalance(this.state.account, 20);
@@ -494,14 +390,8 @@ class App extends Component {
         ethBalance,
         daiBalance,
         xdaiBalance,
-        badgeBalance,
         hasUpdateOnce:true
       });
-
-      if(xdaiBalance < 0.01 && singleBadgeId && !this.state.switchedToSingleBadge){
-        this.setState({switchedToSingleBadge:true})
-        this.selectBadge(singleBadgeId)
-      }
 
     }
 
