@@ -488,6 +488,7 @@ class App extends Component {
   console.log("Setting state",view)
   this.setState({ view, scannerState:false },cb);
   };
+
   changeAlert = (alert, hide=true) => {
     clearTimeout(this.alertTimeout);
     this.setState({ alert });
@@ -606,6 +607,7 @@ class App extends Component {
       <div style={{height:50}}>
       </div>
     )
+
     if(web3){
       header = (
         <div>
@@ -629,15 +631,12 @@ class App extends Component {
     return (
       <I18nextProvider i18n={i18n}>
       <div id="main" style={mainStyle}>
-      <div style={innerStyle}>
-      {extraHead}
-      {networkOverlay}
-      {web3_setup}
-
-      <div>
+        <div style={innerStyle}>
+          {extraHead}
+          {networkOverlay}
+          {web3_setup}
+        <div>
       {header}
-
-
 
       {web3 /*&& this.checkNetwork()*/ && (() => {
         //console.log("VIEW:",view)
