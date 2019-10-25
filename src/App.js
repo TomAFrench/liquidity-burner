@@ -12,7 +12,6 @@ import Header from './components/Header';
 import NavCard from './components/NavCard';
 import SendByScan from './components/SendByScan';
 import SendToAddress from './components/SendToAddress';
-import SendBadge from './components/SendBadge';
 import WithdrawFromPrivate from './components/WithdrawFromPrivate';
 import RequestFunds from './components/RequestFunds';
 import SendWithLink from './components/SendWithLink';
@@ -20,7 +19,6 @@ import Receive from './components/Receive'
 import Apps from './components/Apps'
 import ShareLink from './components/ShareLink'
 import Balance from "./components/Balance";
-import Badges from "./components/Badges";
 import Ruler from "./components/Ruler";
 import Receipt from "./components/Receipt";
 import CashOut from "./components/CashOut";
@@ -172,8 +170,6 @@ class App extends Component {
       vendors: {},
       ethprice: 0.00,
       hasUpdateOnce: false,
-      badges: {},
-      selectedBadge: false
     };
     this.alertTimeout = null;
 
@@ -415,14 +411,9 @@ class App extends Component {
         console.log("this.state.xdaiBalance",this.state.xdaiBalance)
         console.log("this.state.daiBalance",this.state.daiBalance)
         console.log("this.state.isVendor",this.state.isVendor)
-        console.log("this.state.badges",this.state.badges)
-        let badgeCount = 0
-        for(let b in this.state.badges){
-          console.log("B",b,this.state.badges[b])
-          badgeCount++
-        }
+        
 
-        if(!this.state.metaAccount || this.state.balance>=0.05 || (badgeCount>0) || this.state.xdaiBalance>=0.05 || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05 || (this.state.isVendor&&this.state.isVendor.isAllowed)){
+        if(!this.state.metaAccount || this.state.balance>=0.05 || this.state.xdaiBalance>=0.05 || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05 || (this.state.isVendor&&this.state.isVendor.isAllowed)){
           this.setState({possibleNewPrivateKey:false,withdrawFromPrivateKey:this.state.possibleNewPrivateKey},()=>{
             this.changeView('withdraw_from_private')
           })
