@@ -424,26 +424,14 @@ class App extends Component {
   }
 
   changeView = (view,cb) => {
-    if(view=="main"/*||view.indexOf("account_")==0*/){
+    if(view=="main"){
       localStorage.setItem("view",view)//some pages should be sticky because of metamask reloads
       localStorage.setItem("viewSetTime",Date.now())
     }
-    /*if (view.startsWith('send_with_link')||view.startsWith('send_to_address')) {
-    console.log("This is a send...")
-    console.log("BALANCE",this.state.balance)
-    if (this.state.balance <= 0) {
-    console.log("no funds...")
-    this.changeAlert({
-    type: 'danger',
-    message: 'Insufficient funds',
-  });
-  return;
-}
-}
-*/
-  this.changeAlert(null);
-  console.log("Setting state",view)
-  this.setState({ view, scannerState:false },cb);
+
+    this.changeAlert(null);
+    console.log("Setting state",view)
+    this.setState({ view, scannerState:false },cb);
   };
 
   changeAlert = (alert, hide=true) => {
