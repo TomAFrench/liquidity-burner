@@ -713,7 +713,7 @@ render() {
         })
       }}
       />
-      <Transactions
+      {/* <Transactions
       key="Transactions"
       config={{DEBUG: false, hide: true}}
       account={account}
@@ -725,11 +725,6 @@ render() {
       metaAccount={metaAccount}
       onReady={(state) => {
         console.log("Transactions component is ready:", state);
-        if(ERC20TOKEN){
-          state.nativeSend = state.send
-          //delete state.send
-          state.send = tokenSend.bind(this)
-        }
         console.log(state)
         this.setState(state)
 
@@ -739,12 +734,10 @@ render() {
         //  to a more straight forward callback system above
         console.log("Transaction Receipt", transaction, receipt)
       }}
-      />
+      /> */}
       </div>
     )
   }
-
-  let eventParser = ""
 
 
   let extraHead = ""
@@ -756,9 +749,6 @@ render() {
   }
 
   let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance)
-  if(ERC20TOKEN){
-    totalBalance += parseFloat(this.state.balance)
-  }
 
   let header = (
     <div style={{height:50}}>
@@ -1073,100 +1063,11 @@ render() {
     <div id="context" style={{position:"absolute",right:5,top:-15,opacity:0.2,zIndex:100,fontSize:60,color:'#FFFFFF'}}>
     </div>
 
-    {eventParser}
     </div>
     </div>
     </I18nextProvider>
   )
 }
-}
-
-async function tokenSend(to,value,gasLimit,txData,cb){
-  let {account,web3} = this.state
-
-  console.log("tokenSend")
-
-  let weiValue =  this.state.web3.utils.toWei(""+value, 'ether')
-
-  let setGasLimit = 60000
-  if(typeof gasLimit == "function"){
-    cb=gasLimit
-  }else if(gasLimit){
-    setGasLimit=gasLimit
-  }
-
-  let data = false
-  if(typeof txData == "function"){
-    cb = txData
-  }else{
-    data = txData
-  }
-
-  console.log("DAPPARATUS TOKEN SENDING WITH GAS LIMIT",setGasLimit)
-
-  let result
-  if(this.state.metaAccount){
-    console.log("sending with meta account:",this.state.metaAccount.address)
-
-    let tx={
-      to:this.state.contracts[ERC20TOKEN]._address,
-      value: 0,
-      gas: setGasLimit,
-      gasPrice: Math.round(this.state.gwei * 1010101010)
-    }
-    if(data){
-      tx.data = this.state.contracts[ERC20TOKEN].transferWithData(to,weiValue,data).encodeABI()
-    }else{
-      tx.data = this.state.contracts[ERC20TOKEN].transfer(to,weiValue).encodeABI()
-    }
-    console.log("TX SIGNED TO METAMASK:",tx)
-    this.state.web3.eth.accounts.signTransaction(tx, this.state.metaAccount.privateKey).then(signed => {
-      console.log("SIGNED:",signed)
-      this.state.web3.eth.sendSignedTransaction(signed.rawTransaction).on('receipt', (receipt)=>{
-        console.log("META RECEIPT",receipt)
-        if(receipt&&receipt.transactionHash&&!metaReceiptTracker[receipt.transactionHash]){
-          metaReceiptTracker[receipt.transactionHash] = true
-          cb(receipt)
-        }
-      }).on('error',(error)=>{
-        console.log("ERRROROROROROR",error)
-        let errorString = error.toString()
-        if(errorString.indexOf("have enough funds")>=0){
-          this.changeAlert({type: 'danger', message: 'Not enough funds to send message.'})
-        }else{
-          this.changeAlert({type: 'danger', message: errorString})
-        }
-      })
-    });
-
-  }else{
-    let data = false
-    if(typeof txData == "function"){
-      cb = txData
-    }else{
-      data = txData
-    }
-    let txObject = {
-      from:this.state.account,
-      to:this.state.contracts[ERC20TOKEN]._address,
-      value: 0,
-      gas: setGasLimit,
-      gasPrice: Math.round(this.state.gwei * 1010101010)
-    }
-
-    if(data){
-      txObject.data = this.state.contracts[ERC20TOKEN].transferWithData(to,weiValue,data).encodeABI()
-    }else{
-      txObject.data = this.state.contracts[ERC20TOKEN].transfer(to,weiValue).encodeABI()
-    }
-
-    console.log("sending with injected web3 account",txObject)
-    result = await this.state.web3.eth.sendTransaction(txObject)
-
-    console.log("RES",result)
-    cb(result)
-  }
-
 }
 
 
