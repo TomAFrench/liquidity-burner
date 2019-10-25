@@ -608,12 +608,15 @@ class App extends Component {
       </div>
     )
 
+    let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance)
+
     if(web3){
       header = (
         <div>
         <Header
         openScanner={this.openScanner.bind(this)}
         network={this.state.network}
+        total={totalBalance}
         ens={this.state.ens}
         title={this.state.title}
         titleImage={titleImage}
