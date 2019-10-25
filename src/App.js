@@ -124,10 +124,6 @@ const invLogoStyle = {
 
 let metaReceiptTracker = {}
 
-
-const BLOCKS_TO_PARSE_PER_BLOCKTIME = 32
-const MAX_BLOCK_TO_LOOK_BACK = 512//don't look back more than 512 blocks
-
 let dollarSymbol = "$"
 let dollarConversion = 1.0
 //let dollarSymbol = "€"
@@ -775,53 +771,7 @@ goBack(){
   this.changeView('main')
   setTimeout(()=>{window.scrollTo(0,0)},60)
 }
-async parseBlocks(parseBlock,recentTxs,transactionsByAddress){
-  let block = await this.state.web3.eth.getBlock(parseBlock)
-  let updatedTxs = false
-  if(block){
-    let transactions = block.transactions
 
-    //console.log("transactions",transactions)
-    for(let t in transactions){
-      //console.log("TX",transactions[t])
-      let tx = await this.state.web3.eth.getTransaction(transactions[t])
-      if(tx && tx.to && tx.from ){
-        //console.log("EEETRTTTTERTETETET",tx)
-        let smallerTx = {
-          hash:tx.hash,
-          to:tx.to.toLowerCase(),
-          from:tx.from.toLowerCase(),
-          value:this.state.web3.utils.fromWei(""+tx.value,"ether"),
-          blockNumber:tx.blockNumber
-        }
-
-
-        if(smallerTx.from==this.state.account || smallerTx.to==this.state.account){
-          if(tx.input&&tx.input!="0x"){
-
-            let decrypted = await this.decryptInput(tx.input)
-
-            if(decrypted){
-              smallerTx.data = decrypted
-              smallerTx.encrypted = true
-            }
-
-            try{
-              smallerTx.data = this.state.web3.utils.hexToUtf8(tx.input)
-            }catch(e){}
-            //console.log("smallerTx at this point",smallerTx)
-            if(!smallerTx.data){
-              smallerTx.data = " *** unable to decrypt data *** "
-            }
-          }
-          updatedTxs = this.addTxIfAccountMatches(recentTxs,transactionsByAddress,smallerTx) || updatedTxs
-        }
-
-      }
-    }
-  }
-  return updatedTxs
-}
 async decryptInput(input){
   let key = input.substring(0,32)
   //console.log("looking in memory for key",key)
@@ -849,148 +799,7 @@ async decryptInput(input){
   }
   return false
 }
-initRecentTxs(){
-  let recentTxs = []
-  if(this.state.recentTx) recentTxs = recentTxs.concat(this.state.recentTxs)
-  let transactionsByAddress = Object.assign({},this.state.transactionsByAddress)
-  if(!recentTxs||recentTxs.length<=0){
-    recentTxs = localStorage.getItem(this.state.account+"recentTxs")
-    try{
-      recentTxs=JSON.parse(recentTxs)
-    }catch(e){
-      recentTxs=[]
-    }
-  }
-  if(!recentTxs){
-    recentTxs=[]
-  }
-  if(Object.keys(transactionsByAddress).length === 0){
-    transactionsByAddress = localStorage.getItem(this.state.account+"transactionsByAddress")
-    try{
-      transactionsByAddress=JSON.parse(transactionsByAddress)
-    }catch(e){
-      transactionsByAddress={}
-    }
-  }
-  if(!transactionsByAddress){
-    transactionsByAddress={}
-  }
-  return [recentTxs,transactionsByAddress]
-}
-addTxIfAccountMatches(recentTxs,transactionsByAddress,smallerTx){
-  let updatedTxs = false
 
-  let otherAccount = smallerTx.to
-  if(smallerTx.to==this.state.account){
-    otherAccount = smallerTx.from
-  }
-  if(!transactionsByAddress[otherAccount]){
-    transactionsByAddress[otherAccount] = []
-  }
-
-  let found = false
-  if(parseFloat(smallerTx.value)>0.005){
-    for(let r in recentTxs){
-      if(recentTxs[r].hash==smallerTx.hash/* && (!smallerTx.data || recentTxs[r].data == smallerTx.data)*/){
-        found = true
-        if(!smallerTx.data || recentTxs[r].data == smallerTx.data){
-          // do nothing, it exists
-        }else{
-          recentTxs[r].data = smallerTx.data
-          updatedTxs=true
-        }
-      }
-    }
-    if(!found){
-      updatedTxs=true
-      recentTxs.push(smallerTx)
-      //console.log("recentTxs after push",recentTxs)
-    }
-  }
-
-  found = false
-  for(let t in transactionsByAddress[otherAccount]){
-    if(transactionsByAddress[otherAccount][t].hash==smallerTx.hash/* && (!smallerTx.data || recentTxs[r].data == smallerTx.data)*/){
-      found = true
-      if(!smallerTx.data || transactionsByAddress[otherAccount][t].data == smallerTx.data){
-        // do nothing, it exists
-      }else{
-        transactionsByAddress[otherAccount][t].data = smallerTx.data
-        if(smallerTx.encrypted) transactionsByAddress[otherAccount][t].encrypted = true
-        updatedTxs=true
-      }
-    }
-  }
-  if(!found){
-    updatedTxs=true
-    transactionsByAddress[otherAccount].push(smallerTx)
-  }
-
-  return updatedTxs
-}
-sortAndSaveTransactions(recentTxs,transactionsByAddress){
-  recentTxs.sort(sortByBlockNumber)
-
-  for(let t in transactionsByAddress){
-    transactionsByAddress[t].sort(sortByBlockNumberDESC)
-  }
-  recentTxs = recentTxs.slice(0,12)
-  localStorage.setItem(this.state.account+"recentTxs",JSON.stringify(recentTxs))
-  localStorage.setItem(this.state.account+"transactionsByAddress",JSON.stringify(transactionsByAddress))
-
-  this.setState({recentTxs:recentTxs,transactionsByAddress:transactionsByAddress},()=>{
-    if(ERC20TOKEN){
-      this.syncFullTransactions()
-    }
-  })
-}
-async addAllTransactionsFromList(recentTxs,transactionsByAddress,theList){
-  let updatedTxs = false
-
-  for(let e in theList){
-    let thisEvent = theList[e]
-    let cleanEvent = Object.assign({},thisEvent)
-    cleanEvent.to = cleanEvent.to.toLowerCase()
-    cleanEvent.from = cleanEvent.from.toLowerCase()
-    cleanEvent.value = this.state.web3.utils.fromWei(""+cleanEvent.value,'ether')
-    cleanEvent.token = ERC20TOKEN
-    if(cleanEvent.data) {
-      let decrypted = await this.decryptInput(cleanEvent.data)
-      if(decrypted){
-        cleanEvent.data = decrypted
-        cleanEvent.encrypted = true
-      }else{
-        try{
-          cleanEvent.data = this.state.web3.utils.hexToUtf8(cleanEvent.data)
-        }catch(e){}
-      }
-    }
-    updatedTxs = this.addTxIfAccountMatches(recentTxs,transactionsByAddress,cleanEvent) || updatedTxs
-  }
-  return updatedTxs
-}
-syncFullTransactions(){
-  let initResult = this.initRecentTxs()
-  let recentTxs = []
-  recentTxs = recentTxs.concat(initResult[0])
-  let transactionsByAddress = Object.assign({},initResult[1])
-
-  let updatedTxs = false
-  updatedTxs = this.addAllTransactionsFromList(recentTxs,transactionsByAddress,this.state.transferTo) || updatedTxs
-  updatedTxs = this.addAllTransactionsFromList(recentTxs,transactionsByAddress,this.state.transferFrom) || updatedTxs
-  updatedTxs = this.addAllTransactionsFromList(recentTxs,transactionsByAddress,this.state.transferToWithData) || updatedTxs
-  updatedTxs = this.addAllTransactionsFromList(recentTxs,transactionsByAddress,this.state.transferFromWithData) || updatedTxs
-
-  if(updatedTxs||!this.state.fullRecentTxs||!this.state.fullTransactionsByAddress){
-    recentTxs.sort(sortByBlockNumber)
-    for(let t in transactionsByAddress){
-      transactionsByAddress[t].sort(sortByBlockNumberDESC)
-    }
-    recentTxs = recentTxs.slice(0,12)
-    //console.log("FULLRECENT",recentTxs)
-    this.setState({fullRecentTxs:recentTxs,fullTransactionsByAddress:transactionsByAddress})
-  }
-}
 async safeCall(to,value,data,cb) {
   let operation = 0
   let safeTxGas = 200000
@@ -1443,10 +1252,7 @@ render() {
     fallbackWeb3Provider={WEB3_PROVIDER}
     onUpdate={async (state) => {
       console.log("Dapparatus update",state)
-      //console.log("DAPPARATUS UPDATE",state)
-      if(ERC20TOKEN){
-        delete state.balance
-      }
+
       if (state.web3Provider) {
         state.web3 = new Web3(state.web3Provider)
 
@@ -1458,68 +1264,6 @@ render() {
           //console.log("state set:",this.state)
           if(this.state.possibleNewPrivateKey){
             this.dealWithPossibleNewPrivateKey()
-          }
-          if(!this.state.parsingTheChain){
-            this.setState({parsingTheChain:true},async ()=>{
-              let upperBoundOfSearch = this.state.block
-              //parse through recent transactions and store in local storage
-
-              if(localStorage&&typeof localStorage.setItem == "function"){
-
-                let initResult = this.initRecentTxs()
-                let recentTxs = initResult[0]
-                let transactionsByAddress = initResult[1]
-
-                let loadedBlocksTop = this.state.loadedBlocksTop
-                if(!loadedBlocksTop){
-                  loadedBlocksTop = localStorage.getItem(this.state.account+"loadedBlocksTop")
-                }
-
-                //  Look back through previous blocks since this account
-                //  was last online... this could be bad. We might need a
-                //  central server keeping track of all these and delivering
-                //  a list of recent transactions
-
-
-                let updatedTxs = false
-                if(!loadedBlocksTop || loadedBlocksTop<this.state.block){
-                  if(!loadedBlocksTop) loadedBlocksTop = Math.max(2,this.state.block-5)
-
-                  if(this.state.block - loadedBlocksTop > MAX_BLOCK_TO_LOOK_BACK){
-                    loadedBlocksTop = this.state.block-MAX_BLOCK_TO_LOOK_BACK
-                  }
-
-                  let paddedLoadedBlocks = parseInt(loadedBlocksTop)+BLOCKS_TO_PARSE_PER_BLOCKTIME
-                  //console.log("choosing the min of ",paddedLoadedBlocks,"and",this.state.block)
-                  let parseBlock=Math.min(paddedLoadedBlocks,this.state.block)
-
-                  //console.log("MIN:",parseBlock)
-                  upperBoundOfSearch = parseBlock
-                  console.log(" +++++++======= Parsing recent blocks ~"+this.state.block)
-                  //first, if we are still back parsing, we need to look at *this* block too
-                  if(upperBoundOfSearch<this.state.block){
-                    for(let b=this.state.block;b>this.state.block-6;b--){
-                      //console.log(" ++ Parsing *CURRENT BLOCK* Block "+b+" for transactions...")
-                      updatedTxs = (await this.parseBlocks(b,recentTxs,transactionsByAddress)) || updatedTxs
-                    }
-                  }
-                  console.log(" +++++++======= Parsing from "+loadedBlocksTop+" to "+upperBoundOfSearch+"....")
-                  while(loadedBlocksTop<parseBlock){
-                    //console.log(" ++ Parsing Block "+parseBlock+" for transactions...")
-                    updatedTxs = (await this.parseBlocks(parseBlock,recentTxs,transactionsByAddress)) || updatedTxs
-                    parseBlock--
-                  }
-                }
-
-                if(updatedTxs||!this.state.recentTxs){
-                  this.sortAndSaveTransactions(recentTxs,transactionsByAddress)
-                }
-
-                localStorage.setItem(this.state.account+"loadedBlocksTop",upperBoundOfSearch)
-                this.setState({parsingTheChain:false,loadedBlocksTop:upperBoundOfSearch})
-              }
-              //console.log("~~ DONE PARSING SET ~~")
-            })
           }
         })
       }
@@ -1635,24 +1379,6 @@ async function tokenSend(to,value,gasLimit,txData,cb){
 
 }
 
-let sortByBlockNumberDESC = (a,b)=>{
-  if(b.blockNumber>a.blockNumber){
-    return -1
-  }
-  if(b.blockNumber<a.blockNumber){
-    return 1
-  }
-  return 0
-}
-let sortByBlockNumber = (a,b)=>{
-  if(b.blockNumber<a.blockNumber){
-    return -1
-  }
-  if(b.blockNumber>a.blockNumber){
-    return 1
-  }
-  return 0
-}
 
 function isArrayAndHasEntries(array){
   if (array === undefined || array.length == 0) {
