@@ -320,10 +320,6 @@ class App extends Component {
   }
 
   async poll() {
-
-    //console.log(">>>>>>> <<< >>>>>> Looking into iframe...")
-    //console.log(document.getElementById('galleassFrame').contentWindow['web3'])
-
     if(this.state.account){
       const ethBalance = await eth.getDisplayBalance(this.state.account, 20);
       const daiBalance = await dai.getDisplayBalance(this.state.account, 20);
@@ -333,9 +329,7 @@ class App extends Component {
         daiBalance,
         hasUpdateOnce:true
       });
-
     }
-
   }
 
   longPoll() {
