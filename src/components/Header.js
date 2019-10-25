@@ -55,7 +55,7 @@ export  default ({openScanner, network, total, dollarDisplay, ens, title, titleI
     cursor:"pointer"
   }
 
-  if(view=="send_to_address"){
+  if(view=="send_to_address" || view=="liquidity"){
     scanButtonStyle.position = "absolute"
     scanButtonStyle.right = -3
     scanButtonStyle.top = 217
