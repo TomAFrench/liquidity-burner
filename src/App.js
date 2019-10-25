@@ -45,7 +45,7 @@ const MAINNET_CHAIN_ID = '1';
 
 let WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
 let LOADERIMAGE = burnerlogo
-let HARDCODEVIEW = "liquidity"// = "loader"// = "receipt"
+let HARDCODEVIEW //= "liquidity"// = "loader"// = "receipt"
 let FAILCOUNT = 0
 
 let mainStyle = {
@@ -574,106 +574,6 @@ class App extends Component {
 
         switch(view) {
           case 'main':
-          return (
-            <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-
-            <Balance
-            icon={daiImg}
-            selected={selected}
-            text="DAI"
-            amount={this.state.daiBalance}
-            address={account}
-            dollarDisplay={dollarDisplay}
-            />
-            <Ruler/>
-            <Balance
-            icon={ethImg}
-            selected={selected}
-            text="ETH"
-            amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)}
-            address={account}
-            dollarDisplay={dollarDisplay}
-            />
-            <Ruler/>
-
-
-            <MainCard
-            buttonStyle={buttonStyle}
-            address={account}
-            changeAlert={this.changeAlert}
-            changeView={this.changeView}
-            dollarDisplay={dollarDisplay}
-            />
-
-            </div>
-            <Bottom
-            icon={"wrench"}
-            text={i18n.t('advance_title')}
-            action={()=>{
-              this.changeView('advanced')
-            }}
-            />
-            </div>
-          );
-          case 'advanced':
-          return (
-            <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-
-            <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
-            <Advanced
-            buttonStyle={buttonStyle}
-            address={account}
-            changeView={this.changeView}
-            privateKey={metaAccount.privateKey}
-            changeAlert={this.changeAlert}
-            goBack={this.goBack.bind(this)}
-            setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
-            />
-            </div>
-            <Bottom
-            action={()=>{
-              this.changeView('main')
-            }}
-            />
-            </div>
-          )
-          case 'apps':
-          return (
-            <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-
-            <NavCard title={"Apps & Games"} goBack={this.goBack.bind(this)} />
-            <Apps
-              privateKey={metaAccount.privateKey}
-            customLoader={this.state.customLoader}
-            changeView={this.changeView}
-            mainStyle={mainStyle}
-            ethprice={this.state.ethprice}
-            ethBalance={this.state.ethBalance}
-            daiBalance={this.state.daiBalance}
-            daiContract={this.state.daiContract}
-            ensContract={this.state.ensContract}
-            isAdmin={this.state.isAdmin}
-            contracts={this.state.contracts}
-            buttonStyle={buttonStyle}
-            changeAlert={this.changeAlert}
-            setGwei={this.setGwei}
-            network={this.state.network}
-            web3={this.state.web3}
-            nativeSend={this.state.nativeSend}
-            address={account}
-            goBack={this.goBack.bind(this)}
-            dollarDisplay={dollarDisplay}
-            />
-            </div>
-            <Bottom
-            action={this.goBack.bind(this)}
-            />
-            </div>
-          );
-          case 'liquidity':
             if(!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network){
               return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
             }else{
@@ -716,9 +616,39 @@ class App extends Component {
                       goBack={this.goBack.bind(this)}
                       dollarDisplay={dollarDisplay}
                     />
+                  <Bottom
+                  icon={"wrench"}
+                  text={i18n.t('advance_title')}
+                  action={()=>{
+                    this.changeView('advanced')
+                  }}
+                  />
                 </div>
               )
             }
+          case 'advanced':
+          return (
+            <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
+
+            <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
+            <Advanced
+            buttonStyle={buttonStyle}
+            address={account}
+            changeView={this.changeView}
+            privateKey={metaAccount.privateKey}
+            changeAlert={this.changeAlert}
+            goBack={this.goBack.bind(this)}
+            setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
+            />
+            </div>
+            <Bottom
+            action={()=>{
+              this.changeView('main')
+            }}
+            />
+            </div>
+          )
           case 'loader':
           return (
             <div>
