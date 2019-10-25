@@ -1,4 +1,10 @@
 import React from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import { Events, Blockie, Scaler } from "dapparatus";
 import Web3 from 'web3';
 import Ruler from "./Ruler";
@@ -201,193 +207,74 @@ export default class LiquidityNetwork extends React.Component {
         <div className="content ops row">
           <div className="col-6 p-1" onClick={() => this.changeView('receive')}>
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-qrcode"  /> {i18next.t('main_card.receive')}
-              </Scaler>
+              <Link to="/liquidity/receive" style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                  <i className="fas fa-qrcode"  /> {i18next.t('main_card.receive')}
+                </Scaler>
+              </Link>
             </button>
           </div>
           <div className="col-6 p-1">
             <button className="btn btn-large w-100" onClick={() => this.changeView('send_to_address')} style={this.props.buttonStyle.primary}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
-              </Scaler>
+              <Link to="/liquidity/send" style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                  <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
+                </Scaler>
+              </Link>
             </button>
           </div>
         </div>
         <div className="content ops row">
           <div className="col-6 p-1" onClick={() => this.changeView('bridge')}>
             <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.bridge.title')}
-              </Scaler>
+              <Link to="/liquidity/bridge" style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
+                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                  <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.bridge.title')}
+                </Scaler>
+              </Link>
             </button>
           </div>
           <div className="col-6 p-1" onClick={() => this.changeView('tex')}>
             <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-random"/> {i18next.t('exchange_title')}
-              </Scaler>
+              <Link to="/liquidity/exchange" style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
+                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                  <i className="fas fa-random"/> {i18next.t('exchange_title')}
+                </Scaler>
+              </Link>
             </button>
           </div>
         </div>
       </div>
     )
+    return (
+      <Switch>
+        <Route path="/liquidity/receive">
+          <div>
+              <div className="main-card card w-100" style={{zIndex:1}}>
 
-    switch(this.state.view){
-      case 'main':
-        return (
-          <div className="send-to-address card w-100" style={{zIndex:1}}>
-            <div className="form-group w-100">
-
-              <div style={{width:"100%",textAlign:"center"}}>
-                <Balance
-                      icon={daiImg}
-                      selected={true}
-                      text="fDAI"
-                      amount={this.state.displayfDai}
-                      address={this.props.account}
-                      dollarDisplay={(balance)=>{return balance}}
-                    />
-                <Ruler/>
-                <Balance
-                      icon={daiImg}
-                      selected={true}
-                      text="DAI"
-                      amount={this.state.displayDai}
-                      address={this.props.account}
-                      dollarDisplay={(balance)=>{return balance}}
-                    />
-                <Ruler/>
-                <Balance
-                      icon={ethImg}
-                      selected={true}
-                      text="fETH"
-                      amount={this.state.displayfEth}
-                      address={this.props.account}
-                      dollarDisplay={(balance)=>{return balance}}
-                    />
-                <Ruler/>
-                <Balance
-                      icon={ethImg}
-                      selected={true}
-                      text="ETH"
-                      amount={this.state.displayEth}
-                      address={this.props.account}
-                      dollarDisplay={(balance)=>{return balance}}
-                    />
-                <Ruler/>
-
-                {sendButtons}
-
-                </div>
-                <LiquidityTransactions
+                <NavCard title={i18n.t('receive_title')} goBack={this.goBack.bind(this)}/>
+                <LiquidityReceive
+                  hubContract={HUB_CONTRACT_ADDRESS}
+                  hubApiUrl={HUB_API_URL}
                   dollarDisplay={(balance)=>{return balance}}
                   view={this.state.view}
+                  block={this.state.block}
+                  ensLookup={this.props.ensLookup}
                   buttonStyle={this.props.buttonStyle}
-                  changeView={this.changeView.bind(this)}
-                  changeAlert={this.props.changeAlert.bind(this)}
-                  address={this.state.account}
-                  recentTxs={this.state.transactions}
+                  balance={this.props.balance}
+                  address={this.state.address}
+                  changeAlert={this.props.changeAlert}
                 />
+              </div>
+              <Link to="/liquidity">
+                <Bottom
+                  action={()=>{}}
+                />
+              </Link>
             </div>
-        </div>
-      )
-      case 'bridge':
-        return (
-          <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-              <NavCard title={i18n.t('liquidity.bridge.title')} goBack={this.goBack.bind(this)}/>
-              Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
-              <Ruler/>
-              <LiquidityBridge
-                text={"ETH"}
-                image={ethImg}
-                tokenAddress={HUB_CONTRACT_ADDRESS}
-                address={this.state.address}
-                buttonStyle={this.props.buttonStyle}
-                nocust={this.state.nocustManager}
-                ethBalance={this.state.ethBalance}
-                onchainBalance={this.state.ethBalance}
-                offchainBalance={this.state.fethBalance}
-                onchainDisplay={this.state.displayEth}
-                offchainDisplay={this.state.displayfEth}
-                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
-                withdrawLimit={this.state.ethWithdrawLimit}
-              />
-              <Ruler/>
-              <LiquidityBridge
-                text={"DAI"}
-                image={daiImg}
-                tokenAddress={TEST_DAI_ADDRESS}
-                address={this.state.address}
-                buttonStyle={this.props.buttonStyle}
-                nocust={this.state.nocustManager}
-                ethBalance={this.state.ethBalance}
-                onchainBalance={this.state.daiBalance}
-                offchainBalance={this.state.fdaiBalance}
-                onchainDisplay={this.state.displayDai}
-                offchainDisplay={this.state.displayfDai}
-                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
-                withdrawLimit={this.state.daiWithdrawLimit}
-              />
-            </div>
-            <Bottom
-              action={this.goBack.bind(this)}
-            />
-          </div>
-        )
-      case 'tex':
-        return (
-          <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-              <NavCard title={i18n.t('exchange_title')} goBack={this.goBack.bind(this)}/>
-              <LiquidityExchange
-                assetAText={"fETH"}
-                assetBText={"fDAI"}
-                assetAAddress={HUB_CONTRACT_ADDRESS}
-                assetBAddress={TEST_DAI_ADDRESS}
-                assetAImage={ethImg}
-                assetBImage={daiImg}
-                assetABalance={this.state.fethBalance}
-                assetBBalance={this.state.fdaiBalance}
-                assetADisplay={this.state.displayfEth}
-                assetBDisplay={this.state.displayfDai}
-                address={this.state.address}
-                buttonStyle={this.props.buttonStyle}
-                nocust={this.state.nocustManager}
-              />
-            </div>
-            <Bottom
-              action={this.goBack.bind(this)}
-            />
-          </div>
-        )
-      case 'receive':
-        return (
-          <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
+        </Route>
 
-              <NavCard title={i18n.t('receive_title')} goBack={this.goBack.bind(this)}/>
-              <LiquidityReceive
-                hubContract={HUB_CONTRACT_ADDRESS}
-                hubApiUrl={HUB_API_URL}
-                dollarDisplay={(balance)=>{return balance}}
-                view={this.state.view}
-                block={this.state.block}
-                ensLookup={this.props.ensLookup}
-                buttonStyle={this.props.buttonStyle}
-                balance={this.props.balance}
-                address={this.state.address}
-                changeAlert={this.props.changeAlert}
-              />
-            </div>
-            <Bottom
-              action={this.goBack.bind(this)}
-            />
-          </div>
-        )
-      case 'send_to_address':
-        return (
+        <Route path="/liquidity/send">
           <div>
             <div className="send-to-address card w-100" style={{zIndex:1}}>
             
@@ -427,26 +314,174 @@ export default class LiquidityNetwork extends React.Component {
                 }}
               />
             </div>
-            <Bottom
-              action={this.goBack.bind(this)}
-            />
+            <Link to="/liquidity">
+              <Bottom
+                action={()=>{}}
+              />
+            </Link>
           </div>
-        )
-      case 'send_by_scan':
-        return (
-          <LiquiditySendByScan
-          parseAndCleanPath={this.props.parseAndCleanPath}
-          returnToState={this.returnToState.bind(this)}
-          returnState={this.state.returnState}
-          mainStyle={this.props.mainStyle}
-          goBack={this.goBack.bind(this)}
-          changeView={this.changeView.bind(this)}
-          onError={(error) =>{
-            this.props.changeAlert("danger",error)
-          }}
-          />
-        );
-    }
+        </Route>
+
+        <Route path="/liquidity/bridge">
+          <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
+              <NavCard title={i18n.t('liquidity.bridge.title')} goBack={this.goBack.bind(this)}/>
+              Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
+              <Ruler/>
+              <LiquidityBridge
+                text={"ETH"}
+                image={ethImg}
+                tokenAddress={HUB_CONTRACT_ADDRESS}
+                address={this.state.address}
+                buttonStyle={this.props.buttonStyle}
+                nocust={this.state.nocustManager}
+                ethBalance={this.state.ethBalance}
+                onchainBalance={this.state.ethBalance}
+                offchainBalance={this.state.fethBalance}
+                onchainDisplay={this.state.displayEth}
+                offchainDisplay={this.state.displayfEth}
+                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
+                withdrawLimit={this.state.ethWithdrawLimit}
+              />
+              <Ruler/>
+              <LiquidityBridge
+                text={"DAI"}
+                image={daiImg}
+                tokenAddress={TEST_DAI_ADDRESS}
+                address={this.state.address}
+                buttonStyle={this.props.buttonStyle}
+                nocust={this.state.nocustManager}
+                ethBalance={this.state.ethBalance}
+                onchainBalance={this.state.daiBalance}
+                offchainBalance={this.state.fdaiBalance}
+                onchainDisplay={this.state.displayDai}
+                offchainDisplay={this.state.displayfDai}
+                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
+                withdrawLimit={this.state.daiWithdrawLimit}
+              />
+            </div>
+            <Link to="/liquidity">
+              <Bottom
+                action={()=>{}}
+              />
+            </Link>
+          </div>
+        </Route>
+
+        <Route path="/liquidity/exchange">
+          <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
+              <NavCard title={i18n.t('exchange_title')} goBack={this.goBack.bind(this)}/>
+              <LiquidityExchange
+                assetAText={"fETH"}
+                assetBText={"fDAI"}
+                assetAAddress={HUB_CONTRACT_ADDRESS}
+                assetBAddress={TEST_DAI_ADDRESS}
+                assetAImage={ethImg}
+                assetBImage={daiImg}
+                assetABalance={this.state.fethBalance}
+                assetBBalance={this.state.fdaiBalance}
+                assetADisplay={this.state.displayfEth}
+                assetBDisplay={this.state.displayfDai}
+                address={this.state.address}
+                buttonStyle={this.props.buttonStyle}
+                nocust={this.state.nocustManager}
+              />
+            </div>
+            <Link to="/liquidity">
+              <Bottom
+                action={()=>{}}
+              />
+            </Link>
+          </div>
+        </Route>
+
+        <Route path="/liquidity">
+        <div>
+            <div className="send-to-address card w-100" style={{zIndex:1}}>
+              <div className="form-group w-100">
+
+                <div style={{width:"100%",textAlign:"center"}}>
+                  <Balance
+                        icon={daiImg}
+                        selected={true}
+                        text="fDAI"
+                        amount={this.state.displayfDai}
+                        address={this.props.account}
+                        dollarDisplay={(balance)=>{return balance}}
+                      />
+                  <Ruler/>
+                  <Balance
+                        icon={daiImg}
+                        selected={true}
+                        text="DAI"
+                        amount={this.state.displayDai}
+                        address={this.props.account}
+                        dollarDisplay={(balance)=>{return balance}}
+                      />
+                  <Ruler/>
+                  <Balance
+                        icon={ethImg}
+                        selected={true}
+                        text="fETH"
+                        amount={this.state.displayfEth}
+                        address={this.props.account}
+                        dollarDisplay={(balance)=>{return balance}}
+                      />
+                  <Ruler/>
+                  <Balance
+                        icon={ethImg}
+                        selected={true}
+                        text="ETH"
+                        amount={this.state.displayEth}
+                        address={this.props.account}
+                        dollarDisplay={(balance)=>{return balance}}
+                      />
+                  <Ruler/>
+
+                  {sendButtons}
+
+                  </div>
+                  <LiquidityTransactions
+                    dollarDisplay={(balance)=>{return balance}}
+                    view={this.state.view}
+                    buttonStyle={this.props.buttonStyle}
+                    changeView={this.changeView.bind(this)}
+                    changeAlert={this.props.changeAlert.bind(this)}
+                    address={this.state.account}
+                    recentTxs={this.state.transactions}
+                  />
+              </div>
+          </div>
+            <Link to="/advanced">
+              <Bottom
+                icon={"wrench"}
+                text={i18n.t('advance_title')}
+                action={()=>{}}
+              />
+            </Link>
+          </div>
+        </Route>
+      </Switch>
+    )
+
+    // switch(this.state.view){
+    
+    //   case 'send_by_scan':
+    //     return (
+    //       <LiquiditySendByScan
+    //       parseAndCleanPath={this.props.parseAndCleanPath}
+    //       returnToState={this.returnToState.bind(this)}
+    //       returnState={this.state.returnState}
+    //       mainStyle={this.props.mainStyle}
+    //       goBack={this.goBack.bind(this)}
+    //       changeView={this.changeView.bind(this)}
+    //       onError={(error) =>{
+    //         this.props.changeAlert("danger",error)
+    //       }}
+    //       />
+    //     );
+    // }
 
   }
 }

@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect
+} from "react-router-dom";
 import { ContractLoader, Dapparatus, Transactions, Gas, Address, Events, Blockie, Scaler } from "dapparatus";
 import Web3 from 'web3';
 import axios from 'axios';
@@ -559,6 +566,7 @@ class App extends Component {
     }
 
     return (
+      <Router>
       <I18nextProvider i18n={i18n}>
       <div id="main" style={mainStyle}>
         <div style={innerStyle}>
@@ -567,64 +575,9 @@ class App extends Component {
         <div>
       {header}
 
-      {web3 /*&& this.checkNetwork()*/ && (() => {
-
-        switch(view) {
-          case 'main':
-            if(!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network){
-              return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-            }else{
-              return (
-                <div>
-                    <LiquidityNetwork
-                      privateKey={metaAccount.privateKey}
-
-                      web3={this.state.web3}
-
-                      address={account}
-
-                      network={this.state.network}
-                      block={this.state.block}
-
-                      mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
-
-                      daiContract={this.state.daiContract}
-                      ensContract={this.state.ensContract}
-                      ensLookup={this.ensLookup.bind(this)}
-
-                      ethBalance={this.state.ethBalance}
-                      daiBalance={this.state.daiBalance}
-
-                      eth={eth}
-                      dai={dai}
-                      ethprice={this.state.ethprice}
-
-
-                      setGwei={this.setGwei}
-                      gwei={this.state.gwei}
-
-                      parseAndCleanPath={this.parseAndCleanPath.bind(this)}
-                      openScanner={this.openScanner.bind(this)}
-                      scannerState={this.state.scannerState}
-
-                      mainStyle={mainStyle}
-                      buttonStyle={buttonStyle}
-                      changeAlert={this.changeAlert}
-                      goBack={this.goBack.bind(this)}
-                      dollarDisplay={dollarDisplay}
-                    />
-                  <Bottom
-                  icon={"wrench"}
-                  text={i18n.t('advance_title')}
-                  action={()=>{
-                    this.changeView('advanced')
-                  }}
-                  />
-                </div>
-              )
-            }
-          case 'advanced':
-            return (
+      {web3 &&
+        <Switch>
+          <Route path="/advanced">
               <div>
                 <div className="main-card card w-100" style={{zIndex:1}}>
                   <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
@@ -638,13 +591,63 @@ class App extends Component {
                   setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
                   />
                 </div>
-                <Bottom
-                action={()=>{
-                  this.changeView('main')
-                }}
-                />
+                <Link to="/">
+                  <Bottom
+                    action={()=>{}}
+                  />
+                </Link>
               </div>
-            )
+          </Route>
+          <Route path="/liquidity">
+            {(!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network) ?
+              <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/> :
+              <LiquidityNetwork
+                privateKey={metaAccount.privateKey}
+
+                web3={this.state.web3}
+
+                address={account}
+
+                network={this.state.network}
+                block={this.state.block}
+
+                mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
+
+                daiContract={this.state.daiContract}
+                ensContract={this.state.ensContract}
+                ensLookup={this.ensLookup.bind(this)}
+
+                ethBalance={this.state.ethBalance}
+                daiBalance={this.state.daiBalance}
+
+                eth={eth}
+                dai={dai}
+                ethprice={this.state.ethprice}
+
+
+                setGwei={this.setGwei}
+                gwei={this.state.gwei}
+
+                parseAndCleanPath={this.parseAndCleanPath.bind(this)}
+                openScanner={this.openScanner.bind(this)}
+                scannerState={this.state.scannerState}
+
+                mainStyle={mainStyle}
+                buttonStyle={buttonStyle}
+                changeAlert={this.changeAlert}
+                goBack={this.goBack.bind(this)}
+                dollarDisplay={dollarDisplay}
+              />
+            }
+          </Route>
+          <Route path="/">
+          <Redirect to="/liquidity" />
+          </Route>
+        </Switch>}
+
+      {/* {web3 && (() => {
+          
+        switch(view) {
           case 'loader':
             return (
               <div>
@@ -669,7 +672,8 @@ class App extends Component {
             )
         }
 
-      })()}
+      })()} */}
+      
       { ( false ||  !web3 /*|| !this.checkNetwork() */) &&
         <div>
         <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
@@ -723,6 +727,7 @@ class App extends Component {
       </div>
       </div>
       </I18nextProvider>
+      </Router>
     )
   }
 }
