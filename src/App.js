@@ -213,6 +213,7 @@ class App extends Component {
     //console.log("STATE",state)
     return state;
   }
+
   openScanner(returnState){
     this.setState({returnState:returnState,view:"send_by_scan"})
   }
@@ -222,13 +223,16 @@ class App extends Component {
     console.log("UPDATE FROM RETURN STATE",updateState)
     this.setState(updateState)
   }
+
   updateDimensions() {
     //force it to rerender when the window is resized to make sure qr fits etc
     this.forceUpdate();
   }
+
   saveKey(update){
     this.setState(update)
   }
+
   detectContext(){
     console.log("DETECTING CONTEXT....")
     //snagged from https://stackoverflow.com/questions/52759238/private-incognito-mode-detection-for-ios-12-safari
@@ -261,6 +265,7 @@ class App extends Component {
       }
     })
   }
+
   componentDidMount(){
 
     document.body.style.backgroundColor = mainStyle.backgroundColor
@@ -337,6 +342,7 @@ class App extends Component {
 
     this.connectToRPC()
   }
+
   connectToRPC(){
     const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth;
     const ensContract = new Contract(require("./contracts/ENS.abi.js"),require("./contracts/ENS.address.js"))
@@ -348,6 +354,7 @@ class App extends Component {
     }
     this.setState({ ensContract, daiContract });
   }
+
   componentWillUnmount() {
     clearInterval(interval)
     clearInterval(intervalLong)
@@ -376,6 +383,7 @@ class App extends Component {
 
 
   }
+
   longPoll() {
     axios.get("https://api.coinmarketcap.com/v2/ticker/1027/")
     .then((response)=>{
@@ -383,11 +391,13 @@ class App extends Component {
       this.setState({ethprice})
     })
   }
+
   setPossibleNewPrivateKey(value){
     this.setState({possibleNewPrivateKey:value},()=>{
       this.dealWithPossibleNewPrivateKey()
     })
   }
+
   async dealWithPossibleNewPrivateKey(){
     //this happens as page load and you need to wait until
     if(this.state && this.state.hasUpdateOnce){
@@ -438,6 +448,7 @@ class App extends Component {
 
 
   }
+
   componentDidUpdate(prevProps, prevState) {
     let { network, web3 } = this.state;
     if (web3 && network !== prevState.network /*&& !this.checkNetwork()*/) {
@@ -448,10 +459,12 @@ class App extends Component {
       //}, false)
     }
   };
+
   checkNetwork() {
     let { network } = this.state;
     return network === "xDai" || network === "Unknown";
   }
+
   checkClaim(tx, contracts) {
     //check if we are trying to claim
     if (this.state.claimId && this.state.claimKey) {
@@ -463,6 +476,7 @@ class App extends Component {
       }
     }
   }
+
   async ensLookup(name){
     let hash = namehash.hash(name)
     console.log("namehash",name,hash)
@@ -474,6 +488,7 @@ class App extends Component {
     console.log("ensResolver:",ensResolver)
     return ensResolver.methods.addr(hash).call()
   }
+
   async chainClaim(tx, contracts) {
     console.log("DOING CLAIM ONCHAIN", this.state.claimId, this.state.claimKey, this.state.account);
     this.setState({sending: true})
@@ -529,6 +544,7 @@ class App extends Component {
 
     this.forceUpdate();
   }
+
   async relayClaim() {
     console.log("DOING CLAIM THROUGH RELAY")
     let fund = await this.state.contracts.Links.funds(this.state.claimId).call()
@@ -599,9 +615,11 @@ class App extends Component {
       setTimeout(this.relayClaim,2000)
     }
   }
+
   setReceipt = (obj)=>{
     this.setState({receipt:obj})
   }
+
   changeView = (view,cb) => {
     if(view=="exchange"||view=="main"/*||view.indexOf("account_")==0*/){
       localStorage.setItem("view",view)//some pages should be sticky because of metamask reloads
@@ -620,444 +638,445 @@ class App extends Component {
 }
 }
 */
-this.changeAlert(null);
-console.log("Setting state",view)
-this.setState({ view, scannerState:false },cb);
-};
-changeAlert = (alert, hide=true) => {
-  clearTimeout(this.alertTimeout);
-  this.setState({ alert });
-  if (alert && hide) {
-    this.alertTimeout = setTimeout(() => {
-      this.setState({ alert: null });
-    }, 2000);
-  }
-};
-goBack(){
-  console.log("GO BACK")
-  this.changeView('main')
-  setTimeout(()=>{window.scrollTo(0,0)},60)
-}
+  this.changeAlert(null);
+  console.log("Setting state",view)
+  this.setState({ view, scannerState:false },cb);
+  };
+  changeAlert = (alert, hide=true) => {
+    clearTimeout(this.alertTimeout);
+    this.setState({ alert });
+    if (alert && hide) {
+      this.alertTimeout = setTimeout(() => {
+        this.setState({ alert: null });
+      }, 2000);
+    }
+  };
 
-async decryptInput(input){
-  let key = input.substring(0,32)
-  //console.log("looking in memory for key",key)
-  let cachedEncrypted = this.state[key]
-  if(!cachedEncrypted){
-    //console.log("nothing found in memory, checking local storage")
-    cachedEncrypted = localStorage.getItem(key)
+  goBack(){
+    console.log("GO BACK")
+    this.changeView('main')
+    setTimeout(()=>{window.scrollTo(0,0)},60)
   }
-  if(cachedEncrypted){
-    return cachedEncrypted
-  }else{
-    if(this.state.metaAccount){
-      try{
-        let parsedData = EthCrypto.cipher.parse(input.substring(2))
-        const endMessage = await EthCrypto.decryptWithPrivateKey(
-          this.state.metaAccount.privateKey, // privateKey
-          parsedData // encrypted-data
-        );
-        return  endMessage
-      }catch(e){}
+
+  async decryptInput(input){
+    let key = input.substring(0,32)
+    //console.log("looking in memory for key",key)
+    let cachedEncrypted = this.state[key]
+    if(!cachedEncrypted){
+      //console.log("nothing found in memory, checking local storage")
+      cachedEncrypted = localStorage.getItem(key)
+    }
+    if(cachedEncrypted){
+      return cachedEncrypted
     }else{
-      //no meta account? maybe try to setup signing keys?
-      //maybe have a contract that tries do decrypt? \
+      if(this.state.metaAccount){
+        try{
+          let parsedData = EthCrypto.cipher.parse(input.substring(2))
+          const endMessage = await EthCrypto.decryptWithPrivateKey(
+            this.state.metaAccount.privateKey, // privateKey
+            parsedData // encrypted-data
+          );
+          return  endMessage
+        }catch(e){}
+      }else{
+        //no meta account? maybe try to setup signing keys?
+        //maybe have a contract that tries do decrypt? \
+      }
     }
+    return false
   }
-  return false
-}
 
 
-render() {
-  let {
-    web3, account, tx, gwei, block, avgBlockTime, etherscan, balance, metaAccount, burnMetaAccount, view, alert, send
-  } = this.state;
+  render() {
+    let {
+      web3, account, tx, gwei, block, avgBlockTime, etherscan, balance, metaAccount, burnMetaAccount, view, alert, send
+    } = this.state;
 
-  let networkOverlay = ""
-  // if(web3 && !this.checkNetwork() && view!="exchange"){
-  //   networkOverlay = (
-  //     <div>
-  //       <input style={{zIndex:13,position:'absolute',opacity:0.95,right:48,top:192,width:194}} value="https://dai.poa.network" />
-  //       <img style={{zIndex:12,position:'absolute',opacity:0.95,right:0,top:0,maxHeight:370}} src={customRPCHint} />
-  //     </div>
-  //   )
-  // }
+    let networkOverlay = ""
+    // if(web3 && !this.checkNetwork() && view!="exchange"){
+    //   networkOverlay = (
+    //     <div>
+    //       <input style={{zIndex:13,position:'absolute',opacity:0.95,right:48,top:192,width:194}} value="https://dai.poa.network" />
+    //       <img style={{zIndex:12,position:'absolute',opacity:0.95,right:0,top:0,maxHeight:370}} src={customRPCHint} />
+    //     </div>
+    //   )
+    // }
 
 
-  let web3_setup = ""
-  if(web3){
-    web3_setup = (
+    let web3_setup = ""
+    if(web3){
+      web3_setup = (
+        <div>
+        <ContractLoader
+        key="ContractLoader"
+        config={{DEBUG: true}}
+        web3={web3}
+        require={path => {
+          return require(`${__dirname}/${path}`)
+        }}
+        onReady={(contracts, customLoader) => {
+          console.log("contracts loaded", contracts)
+          this.setState({contracts: contracts,customLoader: customLoader}, async () => {
+            console.log("Contracts Are Ready:", contracts)
+            this.checkClaim(tx, contracts);
+          })
+        }}
+        />
+        {/* <Transactions
+        key="Transactions"
+        config={{DEBUG: false, hide: true}}
+        account={account}
+        gwei={gwei}
+        web3={web3}
+        block={block}
+        avgBlockTime={avgBlockTime}
+        etherscan={etherscan}
+        metaAccount={metaAccount}
+        onReady={(state) => {
+          console.log("Transactions component is ready:", state);
+          console.log(state)
+          this.setState(state)
+
+        }}
+        onReceipt={(transaction, receipt) => {
+          // this is one way to get the deployed contract address, but instead I'll switch
+          //  to a more straight forward callback system above
+          console.log("Transaction Receipt", transaction, receipt)
+        }}
+        /> */}
+        </div>
+      )
+    }
+
+
+    let extraHead = ""
+    if(this.state.extraHeadroom){
+      extraHead = (
+        <div style={{marginTop:this.state.extraHeadroom}}>
+        </div>
+      )
+    }
+
+    let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance)
+
+    let header = (
+      <div style={{height:50}}>
+      </div>
+    )
+    if(web3){
+      header = (
+        <div>
+        <Header
+        openScanner={this.openScanner.bind(this)}
+        network={this.state.network}
+        total={totalBalance}
+        ens={this.state.ens}
+        title={this.state.title}
+        titleImage={titleImage}
+        mainStyle={mainStyle}
+        address={this.state.account}
+        changeView={this.changeView}
+        balance={balance}
+        view={this.state.view}
+        dollarDisplay={dollarDisplay}
+        />
+        </div>
+      )
+    }
+
+    return (
+      <I18nextProvider i18n={i18n}>
+      <div id="main" style={mainStyle}>
+      <div style={innerStyle}>
+      {extraHead}
+      {networkOverlay}
+      {web3_setup}
+
       <div>
-      <ContractLoader
-      key="ContractLoader"
-      config={{DEBUG: true}}
-      web3={web3}
-      require={path => {
-        return require(`${__dirname}/${path}`)
-      }}
-      onReady={(contracts, customLoader) => {
-        console.log("contracts loaded", contracts)
-        this.setState({contracts: contracts,customLoader: customLoader}, async () => {
-          console.log("Contracts Are Ready:", contracts)
-          this.checkClaim(tx, contracts);
-        })
-      }}
-      />
-      {/* <Transactions
-      key="Transactions"
-      config={{DEBUG: false, hide: true}}
-      account={account}
-      gwei={gwei}
-      web3={web3}
-      block={block}
-      avgBlockTime={avgBlockTime}
-      etherscan={etherscan}
-      metaAccount={metaAccount}
-      onReady={(state) => {
-        console.log("Transactions component is ready:", state);
-        console.log(state)
-        this.setState(state)
-
-      }}
-      onReceipt={(transaction, receipt) => {
-        // this is one way to get the deployed contract address, but instead I'll switch
-        //  to a more straight forward callback system above
-        console.log("Transaction Receipt", transaction, receipt)
-      }}
-      /> */}
-      </div>
-    )
-  }
-
-
-  let extraHead = ""
-  if(this.state.extraHeadroom){
-    extraHead = (
-      <div style={{marginTop:this.state.extraHeadroom}}>
-      </div>
-    )
-  }
-
-  let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance)
-
-  let header = (
-    <div style={{height:50}}>
-    </div>
-  )
-  if(web3){
-    header = (
-      <div>
-      <Header
-      openScanner={this.openScanner.bind(this)}
-      network={this.state.network}
-      total={totalBalance}
-      ens={this.state.ens}
-      title={this.state.title}
-      titleImage={titleImage}
-      mainStyle={mainStyle}
-      address={this.state.account}
-      changeView={this.changeView}
-      balance={balance}
-      view={this.state.view}
-      dollarDisplay={dollarDisplay}
-      />
-      </div>
-    )
-  }
-
-  return (
-    <I18nextProvider i18n={i18n}>
-    <div id="main" style={mainStyle}>
-    <div style={innerStyle}>
-    {extraHead}
-    {networkOverlay}
-    {web3_setup}
-
-    <div>
-    {header}
+      {header}
 
 
 
-    {web3 /*&& this.checkNetwork()*/ && (() => {
-      //console.log("VIEW:",view)
+      {web3 /*&& this.checkNetwork()*/ && (() => {
+        //console.log("VIEW:",view)
 
-      let selected = "xDai"
+        let selected = "xDai"
 
-      switch(view) {
-        case 'main':
-        return (
-          <div>
-          <div className="main-card card w-100" style={{zIndex:1}}>
+        switch(view) {
+          case 'main':
+          return (
+            <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
 
-          <Balance
-          icon={xdaiImg}
-          selected={selected}
-          text={xdai.name}
-          amount={this.state.xdaiBalance}
-          address={account}
-          dollarDisplay={dollarDisplay}
-          />
-          <Ruler/>
-          <Balance
-          icon={daiImg}
-          selected={selected}
-          text="DAI"
-          amount={this.state.daiBalance}
-          address={account}
-          dollarDisplay={dollarDisplay}
-          />
-          <Ruler/>
-          <Balance
-          icon={ethImg}
-          selected={selected}
-          text="ETH"
-          amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)}
-          address={account}
-          dollarDisplay={dollarDisplay}
-          />
-          <Ruler/>
+            <Balance
+            icon={xdaiImg}
+            selected={selected}
+            text={xdai.name}
+            amount={this.state.xdaiBalance}
+            address={account}
+            dollarDisplay={dollarDisplay}
+            />
+            <Ruler/>
+            <Balance
+            icon={daiImg}
+            selected={selected}
+            text="DAI"
+            amount={this.state.daiBalance}
+            address={account}
+            dollarDisplay={dollarDisplay}
+            />
+            <Ruler/>
+            <Balance
+            icon={ethImg}
+            selected={selected}
+            text="ETH"
+            amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)}
+            address={account}
+            dollarDisplay={dollarDisplay}
+            />
+            <Ruler/>
 
 
-          <MainCard
-          buttonStyle={buttonStyle}
-          address={account}
-          balance={balance}
-          changeAlert={this.changeAlert}
-          changeView={this.changeView}
-          dollarDisplay={dollarDisplay}
-          ERC20TOKEN={ERC20TOKEN}
-          />
+            <MainCard
+            buttonStyle={buttonStyle}
+            address={account}
+            balance={balance}
+            changeAlert={this.changeAlert}
+            changeView={this.changeView}
+            dollarDisplay={dollarDisplay}
+            ERC20TOKEN={ERC20TOKEN}
+            />
 
-          <RecentTransactions
-          dollarDisplay={dollarDisplay}
-          view={this.state.view}
-          buttonStyle={buttonStyle}
-          ERC20TOKEN={ERC20TOKEN}
-          transactionsByAddress={ERC20TOKEN?this.state.fullTransactionsByAddress:this.state.transactionsByAddress}
-          changeView={this.changeView}
-          address={account}
-          block={this.state.block}
-          recentTxs={ERC20TOKEN?this.state.fullRecentTxs:this.state.recentTxs}
-          />
-          </div>
-          <Bottom
-          icon={"wrench"}
-          text={i18n.t('advance_title')}
-          action={()=>{
-            this.changeView('advanced')
-          }}
-          />
-          </div>
-        );
-        case 'advanced':
-        return (
-          <div>
-          <div className="main-card card w-100" style={{zIndex:1}}>
+            <RecentTransactions
+            dollarDisplay={dollarDisplay}
+            view={this.state.view}
+            buttonStyle={buttonStyle}
+            ERC20TOKEN={ERC20TOKEN}
+            transactionsByAddress={ERC20TOKEN?this.state.fullTransactionsByAddress:this.state.transactionsByAddress}
+            changeView={this.changeView}
+            address={account}
+            block={this.state.block}
+            recentTxs={ERC20TOKEN?this.state.fullRecentTxs:this.state.recentTxs}
+            />
+            </div>
+            <Bottom
+            icon={"wrench"}
+            text={i18n.t('advance_title')}
+            action={()=>{
+              this.changeView('advanced')
+            }}
+            />
+            </div>
+          );
+          case 'advanced':
+          return (
+            <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
 
-          <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
-          <Advanced
-          isVendor={this.state.isVendor && this.state.isVendor.isAllowed}
-          buttonStyle={buttonStyle}
-          address={account}
-          balance={balance}
-          changeView={this.changeView}
-          privateKey={metaAccount.privateKey}
-          changeAlert={this.changeAlert}
-          goBack={this.goBack.bind(this)}
-          setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
-          />
-          </div>
-          <Bottom
-          action={()=>{
-            this.changeView('main')
-          }}
-          />
-          </div>
-        )
-        case 'apps':
-        return (
-          <div>
-          <div className="main-card card w-100" style={{zIndex:1}}>
-
-          <NavCard title={"Apps & Games"} goBack={this.goBack.bind(this)} />
-          <Apps
+            <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
+            <Advanced
+            isVendor={this.state.isVendor && this.state.isVendor.isAllowed}
+            buttonStyle={buttonStyle}
+            address={account}
+            balance={balance}
+            changeView={this.changeView}
             privateKey={metaAccount.privateKey}
-          customLoader={this.state.customLoader}
-          changeView={this.changeView}
-          mainStyle={mainStyle}
-          ERC20NAME={ERC20NAME}
-          ERC20IMAGE={ERC20IMAGE}
-          ERC20TOKEN={ERC20TOKEN}
-          ERC20VENDOR={ERC20VENDOR}
-          ethprice={this.state.ethprice}
-          ethBalance={this.state.ethBalance}
-          daiBalance={this.state.daiBalance}
-          xdaiBalance={this.state.xdaiBalance}
-          daiContract={this.state.daiContract}
-          ensContract={this.state.ensContract}
-          isVendor={this.state.isVendor}
-          isAdmin={this.state.isAdmin}
-          contracts={this.state.contracts}
-          buttonStyle={buttonStyle}
-          changeAlert={this.changeAlert}
-          setGwei={this.setGwei}
-          network={this.state.network}
-          tx={this.state.tx}
-          web3={this.state.web3}
-          send={this.state.send}
-          nativeSend={this.state.nativeSend}
-          address={account}
-          balance={balance}
-          goBack={this.goBack.bind(this)}
-          dollarDisplay={dollarDisplay}
-          />
-          </div>
-          <Bottom
-          action={this.goBack.bind(this)}
-          />
-          </div>
-        );
-        case 'liquidity':
-          if(!this.state || !this.state.customLoader || !this.state.tx || !this.state.contracts || !this.state.network){
-            return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-          }else{
-            return (
-              <div>
-                  <LiquidityNetwork
-                    privateKey={metaAccount.privateKey}
+            changeAlert={this.changeAlert}
+            goBack={this.goBack.bind(this)}
+            setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
+            />
+            </div>
+            <Bottom
+            action={()=>{
+              this.changeView('main')
+            }}
+            />
+            </div>
+          )
+          case 'apps':
+          return (
+            <div>
+            <div className="main-card card w-100" style={{zIndex:1}}>
 
-                    web3={this.state.web3}
-                    tx={this.state.tx}
-                    send={this.state.send}
+            <NavCard title={"Apps & Games"} goBack={this.goBack.bind(this)} />
+            <Apps
+              privateKey={metaAccount.privateKey}
+            customLoader={this.state.customLoader}
+            changeView={this.changeView}
+            mainStyle={mainStyle}
+            ERC20NAME={ERC20NAME}
+            ERC20IMAGE={ERC20IMAGE}
+            ERC20TOKEN={ERC20TOKEN}
+            ERC20VENDOR={ERC20VENDOR}
+            ethprice={this.state.ethprice}
+            ethBalance={this.state.ethBalance}
+            daiBalance={this.state.daiBalance}
+            xdaiBalance={this.state.xdaiBalance}
+            daiContract={this.state.daiContract}
+            ensContract={this.state.ensContract}
+            isVendor={this.state.isVendor}
+            isAdmin={this.state.isAdmin}
+            contracts={this.state.contracts}
+            buttonStyle={buttonStyle}
+            changeAlert={this.changeAlert}
+            setGwei={this.setGwei}
+            network={this.state.network}
+            tx={this.state.tx}
+            web3={this.state.web3}
+            send={this.state.send}
+            nativeSend={this.state.nativeSend}
+            address={account}
+            balance={balance}
+            goBack={this.goBack.bind(this)}
+            dollarDisplay={dollarDisplay}
+            />
+            </div>
+            <Bottom
+            action={this.goBack.bind(this)}
+            />
+            </div>
+          );
+          case 'liquidity':
+            if(!this.state || !this.state.customLoader || !this.state.tx || !this.state.contracts || !this.state.network){
+              return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+            }else{
+              return (
+                <div>
+                    <LiquidityNetwork
+                      privateKey={metaAccount.privateKey}
 
-                    address={account}
-                    balance={balance}
+                      web3={this.state.web3}
+                      tx={this.state.tx}
+                      send={this.state.send}
 
-                    network={this.state.network}
-                    block={this.state.block}
+                      address={account}
+                      balance={balance}
 
-                    mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
+                      network={this.state.network}
+                      block={this.state.block}
 
-                    daiContract={this.state.daiContract}
-                    ensContract={this.state.ensContract}
-                    ensLookup={this.ensLookup.bind(this)}
+                      mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
 
-                    ethBalance={this.state.ethBalance}
-                    daiBalance={this.state.daiBalance}
+                      daiContract={this.state.daiContract}
+                      ensContract={this.state.ensContract}
+                      ensLookup={this.ensLookup.bind(this)}
 
-                    eth={eth}
-                    dai={dai}
-                    ethprice={this.state.ethprice}
+                      ethBalance={this.state.ethBalance}
+                      daiBalance={this.state.daiBalance}
+
+                      eth={eth}
+                      dai={dai}
+                      ethprice={this.state.ethprice}
 
 
-                    setGwei={this.setGwei}
-                    gwei={this.state.gwei}
+                      setGwei={this.setGwei}
+                      gwei={this.state.gwei}
 
-                    parseAndCleanPath={this.parseAndCleanPath.bind(this)}
-                    openScanner={this.openScanner.bind(this)}
-                    scannerState={this.state.scannerState}
+                      parseAndCleanPath={this.parseAndCleanPath.bind(this)}
+                      openScanner={this.openScanner.bind(this)}
+                      scannerState={this.state.scannerState}
 
-                    mainStyle={mainStyle}
-                    buttonStyle={buttonStyle}
-                    changeAlert={this.changeAlert}
-                    goBack={this.goBack.bind(this)}
-                    dollarDisplay={dollarDisplay}
-                  />
-              </div>
-            )
-          }
-        case 'loader':
-        return (
-          <div>
-          <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+                      mainStyle={mainStyle}
+                      buttonStyle={buttonStyle}
+                      changeAlert={this.changeAlert}
+                      goBack={this.goBack.bind(this)}
+                      dollarDisplay={dollarDisplay}
+                    />
+                </div>
+              )
+            }
+          case 'loader':
+          return (
+            <div>
+            <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
 
-          <NavCard title={"Sending..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-          </div>
-          <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-          </div>
-        );
-        case 'reader':
-        return (
-          <div>
-          <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+            <NavCard title={"Sending..."} goBack={this.goBack.bind(this)} darkMode={true}/>
+            </div>
+            <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+            </div>
+          );
+          case 'reader':
+          return (
+            <div>
+            <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
 
-          <NavCard title={"Reading QRCode..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-          </div>
-          <Loader loaderImage={LOADERIMAGE}  mainStyle={mainStyle}/>
-          </div>
-        );
-        case 'claimer':
-        return (
-          <div>
-          <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+            <NavCard title={"Reading QRCode..."} goBack={this.goBack.bind(this)} darkMode={true}/>
+            </div>
+            <Loader loaderImage={LOADERIMAGE}  mainStyle={mainStyle}/>
+            </div>
+          );
+          case 'claimer':
+          return (
+            <div>
+            <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
 
-          <NavCard title={"Claiming..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-          </div>
-          <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-          </div>
-        );
-        default:
-        return (
-          <div>unknown view</div>
-        )
+            <NavCard title={"Claiming..."} goBack={this.goBack.bind(this)} darkMode={true}/>
+            </div>
+            <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+            </div>
+          );
+          default:
+          return (
+            <div>unknown view</div>
+          )
+        }
+
+      })()}
+      { ( false ||  !web3 /*|| !this.checkNetwork() */) &&
+        <div>
+        <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+        </div>
       }
-
-    })()}
-    { ( false ||  !web3 /*|| !this.checkNetwork() */) &&
-      <div>
-      <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+      { alert && <Footer alert={alert} changeAlert={this.changeAlert}/> }
       </div>
-    }
-    { alert && <Footer alert={alert} changeAlert={this.changeAlert}/> }
-    </div>
 
 
 
-    <Dapparatus
-    config={{
-      DEBUG: false,
-      hide: true,
-      requiredNetwork: ['Unknown', 'xDai'],
-      metatxAccountGenerator: false,
-    }}
-    //used to pass a private key into Dapparatus
-    newPrivateKey={this.state.newPrivateKey}
-    fallbackWeb3Provider={WEB3_PROVIDER}
-    onUpdate={async (state) => {
-      console.log("Dapparatus update",state)
+      <Dapparatus
+      config={{
+        DEBUG: false,
+        hide: true,
+        requiredNetwork: ['Unknown', 'xDai'],
+        metatxAccountGenerator: false,
+      }}
+      //used to pass a private key into Dapparatus
+      newPrivateKey={this.state.newPrivateKey}
+      fallbackWeb3Provider={WEB3_PROVIDER}
+      onUpdate={async (state) => {
+        console.log("Dapparatus update",state)
 
-      if (state.web3Provider) {
-        state.web3 = new Web3(state.web3Provider)
+        if (state.web3Provider) {
+          state.web3 = new Web3(state.web3Provider)
 
+          this.setState(state,()=>{
+            this.detectContext()
+            //console.log("state set:",this.state)
+            if(this.state.possibleNewPrivateKey){
+              this.dealWithPossibleNewPrivateKey()
+            }
+          })
+        }
+      }}
+      />
+      <Gas
+      network={this.state.network}
+      onUpdate={(state)=>{
+        console.log("Gas price update:",state)
         this.setState(state,()=>{
-          this.detectContext()
-          //console.log("state set:",this.state)
-          if(this.state.possibleNewPrivateKey){
-            this.dealWithPossibleNewPrivateKey()
-          }
+          this.state.gwei += 0.1
+          console.log("GWEI set:",this.state)
         })
-      }
-    }}
-    />
-    <Gas
-    network={this.state.network}
-    onUpdate={(state)=>{
-      console.log("Gas price update:",state)
-      this.setState(state,()=>{
-        this.state.gwei += 0.1
-        console.log("GWEI set:",this.state)
-      })
-    }}
-    />
+      }}
+      />
 
-    <div id="context" style={{position:"absolute",right:5,top:-15,opacity:0.2,zIndex:100,fontSize:60,color:'#FFFFFF'}}>
-    </div>
+      <div id="context" style={{position:"absolute",right:5,top:-15,opacity:0.2,zIndex:100,fontSize:60,color:'#FFFFFF'}}>
+      </div>
 
-    </div>
-    </div>
-    </I18nextProvider>
-  )
-}
+      </div>
+      </div>
+      </I18nextProvider>
+    )
+  }
 }
 
 
