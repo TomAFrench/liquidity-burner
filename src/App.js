@@ -4,7 +4,7 @@ import Web3 from 'web3';
 import axios from 'axios';
 import { I18nextProvider } from 'react-i18next';
 import gasless from 'tabookey-gasless';
-import { eth, dai } from '@burner-wallet/assets';
+import { eth } from '@burner-wallet/assets';
 
 import i18n from './i18n';
 import './App.scss';
@@ -40,7 +40,7 @@ import Bottom from './components/Bottom';
 import customRPCHint from './customRPCHint.png';
 import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
-import core, { mainAsset as xdai } from './core';
+import core, { mainAsset as dai } from './core';
 
 
 
@@ -48,7 +48,6 @@ import bufficorn from './bufficorn.png';
 import cypherpunk from './cypherpunk.png';
 import ethImg from './images/ethereum.png';
 import daiImg from './images/dai.jpg';
-import xdaiImg from './images/xdai.jpg';
 import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
 
@@ -59,12 +58,8 @@ const RNMessageChannel = false //disable React Native for now, it is breaking Sa
 let base64url = require('base64url')
 const EthCrypto = require('eth-crypto');
 
-//const POA_XDAI_NODE = "https://dai-b.poa.network"
-const POA_XDAI_NODE = "https://dai.poa.network"
-
 const MAINNET_CHAIN_ID = '1';
 
-let XDAI_PROVIDER = process.env.REACT_APP_POA_XDAI_NODE
 
 let WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
 let ERC20TOKEN = false
@@ -359,12 +354,10 @@ class App extends Component {
     if(this.state.account){
       const ethBalance = await eth.getDisplayBalance(this.state.account, 20);
       const daiBalance = await dai.getDisplayBalance(this.state.account, 20);
-      const xdaiBalance = await xdai.getDisplayBalance(this.state.account, 20);
 
       this.setState({
         ethBalance,
         daiBalance,
-        xdaiBalance,
         hasUpdateOnce:true
       });
 
@@ -402,12 +395,11 @@ class App extends Component {
         console.log("Checking on pk import...")
         console.log("this.state.balance",this.state.balance)
         console.log("this.state.metaAccount",this.state.metaAccount)
-        console.log("this.state.xdaiBalance",this.state.xdaiBalance)
         console.log("this.state.daiBalance",this.state.daiBalance)
         console.log("this.state.isVendor",this.state.isVendor)
         
 
-        if(!this.state.metaAccount || this.state.balance>=0.05 || this.state.xdaiBalance>=0.05 || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05 || (this.state.isVendor&&this.state.isVendor.isAllowed)){
+        if(!this.state.metaAccount || this.state.balance>=0.05 || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05 || (this.state.isVendor&&this.state.isVendor.isAllowed)){
           this.setState({possibleNewPrivateKey:false,withdrawFromPrivateKey:this.state.possibleNewPrivateKey},()=>{
             this.changeView('withdraw_from_private')
           })
@@ -447,7 +439,7 @@ class App extends Component {
 
   checkNetwork() {
     let { network } = this.state;
-    return network === "xDai" || network === "Unknown";
+    return network === "Rinkeby" || network === "Unknown";
   }
 
   async ensLookup(name){
@@ -608,7 +600,7 @@ class App extends Component {
       </div>
     )
 
-    let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance)
+    let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance)
 
     if(web3){
       header = (
@@ -644,7 +636,7 @@ class App extends Component {
       {web3 /*&& this.checkNetwork()*/ && (() => {
         //console.log("VIEW:",view)
 
-        let selected = "xDai"
+        let selected = "DAI"
 
         switch(view) {
           case 'main':
@@ -652,15 +644,6 @@ class App extends Component {
             <div>
             <div className="main-card card w-100" style={{zIndex:1}}>
 
-            <Balance
-            icon={xdaiImg}
-            selected={selected}
-            text={xdai.name}
-            amount={this.state.xdaiBalance}
-            address={account}
-            dollarDisplay={dollarDisplay}
-            />
-            <Ruler/>
             <Balance
             icon={daiImg}
             selected={selected}
@@ -755,7 +738,6 @@ class App extends Component {
             ethprice={this.state.ethprice}
             ethBalance={this.state.ethBalance}
             daiBalance={this.state.daiBalance}
-            xdaiBalance={this.state.xdaiBalance}
             daiContract={this.state.daiContract}
             ensContract={this.state.ensContract}
             isVendor={this.state.isVendor}
@@ -866,7 +848,7 @@ class App extends Component {
       config={{
         DEBUG: false,
         hide: true,
-        requiredNetwork: ['Unknown', 'xDai'],
+        requiredNetwork: ['Unknown', 'Rinkeby'],
         metatxAccountGenerator: false,
       }}
       //used to pass a private key into Dapparatus
