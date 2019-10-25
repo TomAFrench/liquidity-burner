@@ -190,6 +190,7 @@ class App extends Component {
     }catch(e){console.log(e)}
 
   }
+  
   parseAndCleanPath(path){
     let parts = path.split(";")
     //console.log("PARTS",parts)
@@ -213,6 +214,7 @@ class App extends Component {
   openScanner(returnState){
     this.setState({returnState:returnState,view:"send_by_scan"})
   }
+
   returnToState(scannerState){
     let updateState = Object.assign({scannerState:scannerState}, this.state.returnState);
     updateState.returnState = false
