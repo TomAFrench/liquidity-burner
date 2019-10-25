@@ -67,7 +67,6 @@ const MAINNET_CHAIN_ID = '1';
 let XDAI_PROVIDER = process.env.REACT_APP_POA_XDAI_NODE
 
 let WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
-let CLAIM_RELAY = 'https://x.xdai.io'
 let ERC20TOKEN = false
 let ERC20VENDOR
 let ERC20IMAGE
@@ -190,7 +189,7 @@ class App extends Component {
     }catch(e){console.log(e)}
 
   }
-  
+
   parseAndCleanPath(path){
     let parts = path.split(";")
     //console.log("PARTS",parts)
@@ -291,13 +290,6 @@ class App extends Component {
       }else if(window.location.pathname.length==43){
         this.changeView('send_to_address')
         console.log("CHANGE VIEW")
-      }else if(window.location.pathname.length==134){
-        let parts = window.location.pathname.split(";")
-        let claimId = parts[0].replace("/","")
-        let claimKey = parts[1]
-        console.log("DO CLAIM",claimId,claimKey)
-        this.setState({claimId,claimKey})
-        window.history.pushState({},"", "/");
       }else if(
         (window.location.pathname.length>=65&&window.location.pathname.length<=67&&window.location.pathname.indexOf(";")<0) ||
         (window.location.hash.length>=65 && window.location.hash.length <=67 && window.location.hash.indexOf(";")<0)
@@ -458,18 +450,6 @@ class App extends Component {
     return network === "xDai" || network === "Unknown";
   }
 
-  checkClaim(tx, contracts) {
-    //check if we are trying to claim
-    if (this.state.claimId && this.state.claimKey) {
-      this.changeView('claimer')
-      if (this.state.balance > 0.005) {
-        this.chainClaim(tx, contracts);
-      } else {
-        this.relayClaim();
-      }
-    }
-  }
-
   async ensLookup(name){
     let hash = namehash.hash(name)
     console.log("namehash",name,hash)
@@ -480,133 +460,6 @@ class App extends Component {
     const ensResolver = new Contract(require("./contracts/ENSResolver.abi.js"),resolver)
     console.log("ensResolver:",ensResolver)
     return ensResolver.methods.addr(hash).call()
-  }
-
-  async chainClaim(tx, contracts) {
-    console.log("DOING CLAIM ONCHAIN", this.state.claimId, this.state.claimKey, this.state.account);
-    this.setState({sending: true})
-
-    let fund = await contracts.Links.funds(this.state.claimId).call()
-    console.log("FUND FOR "+this.state.claimId+" IS: ", fund)
-    if (parseInt(fund[5].toString())>0) {
-      this.setState({fund: fund})
-
-
-      let claimHash = this.state.web3.utils.soliditySha3(
-        {type: 'bytes32', value: this.state.claimId}, // fund id
-        {type: 'address', value: this.state.account}, // destination address
-        {type: 'uint256', value: fund[5]}, // nonce
-        {type: 'address', value: contracts.Links._address} // contract address
-      )
-      console.log("claimHash", claimHash)
-      console.log("this.state.claimKey", this.state.claimKey)
-      let sig = this.state.web3.eth.accounts.sign(claimHash, this.state.claimKey);
-      sig = sig.signature;
-
-      console.log("CLAIM TX:", this.state.claimId, sig, claimHash, this.state.account)
-      tx(contracts.Links.claim(this.state.claimId, sig, claimHash, this.state.account), 250000, false, 0, (result) => {
-        if (result) {
-          console.log("CLAIMED!!!", result)
-          this.setState({claimed: true})
-          setTimeout(() => {
-            this.setState({sending: false}, () => {
-              //alert("DONE")
-              window.location = "/"
-            })
-          }, 2000)
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    }else{
-      console.log("FUND IS NOT READY YET, WAITING...")
-      if(FAILCOUNT++>1){
-        this.changeAlert({type: 'danger', message: 'Sorry. Failed to claim. Already claimed?'})
-        setTimeout(() => {
-          this.setState({sending: false}, () => {
-            //alert("DONE")
-            window.location = "/"
-          })
-        }, 2000)
-      }
-      setTimeout(()=>{
-        this.chainClaim(tx, contracts)
-      },3000)
-    }
-
-    this.forceUpdate();
-  }
-
-  async relayClaim() {
-    console.log("DOING CLAIM THROUGH RELAY")
-    let fund = await this.state.contracts.Links.funds(this.state.claimId).call()
-    if (parseInt(fund[5].toString())>0) {
-      this.setState({fund: fund})
-      console.log("FUND: ", fund)
-
-      let claimHash = this.state.web3.utils.soliditySha3(
-        {type: 'bytes32', value: this.state.claimId}, // fund id
-        {type: 'address', value: this.state.account}, // destination address
-        {type: 'uint256', value: fund[5]}, // nonce
-        {type: 'address', value: this.state.contracts.Links._address} // contract address
-      )
-      console.log("claimHash", claimHash)
-      console.log("this.state.claimKey", this.state.claimKey)
-      let sig = this.state.web3.eth.accounts.sign(claimHash, this.state.claimKey);
-      sig = sig.signature
-      /* getGasPrice() is not implemented on Metamask, leaving the code as reference. */
-      //this.state.web3.eth.getGasPrice()
-      //.then((gasPrice) => {
-
-      console.log("CLAIM TX:", this.state.claimId, sig, claimHash, this.state.account)
-
-      this.setState({sending: true})
-      let relayClient = new gasless.RelayClient(this.state.web3);
-
-      if(this.state.metaAccount && this.state.metaAccount.privateKey){
-        relayClient.useKeypairForSigning(this.state.metaAccount)
-      }
-      console.log("Calling encodeABU on Links.claim() ",this.state.claimId, sig, claimHash, this.state.account)
-      let claimData = this.state.contracts.Links.claim(this.state.claimId, sig, claimHash, this.state.account).encodeABI()
-      //let network_gas_price = await this.state.web3.eth.getGasPrice();
-      // Sometimes, xDai network returns '0'
-      //if (!network_gas_price || network_gas_price == 0) {
-      //  network_gas_price = 222222222222; // 222.(2) gwei
-      //}
-      let options = {
-        from: this.state.account,
-        to: this.state.contracts.Links._address,
-        txfee: 12,
-        gas_limit: 150000,
-        gas_price: Math.trunc(1000000000 * 25)
-      }
-      console.log("Hitting relayClient with relayTransaction()",claimData, options)
-      relayClient.relayTransaction(claimData, options).then((transaction) => {
-        console.log("TX REALYED: ", transaction)
-        this.setState({claimed: true})
-        setTimeout(() => {
-          this.setState({sending: false}, () => {
-            //alert("DONE")
-            window.location = "/"
-          })
-        }, 2000)
-      })
-      //})
-      //.catch((error) => {
-      //  console.log(error); //Get Gas price promise
-      //});
-    }else{
-      this.changeAlert({type: 'danger', message: 'Sorry. Failed to claim. Already claimed?'})
-      setTimeout(() => {
-        this.setState({sending: false}, () => {
-          //alert("DONE")
-          window.location = "/"
-        })
-      }, 2000)
-      console.log("Fund is not valid yet, trying again....")
-      setTimeout(this.relayClaim,2000)
-    }
   }
 
   setReceipt = (obj)=>{
@@ -711,7 +564,6 @@ class App extends Component {
           console.log("contracts loaded", contracts)
           this.setState({contracts: contracts,customLoader: customLoader}, async () => {
             console.log("Contracts Are Ready:", contracts)
-            this.checkClaim(tx, contracts);
           })
         }}
         />
@@ -992,16 +844,6 @@ class App extends Component {
             <NavCard title={"Reading QRCode..."} goBack={this.goBack.bind(this)} darkMode={true}/>
             </div>
             <Loader loaderImage={LOADERIMAGE}  mainStyle={mainStyle}/>
-            </div>
-          );
-          case 'claimer':
-          return (
-            <div>
-            <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
-
-            <NavCard title={"Claiming..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-            </div>
-            <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
             </div>
           );
           default:
