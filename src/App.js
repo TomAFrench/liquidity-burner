@@ -10,42 +10,24 @@ import i18n from './i18n';
 import './App.scss';
 import Header from './components/Header';
 import NavCard from './components/NavCard';
-import SendByScan from './components/SendByScan';
 import SendToAddress from './components/SendToAddress';
 import WithdrawFromPrivate from './components/WithdrawFromPrivate';
 import RequestFunds from './components/RequestFunds';
-import SendWithLink from './components/SendWithLink';
-import Receive from './components/Receive'
 import Apps from './components/Apps'
-import ShareLink from './components/ShareLink'
 import Balance from "./components/Balance";
 import Ruler from "./components/Ruler";
 import Receipt from "./components/Receipt";
-import CashOut from "./components/CashOut";
 import MainCard from './components/MainCard';
-import History from './components/History';
 import Advanced from './components/Advanced';
-import BottomLinks from './components/BottomLinks';
-import MoreButtons from './components/MoreButtons';
-import Admin from './components/Admin';
-import Vendor from './components/Vendor';
-import Vendors from './components/Vendors';
-import RecentTransactions from './components/RecentTransactions';
 import Footer from './components/Footer';
 import Loader from './components/Loader';
 import burnerlogo from './burnerwallet.png';
 import BurnWallet from './components/BurnWallet'
-import Exchange from './components/Exchange'
 import Bottom from './components/Bottom';
-import customRPCHint from './customRPCHint.png';
 import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
 import core, { mainAsset as dai } from './core';
 
-
-
-import bufficorn from './bufficorn.png';
-import cypherpunk from './cypherpunk.png';
 import ethImg from './images/ethereum.png';
 import daiImg from './images/dai.jpg';
 import Wyre from './services/wyre';
@@ -154,14 +136,12 @@ class App extends Component {
       account: false,
       gwei: 1.1,
       view: view,
-      sendLink: "",
       sendKey: "",
       alert: null,
       loadingTitle:'loading...',
       title: title,
       extraHeadroom:0,
       balance: 0.00,
-      vendors: {},
       ethprice: 0.00,
       hasUpdateOnce: false,
     };
@@ -301,8 +281,6 @@ class App extends Component {
         //console.log("!!! possibleNewPrivateKey",privateKey)
         this.setState({possibleNewPrivateKey:privateKey})
         window.history.pushState({},"", "/");
-      }else if(window.location.pathname.indexOf("/vendors;")==0){
-        this.changeView('vendors')
       }else{
         let parts = window.location.pathname.split(";")
         console.log("PARTS",parts)
@@ -362,8 +340,6 @@ class App extends Component {
       });
 
     }
-
-
 
   }
 
@@ -454,12 +430,8 @@ class App extends Component {
     return ensResolver.methods.addr(hash).call()
   }
 
-  setReceipt = (obj)=>{
-    this.setState({receipt:obj})
-  }
-
   changeView = (view,cb) => {
-    if(view=="exchange"||view=="main"/*||view.indexOf("account_")==0*/){
+    if(view=="main"/*||view.indexOf("account_")==0*/){
       localStorage.setItem("view",view)//some pages should be sticky because of metamask reloads
       localStorage.setItem("viewSetTime",Date.now())
     }
@@ -530,17 +502,6 @@ class App extends Component {
     let {
       web3, account, tx, gwei, block, avgBlockTime, etherscan, balance, metaAccount, burnMetaAccount, view, alert, send
     } = this.state;
-
-    let networkOverlay = ""
-    // if(web3 && !this.checkNetwork() && view!="exchange"){
-    //   networkOverlay = (
-    //     <div>
-    //       <input style={{zIndex:13,position:'absolute',opacity:0.95,right:48,top:192,width:194}} value="https://dai.poa.network" />
-    //       <img style={{zIndex:12,position:'absolute',opacity:0.95,right:0,top:0,maxHeight:370}} src={customRPCHint} />
-    //     </div>
-    //   )
-    // }
-
 
     let web3_setup = ""
     if(web3){
@@ -628,7 +589,6 @@ class App extends Component {
       <div id="main" style={mainStyle}>
         <div style={innerStyle}>
           {extraHead}
-          {networkOverlay}
           {web3_setup}
         <div>
       {header}
@@ -674,17 +634,6 @@ class App extends Component {
             ERC20TOKEN={ERC20TOKEN}
             />
 
-            <RecentTransactions
-            dollarDisplay={dollarDisplay}
-            view={this.state.view}
-            buttonStyle={buttonStyle}
-            ERC20TOKEN={ERC20TOKEN}
-            transactionsByAddress={ERC20TOKEN?this.state.fullTransactionsByAddress:this.state.transactionsByAddress}
-            changeView={this.changeView}
-            address={account}
-            block={this.state.block}
-            recentTxs={ERC20TOKEN?this.state.fullRecentTxs:this.state.recentTxs}
-            />
             </div>
             <Bottom
             icon={"wrench"}
