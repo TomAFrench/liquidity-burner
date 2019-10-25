@@ -921,9 +921,7 @@ class App extends Component {
             changeAlert={this.changeAlert}
             setGwei={this.setGwei}
             network={this.state.network}
-            tx={this.state.tx}
             web3={this.state.web3}
-            send={this.state.send}
             nativeSend={this.state.nativeSend}
             address={account}
             balance={balance}
@@ -937,7 +935,7 @@ class App extends Component {
             </div>
           );
           case 'liquidity':
-            if(!this.state || !this.state.customLoader || !this.state.tx || !this.state.contracts || !this.state.network){
+            if(!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network){
               return <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
             }else{
               return (
@@ -946,8 +944,6 @@ class App extends Component {
                       privateKey={metaAccount.privateKey}
 
                       web3={this.state.web3}
-                      tx={this.state.tx}
-                      send={this.state.send}
 
                       address={account}
                       balance={balance}
