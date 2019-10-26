@@ -16,7 +16,7 @@ export default class LiquidityReceive extends React.Component {
     }
   }
   render() {
-    let {dollarDisplay,view,buttonStyle,ERC20TOKEN, address, changeAlert, changeView, subBalanceDisplay,account, hubContract, hubApiUrl} = this.props
+    let {dollarDisplay,buttonStyle,ERC20TOKEN, address, changeAlert, subBalanceDisplay,account, hubContract, hubApiUrl} = this.props
 
 
     let qrSize = Math.min(document.documentElement.clientWidth,512)-90
@@ -43,19 +43,6 @@ export default class LiquidityReceive extends React.Component {
                 View on Explorer
               </a>
             </div>
-
-            {/* <RecentTransactions
-              dollarDisplay={dollarDisplay}
-              view={view}
-              max={5}
-              buttonStyle={buttonStyle}
-              ERC20TOKEN={ERC20TOKEN}
-              transactionsByAddress={ERC20TOKEN?this.props.fullTransactionsByAddress:this.props.transactionsByAddress}
-              changeView={changeView}
-              address={address}
-              block={this.props.block}
-              recentTxs={ERC20TOKEN?this.props.fullRecentTxs:this.props.recentTxs}
-            /> */}
           </div>
         </div>
     )

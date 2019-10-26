@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import QrReader from "react-qr-reader";
 import FileReaderInput from 'react-file-reader-input';
 import RNMessageChannel from 'react-native-webview-messaging';
@@ -102,7 +103,8 @@ class SendByScan extends Component {
           this.props.returnToState(returnState)
           console.log("return state",returnState)
         }else{
-          this.props.returnToState({toAddress:dataAfterColon})
+          this.setState({success: true, toAddress: dataAfterColon})
+          // this.props.returnToState({toAddress:dataAfterColon})
         }
       }
     }
@@ -120,7 +122,6 @@ class SendByScan extends Component {
   onClose = () => {
     console.log("SCAN CLOSE")
     this.stopRecording();
-    this.props.goBack();
   };
   componentDidMount(){
     interval = setInterval(this.loadMore.bind(this),750)
@@ -179,6 +180,10 @@ class SendByScan extends Component {
     })
   }
   render() {
+
+    if (this.state.success){
+      return <Redirect to={`/liquidity/send/${this.state.toAddress}` } />
+    }
 
     let displayedImage = ""
     if(this.state.imageData){
@@ -269,7 +274,7 @@ class SendByScan extends Component {
 
     return (
       <div style={{  position: "fixed",top:0,left:0,right:0,bottom:0,zIndex:5,margin:'0 auto !important',background:"#000000"}}>
-        <div style={{ position: 'absolute',zIndex: 256,top:20,right:20,fontSize:80,paddingRight:20,color:"#FFFFFF",cursor:'pointer'}} onClick={this.onClose} >
+        <div style={{ position: 'absolute',zIndex: 256,top:20,right:20,fontSize:80,paddingRight:20,color:"#FFFFFF",cursor:'pointer'}} onClick={() => this.props.goBack()} >
           <i className="fa fa-times" aria-hidden="true"></i>
         </div>
         {displayedReader}

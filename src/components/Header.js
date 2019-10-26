@@ -1,13 +1,13 @@
 import React from 'react';
+import { useHistory, useLocation, Link } from "react-router-dom";
 import { Scaler, Blockie } from "dapparatus";
 import burnerloader from '../burnerloader.gif';
-export  default ({openScanner, network, total, dollarDisplay, ens, title, titleImage, mainStyle, balance, address, changeView, view}) => {
 
+export  default ({openScanner, network, total, dollarDisplay, ens, title, titleImage, mainStyle, balance, address}) => {
+  
+  let history = useHistory();
+  let location = useLocation();
 
-  let sendButtonOpacity = 1.0
-  if(view=="receive" || view=="send_badge"){
-    sendButtonOpacity = 0
-  }
 
   let name = ens
   if(!name){
@@ -46,6 +46,9 @@ export  default ({openScanner, network, total, dollarDisplay, ens, title, titleI
     )
   }
 
+  let sendButtonOpacity = 1.0
+
+
   let scanButtonStyle = {
     opacity:sendButtonOpacity,
     position:"fixed",
@@ -55,42 +58,29 @@ export  default ({openScanner, network, total, dollarDisplay, ens, title, titleI
     cursor:"pointer"
   }
 
-  if(view=="send_to_address" || view=="liquidity"){
-    scanButtonStyle.position = "absolute"
-    scanButtonStyle.right = -3
-    scanButtonStyle.top = 217
-    delete scanButtonStyle.bottom
-  }
-
   let bottomRight = (
-    <div style={scanButtonStyle} onClick={() => {
-      openScanner({view:"send_to_address"})
-    }} >
+    <Link to="/scanner" style={scanButtonStyle} >
       <div style={{position:'relative',backgroundImage:"linear-gradient("+mainStyle.mainColorAlt+","+mainStyle.mainColor+")",backgroundColor:mainStyle.mainColor,borderRadius:"50%",width:89,height:89,boxShadow: "0.5px 0.5px 5px #000000"}}>
-        <a href="#" style={{color:'#FFFFFF',position:'absolute',left:30,top:28}}>
+        <div  style={{color:'#FFFFFF',position:'absolute',left:30,top:28}}>
           <i className="fas fa-qrcode" />
-        </a>
+        </div>
       </div>
-    </div>
+    </Link>
   )
 
-  let opacity = 0.5
-
-
-
   let topLeft
-
-  if(view=="main" || view=="exchange"){
+  let opacity = 0.5
+  
+  if(location.pathname !== "/liquidity/receive"){
     opacity = 1.0
     topLeft = (
-      <div style={{zIndex:-2,position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => changeView('receive')} >
-
+      <div style={{zIndex:-2,position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => history.push("/liquidity/receive")} >
           {blockieDisplay} <div style={{position:"absolute",left:60,top:15,fontSize:14}}>{name}</div>
       </div>
     )
   }else{
     topLeft = (
-      <div style={{zIndex:-2,position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => changeView('main')} >
+      <div style={{zIndex:-2,position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => history.goBack()} >
           {blockieDisplay} <div style={{position:"absolute",left:60,top:15,fontSize:14}}>{name}</div>
       </div>
     )

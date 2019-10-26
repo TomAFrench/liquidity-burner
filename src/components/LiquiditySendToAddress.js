@@ -20,15 +20,13 @@ export default class LiquiditySendToAddress extends React.Component {
     console.log("!!!!!!!!!!!!!!!!!!!!!!!! window.location.search",window.location.search,parsed)
 
     let startAmount = props.amount
-    if(props.scannerState) startAmount = props.scannerState.amount
     if(!startAmount) {
       startAmount = cookie.load('sendToStartAmount')
     }else{
       cookie.save('sendToStartAmount', startAmount, { path: '/', maxAge: 60 })
     }
 
-    let toAddress = ""
-    if(props.scannerState) toAddress = props.scannerState.toAddress
+    let toAddress = props.toAddress
     if(!toAddress) {
       toAddress = cookie.load('sendToAddress')
     }else{
@@ -46,16 +44,6 @@ export default class LiquiditySendToAddress extends React.Component {
     if(props.amount){
       startingAmount = props.amount
     }
-    if(window.location.pathname){
-      if(window.location.pathname.length==43){
-        initialState.toAddress = window.location.pathname.substring(1)
-      }else if(window.location.pathname.length>40) {
-      //    console.log("window.location.pathname",window.location.pathname)
-      //  console.log("parseAndCleanPath...")
-        initialState = Object.assign(initialState,this.props.parseAndCleanPath(window.location.pathname))
-      //  console.log("parseAndCleanPath:",initialState)
-      }
-    }
 
     const parsed = queryString.parse(window.location.search);
     if(parsed){
@@ -64,10 +52,6 @@ export default class LiquiditySendToAddress extends React.Component {
 
     this.state = initialState
   //  console.log("SendToAddress constructor",this.state)
-    window.history.pushState({},"", "/");
-
-
-
   }
 
   updateState = async (key, value) => {
@@ -192,35 +176,6 @@ export default class LiquiditySendToAddress extends React.Component {
         if (typeof this.props.onSend === 'function') {
           this.props.onSend()
         }
-        this.props.goBack()
-        
-        // this.props.send(toAddress, value, 120000, txData, (result) => {
-        //   if(result && result.transactionHash){
-        //     this.props.goBack();
-        //     window.history.pushState({},"", "/");
-        //     /*
-        //     this.props.changeAlert({
-        //       type: 'success',
-        //       message: 'Sent! '+result.transactionHash,
-        //     });*/
-
-        //     let receiptObj = {to:toAddress,from:result.from,amount:parseFloat(amount),message:this.state.message,result:result}
-
-
-        //     if(this.state.params){
-        //       receiptObj.params = this.state.params
-        //     }
-
-        //   //  console.log("CHECKING SCANNER STATE FOR ORDER ID",this.props.scannerState)
-        //     if(this.props.scannerState&&this.props.scannerState.daiposOrderId){
-        //       receiptObj.daiposOrderId = this.props.scannerState.daiposOrderId
-        //     }
-
-        //     //console.log("SETTING RECEPITE STATE",receiptObj)
-        //     this.props.setReceipt(receiptObj)
-        //     this.props.changeView("receipt");
-        //   }
-        // })
       }
     }else{
       this.props.changeAlert({type: 'warning', message: i18n.t('send_to_address.error')})
@@ -236,13 +191,6 @@ export default class LiquiditySendToAddress extends React.Component {
           ref={(input) => { this.amountInput = input; }}
              onChange={event => this.updateState('amount', event.target.value)} />
     )
-    if(this.props.scannerState&&this.props.scannerState.daiposOrderId){
-      amountInputDisplay = (
-        <input type="number" readOnly className="form-control" placeholder="0.00" value={this.state.amount} min="0"
-            ref={(input) => { this.amountInput = input; }}
-               onChange={event => this.updateState('amount', event.target.value)} />
-      )
-    }
 
     return (
       <div>
@@ -254,7 +202,7 @@ export default class LiquiditySendToAddress extends React.Component {
                 buttonStyle={this.props.buttonStyle}
                 toAddress={this.state.toAddress}
                 setToAddress={(toAddress) => { this.setState({toAddress}) }}
-                openScanner={this.props.openScanner}
+                openScanner
                 addressInput={(input) => {this.addressInput = input}}
               />
             </div>

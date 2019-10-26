@@ -7,7 +7,7 @@ import i18n from '../i18n';
 
 const { toWei, fromWei } = require('web3-utils');
 
-export default ({dollarDisplay, view, max, buttonStyle, address, recentTxs, changeView, changeAlert}) => {
+export default ({dollarDisplay, max, buttonStyle, address, recentTxs, changeAlert}) => {
   let txns = []
   let count=0
   if(!max) max=9999

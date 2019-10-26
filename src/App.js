@@ -39,6 +39,7 @@ import ethImg from './images/ethereum.png';
 import daiImg from './images/dai.jpg';
 import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
+import LiquiditySendByScan from './components/LiquiditySendByScan'
 
 //https://github.com/lesnitsky/react-native-webview-messaging/blob/v1/examples/react-native/web/index.js
 //import RNMessageChannel from 'react-native-webview-messaging';
@@ -52,7 +53,6 @@ const MAINNET_CHAIN_ID = '1';
 
 let WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
 let LOADERIMAGE = burnerlogo
-let HARDCODEVIEW //= "liquidity"// = "loader"// = "receipt"
 let FAILCOUNT = 0
 
 let mainStyle = {
@@ -124,21 +124,12 @@ class App extends Component {
 
 
     console.log("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[["+title+"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
-    let view = 'main'
-    let cachedView = localStorage.getItem("view")
-    let cachedViewSetAge = Date.now() - localStorage.getItem("viewSetTime")
-    if(HARDCODEVIEW){
-      view = HARDCODEVIEW
-    }else if(cachedViewSetAge < 300000 && cachedView&&cachedView!=0){
-      view = cachedView
-    }
-    console.log("CACHED VIEW",view)
+
     super(props);
     this.state = {
       web3: false,
       account: false,
       gwei: 1.1,
-      view: view,
       alert: null,
       loadingTitle:'loading...',
       title: title,
@@ -184,17 +175,6 @@ class App extends Component {
     }
     //console.log("STATE",state)
     return state;
-  }
-
-  openScanner(returnState){
-    this.setState({returnState:returnState,view:"send_by_scan"})
-  }
-
-  returnToState(scannerState){
-    let updateState = Object.assign({scannerState:scannerState}, this.state.returnState);
-    updateState.returnState = false
-    console.log("UPDATE FROM RETURN STATE",updateState)
-    this.setState(updateState)
   }
 
   updateDimensions() {
@@ -264,9 +244,6 @@ class App extends Component {
         }
         this.setState({possibleNewPrivateKey:rawPK})
         window.history.pushState({},"", "/");
-      }else if(window.location.pathname.length==43){
-        this.changeView('send_to_address')
-        console.log("CHANGE VIEW")
       }else if(
         (window.location.pathname.length>=65&&window.location.pathname.length<=67&&window.location.pathname.indexOf(";")<0) ||
         (window.location.hash.length>=65 && window.location.hash.length <=67 && window.location.hash.indexOf(";")<0)
@@ -283,20 +260,6 @@ class App extends Component {
         //console.log("!!! possibleNewPrivateKey",privateKey)
         this.setState({possibleNewPrivateKey:privateKey})
         window.history.pushState({},"", "/");
-      }else{
-        let parts = window.location.pathname.split(";")
-        console.log("PARTS",parts)
-        if(parts.length>=2){
-          let sendToAddress = parts[0].replace("/","")
-          let sendToAmount = parts[1]
-          let extraData = ""
-          if(parts.length>=3){
-            extraData = parts[2]
-          }
-          if((parseFloat(sendToAmount)>0 || extraData) && sendToAddress.length==42){
-            this.changeView('send_to_address')
-          }
-        }
       }
     }
     setTimeout(this.poll.bind(this),150)
@@ -371,7 +334,7 @@ class App extends Component {
 
         if(!this.state.metaAccount || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05){
           this.setState({possibleNewPrivateKey:false,withdrawFromPrivateKey:this.state.possibleNewPrivateKey},()=>{
-            this.changeView('withdraw_from_private')
+            // this.changeView('withdraw_from_private')
           })
         }else{
 
@@ -424,17 +387,6 @@ class App extends Component {
     return ensResolver.methods.addr(hash).call()
   }
 
-  changeView = (view,cb) => {
-    if(view=="main"){
-      localStorage.setItem("view",view)//some pages should be sticky because of metamask reloads
-      localStorage.setItem("viewSetTime",Date.now())
-    }
-
-    this.changeAlert(null);
-    console.log("Setting state",view)
-    this.setState({ view, scannerState:false },cb);
-  };
-
   changeAlert = (alert, hide=true) => {
     clearTimeout(this.alertTimeout);
     this.setState({ alert });
@@ -444,12 +396,6 @@ class App extends Component {
       }, 2000);
     }
   };
-
-  goBack(){
-    console.log("GO BACK")
-    this.changeView('main')
-    setTimeout(()=>{window.scrollTo(0,0)},60)
-  }
 
   async decryptInput(input){
     let key = input.substring(0,32)
@@ -482,7 +428,7 @@ class App extends Component {
 
   render() {
     let {
-      web3, account, tx, gwei, block, avgBlockTime, etherscan, metaAccount, burnMetaAccount, view, alert, send
+      web3, account, tx, gwei, block, avgBlockTime, etherscan, metaAccount, burnMetaAccount, alert, send
     } = this.state;
 
     let web3_setup = ""
@@ -549,7 +495,6 @@ class App extends Component {
       header = (
         <div>
         <Header
-        openScanner={this.openScanner.bind(this)}
         network={this.state.network}
         total={totalBalance}
         ens={this.state.ens}
@@ -557,8 +502,6 @@ class App extends Component {
         titleImage={titleImage}
         mainStyle={mainStyle}
         address={this.state.account}
-        changeView={this.changeView}
-        view={this.state.view}
         dollarDisplay={dollarDisplay}
         />
         </div>
@@ -580,14 +523,12 @@ class App extends Component {
           <Route path="/advanced">
               <div>
                 <div className="main-card card w-100" style={{zIndex:1}}>
-                  <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
+                  <NavCard title={i18n.t('advance_title')} />
                   <Advanced
                   buttonStyle={buttonStyle}
                   address={account}
-                  changeView={this.changeView}
                   privateKey={metaAccount.privateKey}
                   changeAlert={this.changeAlert}
-                  goBack={this.goBack.bind(this)}
                   setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
                   />
                 </div>
@@ -598,6 +539,22 @@ class App extends Component {
                 </Link>
               </div>
           </Route>
+
+          <Route
+            path="/scanner"
+            render={({history}) => (
+              <LiquiditySendByScan
+                parseAndCleanPath={this.parseAndCleanPath}
+                mainStyle={mainStyle}
+                onError={(error) =>{
+                  this.changeAlert("danger",error)
+                }}
+                goBack={history.goBack}
+              />
+            )}
+          />
+
+          <Redirect exact from="/" to="/liquidity" />
           <Route path="/liquidity">
             {(!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network) ?
               <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/> :
@@ -629,19 +586,13 @@ class App extends Component {
                 gwei={this.state.gwei}
 
                 parseAndCleanPath={this.parseAndCleanPath.bind(this)}
-                openScanner={this.openScanner.bind(this)}
-                scannerState={this.state.scannerState}
 
                 mainStyle={mainStyle}
                 buttonStyle={buttonStyle}
                 changeAlert={this.changeAlert}
-                goBack={this.goBack.bind(this)}
                 dollarDisplay={dollarDisplay}
               />
             }
-          </Route>
-          <Route path="/">
-          <Redirect to="/liquidity" />
           </Route>
         </Switch>}
 
