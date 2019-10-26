@@ -1,6 +1,6 @@
 import BurnerCore from '@burner-wallet/core';
 import { InjectedSigner, LocalSigner } from '@burner-wallet/core/signers';
-import { InfuraGateway, InjectedGateway, XDaiGateway, HTTPGateway } from '@burner-wallet/core/gateways';
+import { InfuraGateway, InjectedGateway, HTTPGateway } from '@burner-wallet/core/gateways';
 import { eth, dai, NativeAsset } from '@burner-wallet/assets';
 
 // TODO: Move all keys to env variable
@@ -18,7 +18,6 @@ if (process.env.REACT_APP_MODE === 'local') {
     usdPrice: 1,
   });
   gateways.push(new HTTPGateway('http://localhost:8545', '5777'));
-} else {
 }
 
 const assets = [mainAsset, eth];

@@ -17,13 +17,9 @@ import i18n from './i18n';
 import './App.scss';
 import Header from './components/Header';
 import NavCard from './components/NavCard';
-import SendToAddress from './components/SendToAddress';
-import WithdrawFromPrivate from './components/WithdrawFromPrivate';
 import RequestFunds from './components/RequestFunds';
-import Apps from './components/Apps'
 import Balance from "./components/Balance";
 import Ruler from "./components/Ruler";
-import Receipt from "./components/Receipt";
 import MainCard from './components/MainCard';
 import Advanced from './components/Advanced';
 import Footer from './components/Footer';
