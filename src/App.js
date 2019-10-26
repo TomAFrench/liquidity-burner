@@ -333,17 +333,9 @@ class App extends Component {
             // this.changeView('withdraw_from_private')
           })
         }else{
-
-          localStorage.setItem(this.state.account+"loadedBlocksTop","")
-          localStorage.setItem(this.state.account+"recentTxs","")
-          localStorage.setItem(this.state.account+"transactionsByAddress","")
           this.setState({
             possibleNewPrivateKey:false,
             newPrivateKey:this.state.possibleNewPrivateKey,
-            recentTxs:[],
-            transactionsByAddress:{},
-            fullRecentTxs:[],
-            fullTransactionsByAddress:{},
           })
 
         }
@@ -516,13 +508,16 @@ class App extends Component {
 
       {web3 &&
         <Switch>
-          <Route path="/advanced">
+          <Route
+            path="/advanced"
+            render={({ history }) => (
               <div>
                 <div className="main-card card w-100" style={{zIndex:1}}>
                   <NavCard title={i18n.t('advance_title')} />
                   <Advanced
                   buttonStyle={buttonStyle}
                   address={account}
+                  history={history}
                   privateKey={metaAccount.privateKey}
                   changeAlert={this.changeAlert}
                   setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
@@ -534,8 +529,9 @@ class App extends Component {
                   />
                 </Link>
               </div>
-          </Route>
-
+            )}
+          />
+            
           <Route
             path="/scanner"
             render={({history}) => (
@@ -547,6 +543,38 @@ class App extends Component {
                 }}
                 goBack={history.goBack}
               />
+            )}
+          />
+
+          <Route
+            path="/burn"
+            render={({ history })=>(
+              <div>
+                <div className="main-card card w-100" style={{zIndex:1}}>
+
+                  <NavCard title={"Burn Private Key"} goBack={history.goBack}/>
+                  <BurnWallet
+                  mainStyle={mainStyle}
+                  address={account}
+                  goBack={history.goBack}
+                  dollarDisplay={dollarDisplay}
+                  burnWallet={()=>{
+                    if(RNMessageChannel){
+                      RNMessageChannel.send("burn")
+                    }
+                    if(localStorage&&typeof localStorage.setItem == "function"){
+                      localStorage.setItem(this.state.account+"metaPrivateKey","")
+                      localStorage.setItem("metaPrivateKey","")
+                    }
+                    burnMetaAccount()
+                  }}
+                  />
+                </div>
+                  <Bottom
+                  text={i18n.t('cancel')}
+                  action={history.goBack}
+                  />
+              </div>
             )}
           />
 

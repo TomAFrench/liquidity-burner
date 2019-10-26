@@ -16,7 +16,7 @@ export default class Advanced extends React.Component {
     }
   }
   render(){
-    let {isVendor, balance, address, privateKey, changeAlert, changeView, goBack, setPossibleNewPrivateKey} = this.props
+    let {isVendor, balance, address, privateKey, changeAlert, goBack, setPossibleNewPrivateKey} = this.props
 
     let url = window.location.protocol+"//"+window.location.hostname
     if(window.location.port&&window.location.port!=80&&window.location.port!=443){
@@ -74,7 +74,7 @@ export default class Advanced extends React.Component {
                   onClick={()=>{
                     console.log(this.state.newPrivateKey)
                     if(this.state && this.state.newPrivateKey && this.state.newPrivateKey.length>=64&&this.state.newPrivateKey.length<=66){
-                      changeView('main')
+                      this.props.history.push('/')
                       let possibleNewPrivateKey = this.state.newPrivateKey
                       if(possibleNewPrivateKey.indexOf("0x")!=0){
                         possibleNewPrivateKey = "0x"+possibleNewPrivateKey
@@ -123,7 +123,7 @@ export default class Advanced extends React.Component {
                     }else{
                       import("ethereum-mnemonic-privatekey-utils").then(pkutils => {
                         const newPrivateKey = pkutils.getPrivateKeyFromMnemonic(this.state.newSeedPhrase)
-                        changeView('main')
+                        this.props.history.push('/')
                         setPossibleNewPrivateKey("0x"+newPrivateKey)
                       });
                     }
@@ -208,7 +208,7 @@ export default class Advanced extends React.Component {
               <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}
                       onClick={()=>{
                         console.log("BALANCE",balance)
-                        changeView('burn-wallet')
+                        this.props.history.push("/burn")
                       }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-fire"/> {i18n.t('burn')}
@@ -246,23 +246,6 @@ export default class Advanced extends React.Component {
           </div>
         </div>
         {showingQr}
-
-        {isVendor &&
-        <div>
-          <div className="content ops row" style={{marginBottom:10}}>
-
-            <div className="col-12 p-1">
-            <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary} onClick={()=>{
-              this.props.changeView("exchange")
-            }}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-key"/> {"Exchange"}
-              </Scaler>
-            </button>
-            </div>
-          </div>
-        </div>
-        }
 
       </div>
     )
