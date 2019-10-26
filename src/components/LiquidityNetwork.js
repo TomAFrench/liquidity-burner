@@ -35,6 +35,8 @@ let LOADERIMAGE = burnerlogo
 
 
 const { toWei, fromWei, toBN } = require('web3-utils');
+const qs = require('query-string');
+
 
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
 const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
@@ -70,8 +72,19 @@ export default class LiquidityNetwork extends React.Component {
       address: limboweb3.eth.accounts.wallet[0].address,
       addressRegistered: false,
       blocksToWithdrawal: -1,
+      tokens: {
+        "ETH": {},
+        "DAI": {},
+        "LQD": {}
+      },
+      balances: {
+        "ETH": {},
+        "DAI": {},
+        "LQD": {}
+      }
     }
 
+    this.getAssets()
 
     this.checkRegistration().then((addressRegistered) => {
       if (!addressRegistered) {
@@ -86,12 +99,12 @@ export default class LiquidityNetwork extends React.Component {
       this.state.address,
       tx => {
         console.log(`Incoming transaction from: ${tx.wallet.address} of: ${tx.amount.toString()} wei of token ${tx.wallet.token}.`)
-        this.checkBalance()
+        this.checkTokenBalances()
         this.getTransactions()
       }, 
       'all'
     ).then((unsubscribe) => this.setState({unsubscribe}))
-    this.checkBalance()
+    this.checkTokenBalances()
     this.getTransactions()
 
 
@@ -117,34 +130,51 @@ export default class LiquidityNetwork extends React.Component {
     return addressRegistered 
   }
 
+  async getAssets(){
+    console.log("Retrieving which tokens are supported by hub")
+    const tokenList = await this.state.nocustManager.getSupportedTokens()
+    
+    var tokens = tokenList.reduce((accumulator, pilot) => {
+      return {...accumulator, [pilot.shortName]: {name: pilot.name, shortName: pilot.shortName, tokenAddress: pilot.tokenAddress}}
+    }, {})
+
+    tokens.ETH.image = ethImg
+    tokens.LQD.image = daiImg
+    this.setState({tokens: tokens})
+  }
+
   async registerWithHub(){
     console.log("Registering with hub")
-    this.state.nocustManager.registerAddress(this.state.address)
-    this.state.nocustManager.registerAddress(this.state.address, TEST_DAI_ADDRESS)
+    if (this.state.tokens) {
+      for (let [key, value] of Object.entries(this.state.tokens)) {
+        this.state.nocustManager.registerAddress(this.state.address, value.tokenAddress)
+      }
+    }
   }
 
   async longPollInterval(){
     console.log("LONGPOLL")
+    this.checkTokenBalances()
     this.checkWithdrawalInfo()
   }
+  
+  async checkTokenBalances(){
+    if (this.state.tokens) {
+      for (let [key, value] of Object.entries(this.state.tokens)) {
+        this.checkTokenBalance(key, value.tokenAddress)
+      }
+    }
+    console.log(this.state.balances)
+  }
 
-  async checkBalance(){
-    const ethBalance = await this.state.nocustManager.getOnChainBalance(this.state.address)
-    const fethBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address)
+  async checkTokenBalance (name, tokenAddress) {
+    const onchainBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, tokenAddress)
+    const offchainBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address, tokenAddress)
 
-    const daiBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, TEST_DAI_ADDRESS)
-    const fdaiBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address, TEST_DAI_ADDRESS)
-    
-    this.setState({ethBalance, daiBalance, fethBalance, fdaiBalance})
-    console.log({ethBalance, daiBalance, fethBalance, fdaiBalance})
+    const displayOnchain = getDisplayValue(toBN(onchainBalance))
+    const displayOffchain = getDisplayValue(toBN(offchainBalance))
 
-    // NOCUST uses big-number.js rather than BN.js so need to convert
-    const displayEth = getDisplayValue(toBN(ethBalance))
-    const displayfEth = getDisplayValue(toBN(fethBalance))
-    const displayDai = getDisplayValue(toBN(daiBalance))
-    const displayfDai = getDisplayValue(toBN(fdaiBalance))
-    this.setState({displayEth, displayfEth, displayDai, displayfDai})
-    console.log({displayEth, displayfEth, displayDai, displayfDai})
+    this.setState({balances: {...this.state.balances, [name]: {onchainBalance, offchainBalance, displayOnchain, displayOffchain}}})
   }
 
   async getTransactions() {
@@ -169,7 +199,7 @@ export default class LiquidityNetwork extends React.Component {
 
     const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, toWei(this.props.gwei.toString(), "gwei"), gasLimit, HUB_CONTRACT_ADDRESS)
     console.log("withdrawal", txhash)
-    this.checkBalance()
+    this.checkTokenBalances()
   }
 
   render(){
@@ -198,7 +228,7 @@ export default class LiquidityNetwork extends React.Component {
           </div>
           <div className="col-6 p-1">
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
-              <Link to="/liquidity/send" style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+              <Link to={{pathname:"/liquidity/send", search: "?token=LQD"}} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
                 </Scaler>
@@ -269,23 +299,26 @@ export default class LiquidityNetwork extends React.Component {
 
         <Route
           path="/liquidity/send/:toAddress"
-          render={({ match }) => (
-            <Redirect to={{ pathname: "/liquidity/send", state: { toAddress: match.params.toAddress } }} />
+          render={({ location, match }) => (
+            <Redirect to={{ pathname: "/liquidity/send", search: location.search, state: { toAddress: match.params.toAddress } }} />
             )}
         />
 
         <Route
           path="/liquidity/send"
-          render={({ history, location }) => (
+          render={({ history, location }) => {
+            const token = this.state.tokens[qs.parse(location.search).token] || {}
+            const tokenBalance = this.state.balances[qs.parse(location.search).token] || {}
+            return (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>
               
                 <NavCard title={i18n.t('send_to_address_title')} />
                 <Balance
-                  icon={daiImg}
+                  icon={token.image}
                   selected={true}
-                  text="fDAI"
-                  amount={this.state.displayfDai}
+                  text={"f"+token.shortName}
+                  amount={tokenBalance.displayOffchain}
                   address={this.props.account}
                   dollarDisplay={(balance)=>{return balance}}
                 />
@@ -294,19 +327,19 @@ export default class LiquidityNetwork extends React.Component {
                   nocustManager={this.state.nocustManager}
                   convertToDollar={(dollar) => {return dollar}}
                   dollarSymbol={"$"}
-                  text={"fDAI"}
+                  text={"f"+token.shortName}
                   toAddress={typeof location.state !== 'undefined' ? location.state.toAddress : undefined}
                   ensLookup={this.props.ensLookup}
                   buttonStyle={this.props.buttonStyle}
-                  offchainBalance={this.state.fdaiBalance}
-                  tokenAddress={TEST_DAI_ADDRESS}
+                  offchainBalance={tokenBalance.displayOffchain}
+                  tokenAddress={token.tokenAddress}
                   address={this.state.address}
                   changeAlert={this.props.changeAlert}
                   dollarDisplay={(balance)=>{return balance}}
                   onSend={() => {
                     history.push("/liquidity/sending")
                     setTimeout(() => {
-                      this.checkBalance()
+                      this.checkTokenBalances()
                       this.getTransactions()
                     }, 2000)
                   }}
@@ -318,7 +351,7 @@ export default class LiquidityNetwork extends React.Component {
                 />
               </Link>
             </div>
-          )}
+          )}}
         />
 
 
@@ -329,33 +362,33 @@ export default class LiquidityNetwork extends React.Component {
               Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
               <Ruler/>
               <LiquidityBridge
-                text={"ETH"}
-                image={ethImg}
+                text={this.state.tokens.ETH.shortName}
+                image={this.state.tokens.ETH.image}
                 tokenAddress={HUB_CONTRACT_ADDRESS}
                 address={this.state.address}
                 buttonStyle={this.props.buttonStyle}
                 nocust={this.state.nocustManager}
-                ethBalance={this.state.ethBalance}
-                onchainBalance={this.state.ethBalance}
-                offchainBalance={this.state.fethBalance}
-                onchainDisplay={this.state.displayEth}
-                offchainDisplay={this.state.displayfEth}
+                ethBalance={this.state.balances.ETH.onchainBalance}
+                onchainBalance={this.state.balances.ETH.onchainBalance}
+                offchainBalance={this.state.balances.ETH.offchainBalance}
+                onchainDisplay={this.state.balances.ETH.displayOnchain}
+                offchainDisplay={this.state.balances.ETH.displayOffchain}
                 gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                 withdrawLimit={this.state.ethWithdrawLimit}
               />
               <Ruler/>
               <LiquidityBridge
-                text={"DAI"}
-                image={daiImg}
+                text={this.state.tokens.LQD.shortName}
+                image={this.state.tokens.LQD.image}
                 tokenAddress={TEST_DAI_ADDRESS}
                 address={this.state.address}
                 buttonStyle={this.props.buttonStyle}
                 nocust={this.state.nocustManager}
-                ethBalance={this.state.ethBalance}
-                onchainBalance={this.state.daiBalance}
-                offchainBalance={this.state.fdaiBalance}
-                onchainDisplay={this.state.displayDai}
-                offchainDisplay={this.state.displayfDai}
+                ethBalance={this.state.balances.ETH.onchainBalance}
+                onchainBalance={this.state.balances.LQD.onchainBalance}
+                offchainBalance={this.state.balances.LQD.offchainBalance}
+                onchainDisplay={this.state.balances.LQD.displayOnchain}
+                offchainDisplay={this.state.balances.LQD.displayOffchain}
                 gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                 withdrawLimit={this.state.daiWithdrawLimit}
               />
@@ -373,16 +406,16 @@ export default class LiquidityNetwork extends React.Component {
             <div className="main-card card w-100" style={{zIndex:1}}>
               <NavCard title={i18n.t('exchange_title')} />
               <LiquidityExchange
-                assetAText={"fETH"}
-                assetBText={"fDAI"}
+                assetAText={"f"+this.state.tokens.ETH.shortName}
+                assetBText={"f"+this.state.tokens.LQD.shortName}
                 assetAAddress={HUB_CONTRACT_ADDRESS}
                 assetBAddress={TEST_DAI_ADDRESS}
-                assetAImage={ethImg}
-                assetBImage={daiImg}
-                assetABalance={this.state.fethBalance}
-                assetBBalance={this.state.fdaiBalance}
-                assetADisplay={this.state.displayfEth}
-                assetBDisplay={this.state.displayfDai}
+                assetAImage={this.state.tokens.ETH.image}
+                assetBImage={this.state.tokens.LQD.image}
+                assetABalance={this.state.balances.ETH.offchainBalance}
+                assetBBalance={this.state.balances.LQD.offchainBalance}
+                assetADisplay={this.state.balances.ETH.displayOffchain}
+                assetBDisplay={this.state.balances.LQD.displayOffchain}
                 address={this.state.address}
                 buttonStyle={this.props.buttonStyle}
                 nocust={this.state.nocustManager}
@@ -402,38 +435,42 @@ export default class LiquidityNetwork extends React.Component {
               <div className="form-group w-100">
 
                 <div style={{width:"100%",textAlign:"center"}}>
+                  <Link to={{pathname:"/liquidity/send", search: "?token=LQD"}} >
+                    <Balance
+                            icon={this.state.tokens.LQD.image}
+                            selected={true}
+                            text={"f"+this.state.tokens.LQD.shortName}
+                            amount={this.state.balances.LQD.displayOffchain}
+                            address={this.props.account}
+                            dollarDisplay={(balance)=>{return balance}}
+                          />
+                  </Link>
+                  <Ruler/>
                   <Balance
-                        icon={daiImg}
+                        icon={this.state.tokens.LQD.image}
                         selected={true}
-                        text="fDAI"
-                        amount={this.state.displayfDai}
+                        text={this.state.tokens.LQD.shortName}
+                        amount={this.state.balances.LQD.displayOnchain}
                         address={this.props.account}
                         dollarDisplay={(balance)=>{return balance}}
                       />
                   <Ruler/>
-                  <Balance
-                        icon={daiImg}
-                        selected={true}
-                        text="DAI"
-                        amount={this.state.displayDai}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
+                  <Link to={{pathname:"/liquidity/send", search: "?token=ETH"}}>
+                    <Balance
+                          icon={this.state.tokens.ETH.image}
+                          selected={true}
+                          text={"f"+this.state.tokens.ETH.shortName}
+                          amount={this.state.balances.ETH.displayOffchain}
+                          address={this.props.account}
+                          dollarDisplay={(balance)=>{return balance}}
+                        />
+                  </Link>
                   <Ruler/>
                   <Balance
-                        icon={ethImg}
+                        icon={this.state.tokens.ETH.image}
                         selected={true}
-                        text="fETH"
-                        amount={this.state.displayfEth}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
-                  <Ruler/>
-                  <Balance
-                        icon={ethImg}
-                        selected={true}
-                        text="ETH"
-                        amount={this.state.displayEth}
+                        text={this.state.tokens.ETH.shortName}
+                        amount={typeof this.state.balances.ETH !== 'undefined' ? this.state.balances.ETH.displayOnchain: "0"}
                         address={this.props.account}
                         dollarDisplay={(balance)=>{return balance}}
                       />

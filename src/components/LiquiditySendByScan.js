@@ -182,7 +182,7 @@ class SendByScan extends Component {
   render() {
 
     if (this.state.success){
-      return <Redirect to={`/liquidity/send/${this.state.toAddress}` } />
+      return <Redirect to={{pathname: "/liquidity/send/"+this.state.toAddress, search: this.props.search}} />
     }
 
     let displayedImage = ""

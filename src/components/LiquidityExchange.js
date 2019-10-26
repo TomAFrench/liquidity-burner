@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Scaler } from "dapparatus";
 import Ruler from "./Ruler";
-import DisplayBar from './DisplayBar'
+import Balance from "./Balance";
 import AmountBar from './AmountBar'
 import i18n from '../i18n';
 
@@ -302,13 +302,13 @@ export default class LiquidityExchange extends React.Component {
   render() {
     return (
       <div>
-        <DisplayBar
+        <Balance
           icon={this.props.assetAImage}
           text={this.props.assetAText}
           amount={this.props.assetADisplay}
-          buttonStyle={this.props.buttonStyle}
-          disableSending
-        />
+          address={this.props.account}
+          dollarDisplay={(balance)=>{return balance}}
+          />
         <Ruler/>
         <TEXSwapBar
           buttonStyle={this.props.buttonStyle}
@@ -322,13 +322,13 @@ export default class LiquidityExchange extends React.Component {
           AtoBTrade={(buyAmount, sellAmount) => this.AtoBTrade(buyAmount, sellAmount)}
           BtoATrade={(buyAmount, sellAmount) => this.BtoATrade(buyAmount, sellAmount)}
         />
-        <DisplayBar
+        <Balance
           icon={this.props.assetBImage}
           text={this.props.assetBText}
           amount={this.props.assetBDisplay}
-          buttonStyle={this.props.buttonStyle}
-          disableSending
-        />
+          address={this.props.account}
+          dollarDisplay={(balance)=>{return balance}}
+          />
         <Ruler/>
       </div>
     )

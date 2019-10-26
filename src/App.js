@@ -508,13 +508,14 @@ class App extends Component {
             
           <Route
             path="/scanner"
-            render={({history}) => (
+            render={({history, location}) => (
               <LiquiditySendByScan
                 parseAndCleanPath={this.parseAndCleanPath}
                 mainStyle={mainStyle}
                 onError={(error) =>{
                   this.changeAlert("danger",error)
                 }}
+                search={location.search}
                 goBack={history.goBack}
               />
             )}

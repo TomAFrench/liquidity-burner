@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Scaler } from "dapparatus";
 import Ruler from "./Ruler";
 import Blockies from 'react-blockies'
-import DisplayBar from './DisplayBar'
+import Balance from "./Balance";
 import SwapBar from './SwapBar'
 import AddressBar from './AddressBar';
 import AmountBar from './AmountBar';
@@ -53,36 +53,17 @@ const TransactionBar = (props) => {
 
 export default class LiquidityBridge extends React.Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      sending: false
-    }
-  }
-
   render() {
     const gasLimit = "300000"
     return (
       <div>
-        <DisplayBar
+        <Balance
           icon={this.props.image}
           text={"f"+this.props.text}
           amount={this.props.offchainDisplay}
-          buttonStyle={this.props.buttonStyle}
-          sending={this.state.sending}
-          enableSend={() => this.setState({sending: true})}
-          cancelSend={() => this.setState({sending: false})}
-
-        />
-        {this.state.sending &&
-        <TransactionBar
-        buttonStyle={this.props.buttonStyle}
-        unit={"f"+this.props.text}
-        totalBalance={this.props.offchainBalance}
-        onSend={(address, amount) => {
-          this.props.nocust.sendTransaction({to: address, from: this.props.address, tokenAddress: this.props.tokenAddress, amount: amount})
-          this.setState({sending: false})}}
-        />}
+          address={this.props.account}
+          dollarDisplay={(balance)=>{return balance}}
+          />
         <Ruler/>
         <SwapBar
           buttonStyle={this.props.buttonStyle}
@@ -94,13 +75,13 @@ export default class LiquidityBridge extends React.Component {
           deposit={(amount) => {this.props.nocust.approveAndDeposit(this.props.address, amount, this.props.gasPrice, gasLimit, this.props.tokenAddress)}}
           requestWithdraw={(amount) => {this.props.nocust.withdrawalRequest(this.props.address, amount, this.props.gasPrice, gasLimit, this.props.tokenAddress)}}
         />
-        <DisplayBar
+        <Balance
           icon={this.props.image}
           text={this.props.text}
           amount={this.props.onchainDisplay}
-          buttonStyle={this.props.buttonStyle}
-          disableSending
-        />
+          address={this.props.account}
+          dollarDisplay={(balance)=>{return balance}}
+          />
         <Ruler/>
       </div>
     )
