@@ -1,5 +1,6 @@
 import React, { Component }  from 'react';
 let interval
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -8,14 +9,19 @@ class App extends Component {
     };
   }
   componentDidMount(){
-    interval = setInterval(this.loadMore.bind(this),250)
+    interval = setInterval(this.loadMore.bind(this),100)
   }
   componentWillUnmount(){
     clearInterval(interval)
   }
   loadMore(){
     let newPercent = this.state.percent+3
-    if(newPercent>100) newPercent=100
+    if(newPercent>100) {
+      newPercent=100
+      if ( typeof this.props.onFinish === 'function'){
+        this.props.onFinish()
+      }
+    }
     this.setState({percent:newPercent})
   }
   render() {

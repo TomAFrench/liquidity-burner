@@ -420,44 +420,20 @@ class App extends Component {
     let web3_setup = ""
     if(web3){
       web3_setup = (
-        <div>
         <ContractLoader
-        key="ContractLoader"
-        config={{DEBUG: true}}
-        web3={web3}
-        require={path => {
-          return require(`${__dirname}/${path}`)
-        }}
-        onReady={(contracts, customLoader) => {
-          console.log("contracts loaded", contracts)
-          this.setState({contracts: contracts,customLoader: customLoader}, async () => {
-            console.log("Contracts Are Ready:", contracts)
-          })
-        }}
+          key="ContractLoader"
+          config={{DEBUG: true}}
+          web3={web3}
+          require={path => {
+            return require(`${__dirname}/${path}`)
+          }}
+          onReady={(contracts, customLoader) => {
+            console.log("contracts loaded", contracts)
+            this.setState({contracts: contracts,customLoader: customLoader}, async () => {
+              console.log("Contracts Are Ready:", contracts)
+            })
+          }}
         />
-        {/* <Transactions
-        key="Transactions"
-        config={{DEBUG: false, hide: true}}
-        account={account}
-        gwei={gwei}
-        web3={web3}
-        block={block}
-        avgBlockTime={avgBlockTime}
-        etherscan={etherscan}
-        metaAccount={metaAccount}
-        onReady={(state) => {
-          console.log("Transactions component is ready:", state);
-          console.log(state)
-          this.setState(state)
-
-        }}
-        onReceipt={(transaction, receipt) => {
-          // this is one way to get the deployed contract address, but instead I'll switch
-          //  to a more straight forward callback system above
-          console.log("Transaction Receipt", transaction, receipt)
-        }}
-        /> */}
-        </div>
       )
     }
 
@@ -620,16 +596,6 @@ class App extends Component {
 
       {/* {web3 && (() => {
           
-        switch(view) {
-          case 'loader':
-            return (
-              <div>
-                <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
-                  <NavCard title={"Sending..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-                </div>
-                <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-              </div>
-            );
           case 'reader':
             return (
               <div>
@@ -639,10 +605,6 @@ class App extends Component {
                 <Loader loaderImage={LOADERIMAGE}  mainStyle={mainStyle}/>
               </div>
             );
-          default:
-            return (
-              <div>unknown view</div>
-            )
         }
 
       })()} */}
@@ -652,6 +614,7 @@ class App extends Component {
         <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
         </div>
       }
+
       { alert && <Footer alert={alert} changeAlert={this.changeAlert}/> }
       </div>
 

@@ -15,6 +15,8 @@ import i18next from 'i18next';
 
 import NavCard from './NavCard';
 import Bottom from './Bottom';
+import Loader from './Loader';
+
 import LiquiditySendByScan from './LiquiditySendByScan'
 import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
@@ -28,6 +30,9 @@ import { NOCUSTManager } from 'nocust-client'
 
 import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
+import burnerlogo from '../liquidity.png';
+let LOADERIMAGE = burnerlogo
+
 
 const { toWei, fromWei, toBN } = require('web3-utils');
 
@@ -251,15 +256,30 @@ export default class LiquidityNetwork extends React.Component {
         </Route>
 
         <Route
+          path="/liquidity/sending"
+          render={({history}) => (
+            <div>
+              <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+                <NavCard title={"Sending..."} darkMode/>
+              </div>
+              <Loader
+                loaderImage={LOADERIMAGE}
+                mainStyle={this.props.mainStyle}
+                onFinish={() => { history.replace("/") }}/>
+            </div>
+          )}
+        />
+
+        <Route
           path="/liquidity/send/:toAddress"
           render={({ match }) => (
             <Redirect to={{ pathname: "/liquidity/send", state: { toAddress: match.params.toAddress } }} />
             )}
         />
 
-        <Route 
+        <Route
           path="/liquidity/send"
-          render={({ location }) => (
+          render={({ history, location }) => (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>
               
@@ -287,6 +307,7 @@ export default class LiquidityNetwork extends React.Component {
                   changeAlert={this.props.changeAlert}
                   dollarDisplay={(balance)=>{return balance}}
                   onSend={() => {
+                    history.push("/liquidity/sending")
                     setTimeout(() => {
                       this.checkBalance()
                       this.getTransactions()
