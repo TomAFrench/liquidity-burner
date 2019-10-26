@@ -28,7 +28,7 @@ import MainCard from './components/MainCard';
 import Advanced from './components/Advanced';
 import Footer from './components/Footer';
 import Loader from './components/Loader';
-import burnerlogo from './burnerwallet.png';
+import burnerlogo from './liquidity.png';
 import BurnWallet from './components/BurnWallet'
 import Bottom from './components/Bottom';
 import namehash from 'eth-ens-namehash'
@@ -61,8 +61,8 @@ let mainStyle = {
   backgroundImage:"linear-gradient(#292929, #191919)",
   backgroundColor:"#191919",
   hotColor:"#F69E4D",
-  mainColorAlt:"#fa7d36",
-  mainColor:"#F76B1C",
+  mainColorAlt:"#6a528e",
+  mainColor:"#183b6c",
 }
 
 let title = i18n.t('app_name')
@@ -625,7 +625,7 @@ class App extends Component {
 
       })()} */}
       
-      { ( false ||  !web3 /*|| !this.checkNetwork() */) &&
+      { !web3 &&
         <div>
         <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
         </div>
