@@ -583,8 +583,6 @@ class App extends Component {
                 setGwei={this.setGwei}
                 gwei={this.state.gwei}
 
-                parseAndCleanPath={this.parseAndCleanPath.bind(this)}
-
                 mainStyle={mainStyle}
                 buttonStyle={buttonStyle}
                 changeAlert={this.changeAlert}

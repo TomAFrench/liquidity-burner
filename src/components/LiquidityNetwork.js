@@ -238,11 +238,8 @@ export default class LiquidityNetwork extends React.Component {
                 <LiquidityReceive
                   hubContract={HUB_CONTRACT_ADDRESS}
                   hubApiUrl={HUB_API_URL}
-                  dollarDisplay={(balance)=>{return balance}}
-                  block={this.state.block}
                   ensLookup={this.props.ensLookup}
                   buttonStyle={this.props.buttonStyle}
-                  balance={this.props.balance}
                   address={this.state.address}
                   changeAlert={this.props.changeAlert}
                 />

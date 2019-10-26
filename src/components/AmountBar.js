@@ -23,7 +23,7 @@ export default (props) => {
       </div>
       <input
         type="number"
-        step="0.1"
+        step="0.01"
         className="form-control"
         placeholder="0.00"
         value={props.value}

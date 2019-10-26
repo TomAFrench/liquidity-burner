@@ -1,6 +1,6 @@
 import React from 'react';
 import Ruler from "./Ruler";
-import Balance from "./Balance";
+
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
@@ -15,7 +15,7 @@ export default class LiquidityReceive extends React.Component {
     }
   }
   render() {
-    let {dollarDisplay,buttonStyle,ERC20TOKEN, address, changeAlert, subBalanceDisplay,account, hubContract, hubApiUrl} = this.props
+    let {buttonStyle, address, changeAlert, hubContract, hubApiUrl} = this.props
 
 
     let qrSize = Math.min(document.documentElement.clientWidth,512)-90
