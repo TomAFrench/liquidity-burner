@@ -593,21 +593,6 @@ class App extends Component {
             }
           </Route>
         </Switch>}
-
-      {/* {web3 && (() => {
-          
-          case 'reader':
-            return (
-              <div>
-                <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
-                  <NavCard title={"Reading QRCode..."} goBack={this.goBack.bind(this)} darkMode={true}/>
-                </div>
-                <Loader loaderImage={LOADERIMAGE}  mainStyle={mainStyle}/>
-              </div>
-            );
-        }
-
-      })()} */}
       
       { !web3 &&
         <div>

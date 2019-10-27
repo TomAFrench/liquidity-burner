@@ -23,7 +23,6 @@ export default (props) => {
         balance={props.balance}
         offchain
         selected
-        address={props.account}
         dollarDisplay={(balance)=>{return balance}}
       />
       <Ruler/>
@@ -57,7 +56,6 @@ export default (props) => {
         token={props.token}
         balance={props.balance}
         selected
-        address={props.account}
         dollarDisplay={(balance)=>{return balance}}
       />
       <Ruler/>
