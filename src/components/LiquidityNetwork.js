@@ -34,6 +34,7 @@ import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
 import lqdImg from '../liquidity.png';
 import burnerlogo from '../liquidity.png';
+import { min } from 'bn.js';
 let LOADERIMAGE = burnerlogo
 
 
@@ -84,9 +85,9 @@ export default class LiquidityNetwork extends React.Component {
       nocustManager: nocustManager,
       address: limboweb3.eth.accounts.wallet[0].address,
       addressRegistered: false,
-      blocksToWithdrawal: -1,
       tokens: tokens,
-      balances: balances
+      balances: balances,
+      withdrawInfo: {}
     }
 
     this.getAssets()
@@ -183,7 +184,9 @@ export default class LiquidityNetwork extends React.Component {
     const displayOnchain = getDisplayValue(toBN(onchainBalance))
     const displayOffchain = getDisplayValue(toBN(offchainBalance))
 
-    this.setState({balances: {...this.state.balances, [name]: {onchainBalance, offchainBalance, displayOnchain, displayOffchain}}})
+    const withdrawalLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, tokenAddress)
+
+    this.setState({balances: {...this.state.balances, [name]: {onchainBalance, offchainBalance, displayOnchain, displayOffchain, withdrawalLimit}}})
   }
 
   async getTransactions() {
@@ -196,17 +199,29 @@ export default class LiquidityNetwork extends React.Component {
 
   async checkWithdrawalInfo () {
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(toWei(this.props.gwei.toString(), "gwei"))
-    const ethWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, this.state.tokens.ETH.tokenAddress)
-    const daiWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, this.state.tokens.LQD.tokenAddress)
-    const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, HUB_CONTRACT_ADDRESS)
+    const ethBlocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, this.state.tokens.ETH.tokenAddress)
+    const lqdBlocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, this.state.tokens.LQD.tokenAddress)
+    
+    let tokenAddress
+    let blocksToWithdrawal
+    if (ethBlocksToWithdrawal === -1) {
+      tokenAddress = this.state.tokens.LQD.tokenAddress
+      blocksToWithdrawal = lqdBlocksToWithdrawal
+    } else if (lqdBlocksToWithdrawal === -1) {
+      tokenAddress = this.state.tokens.ETH.tokenAddress
+      blocksToWithdrawal = ethBlocksToWithdrawal
+    } else {
+      tokenAddress = (ethBlocksToWithdrawal < lqdBlocksToWithdrawal ? this.state.tokens.ETH.tokenAddress : this.state.tokens.LQD.tokenAddress )
+      blocksToWithdrawal = Math.min(ethBlocksToWithdrawal, lqdBlocksToWithdrawal)
+    }
 
-    this.setState({withdrawFee, ethWithdrawLimit, daiWithdrawLimit, blocksToWithdrawal})
+    this.setState({withdrawInfo: { tokenAddress, blocksToWithdrawal, withdrawFee }})
   }
 
   async confirmWithdrawal () {
     const gasLimit = "300000"
 
-    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, toWei(this.props.gwei.toString(), "gwei"), gasLimit, HUB_CONTRACT_ADDRESS)
+    const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, toWei(this.props.gwei.toString(), "gwei"), gasLimit, this.state.withdrawInfo.token)
     console.log("withdrawal", txhash)
     this.checkTokenBalances()
   }
@@ -215,12 +230,12 @@ export default class LiquidityNetwork extends React.Component {
 
     let sendButtons = (
       <div>
-        {typeof this.state.blocksToWithdrawal !== 'undefined' && this.state.blocksToWithdrawal != -1 &&
+        {typeof this.state.withdrawInfo !== 'undefined' && typeof this.state.withdrawInfo.blocksToWithdrawal !== 'undefined' && this.state.withdrawInfo.blocksToWithdrawal != -1 &&
         <div className="content ops row">
-          <div className="col-12 p-1" onClick={() => this.confirmWithdrawal()}>
-            <button className={`btn btn-large w-100 ${this.state.blocksToWithdrawal == 0 ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}>
+          <div className="col-12 p-1" onClick={() => {if (this.state.withdrawInfo.blocksToWithdrawal == 0) this.confirmWithdrawal()}}>
+            <button className={`btn btn-large w-100 ${this.state.withdrawInfo.blocksToWithdrawal == 0 ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className={`fas ${this.state.blocksToWithdrawal == 0 ? 'fa-check' : 'fa-clock'}`}/> {this.state.blocksToWithdrawal == 0 ? i18next.t('liquidity.withdraw.confirm') : this.state.blocksToWithdrawal + " blocks until confirmation"}
+                <i className={`fas ${this.state.withdrawInfo.locksToWithdrawal == 0 ? 'fa-check' : 'fa-clock'}`}/> {this.state.withdrawInfo.blocksToWithdrawal == 0 ? i18next.t('liquidity.withdraw.confirm') : this.state.withdrawInfo.blocksToWithdrawal + " blocks until confirmation"}
               </Scaler>
             </button>
           </div>
@@ -380,7 +395,11 @@ export default class LiquidityNetwork extends React.Component {
             <div>
               <div className="main-card card w-100" style={{zIndex:1}}>
                 <NavCard title={i18n.t('liquidity.bridge.title')} />
-                Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
+                <div style={{textAlign:"center",width:"100%",fontSize:16,marginTop:10}}>
+                    <Scaler config={{startZoomAt:400,origin:"50% 50%",adjustedZoom:1}}>
+                    Withdrawal Fee: {typeof this.state.withdrawInfo.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawInfo.withdrawFee.toString(), 'ether').toString() : 0} ETH
+                    </Scaler>
+                </div>
                 <Ruler/>
                 <LiquidityBridge
                   address={this.state.address}
@@ -390,7 +409,7 @@ export default class LiquidityNetwork extends React.Component {
                   nocust={this.state.nocustManager}
                   ethBalance={this.state.balances.ETH.onchainBalance}
                   gasPrice={toWei(this.props.gwei.toString(), "gwei")}
-                  withdrawLimit={this.state.ethWithdrawLimit}
+                  withdrawLimit={this.state.balances.ETH.withdrawalLimit}
                   changeAlert={this.props.changeAlert}
                 />
                 <Ruler/>
@@ -402,7 +421,7 @@ export default class LiquidityNetwork extends React.Component {
                   nocust={this.state.nocustManager}
                   ethBalance={this.state.balances.ETH.onchainBalance}
                   gasPrice={toWei(this.props.gwei.toString(), "gwei")}
-                  withdrawLimit={this.state.daiWithdrawLimit}
+                  withdrawLimit={this.state.balances.LQD.withdrawalLimit}
                   changeAlert={this.props.changeAlert}
                 />
               </div>
