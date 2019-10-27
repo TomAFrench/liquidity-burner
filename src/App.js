@@ -542,6 +542,7 @@ class App extends Component {
                       localStorage.setItem("metaPrivateKey","")
                     }
                     burnMetaAccount()
+                    history.push("/")
                   }}
                   />
                 </div>
