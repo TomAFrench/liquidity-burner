@@ -5,7 +5,7 @@ import 'react-input-range/lib/css/index.css';
 
 const { toWei, fromWei, toBN } = require('web3-utils');
 
-export default (props) => {
+export default React.forwardRef((props, ref) => {
 
   const maxButton = (
     <div className="input-group-append" onClick={ event => {props.updateValue(props.maxValue)}}>
@@ -22,6 +22,7 @@ export default (props) => {
         <div className="input-group-text">{props.unit}</div>
       </div>
       <input
+        ref={ref}
         type="number"
         step="0.01"
         className="form-control"
@@ -37,3 +38,4 @@ export default (props) => {
     </Scaler>
   )
 }
+)

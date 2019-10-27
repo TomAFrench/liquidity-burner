@@ -358,15 +358,13 @@ export default class LiquidityNetwork extends React.Component {
                 />
                 <Ruler/>
                 <LiquiditySendToAddress
-                  nocustManager={this.state.nocustManager}
+                  token={token}
+                  sendTransaction={(tx) => this.state.nocustManager.sendTransaction(tx)}
                   convertToDollar={(dollar) => {return dollar}}
-                  dollarSymbol={"$"}
-                  text={"f"+token.shortName}
                   toAddress={typeof location.state !== 'undefined' ? location.state.toAddress : undefined}
                   ensLookup={this.props.ensLookup}
                   buttonStyle={this.props.buttonStyle}
                   offchainBalance={tokenBalance.offchainBalance}
-                  tokenAddress={token.tokenAddress}
                   address={this.state.address}
                   changeAlert={this.props.changeAlert}
                   dollarDisplay={(balance)=>{return balance}}

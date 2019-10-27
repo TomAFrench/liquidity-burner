@@ -7,6 +7,8 @@ import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
 import i18n from '../i18n';
 import AddressBar from './AddressBar';
+import AmountBar from './AmountBar'
+
 const queryString = require('query-string');
 const { toWei, fromWei, toBN } = require('web3-utils');
 
@@ -166,12 +168,12 @@ export default class LiquiditySendToAddress extends React.Component {
           to: toAddress,
           from: this.props.address,
           amount: toWei(value, 'ether').toString(),
-          tokenAddress: this.props.tokenAddress
+          tokenAddress: this.props.token.tokenAddress
         }
 
         console.log(transaction)
         
-        this.props.nocustManager.sendTransaction(transaction)
+        this.props.sendTransaction(transaction)
         // console.log("transaction response", response)
         if (typeof this.props.onSend === 'function') {
           this.props.onSend()
@@ -184,13 +186,7 @@ export default class LiquiditySendToAddress extends React.Component {
 
   render() {
     let { canSend, toAddress } = this.state;
-    let {dollarSymbol} = this.props
-
-    let amountInputDisplay = (
-      <input type="number" className="form-control" placeholder="0.00" value={this.state.amount} min="0"
-          ref={(input) => { this.amountInput = input; }}
-             onChange={event => this.updateState('amount', event.target.value)} />
-    )
+      
 
     return (
       <div>
@@ -215,12 +211,15 @@ export default class LiquiditySendToAddress extends React.Component {
               </CopyToClipboard>
             }</div>
             <label htmlFor="amount_input">{i18n.t('send_to_address.send_amount')}</label>
-            <div className="input-group">
-              <div className="input-group-prepend">
-                <div className="input-group-text">{this.props.text}</div>
-              </div>
-              {amountInputDisplay}
-            </div>
+              <AmountBar
+                ref={(input) => { this.amountInput = input; }}
+                buttonStyle={this.props.buttonStyle}
+                unit={"f"+this.props.token.shortName}
+                value={this.state.amount}
+                updateValue={amount => this.updateState('amount', amount)}
+                maxValue={typeof this.props.offchainBalance !== 'undefined' && fromWei(this.props.offchainBalance.toString(), 'ether')}
+                minValue={"0"}
+              />
           </div>
         </div>
         <button name="theVeryBottom" className={`btn btn-lg w-100 ${canSend ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}
