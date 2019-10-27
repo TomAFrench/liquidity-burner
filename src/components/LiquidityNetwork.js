@@ -45,6 +45,9 @@ const qs = require('query-string');
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
 const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
 const RPC_URL = process.env.REACT_APP_RPC_URL
+const TOKEN = process.env.REACT_APP_TOKEN
+
+console.log("TOKEN", TOKEN)
 
 function getDisplayValue(value, decimals=4) {
   const displayVal = fromWei(value.toString(), 'ether');
@@ -145,8 +148,9 @@ export default class LiquidityNetwork extends React.Component {
     }, {})
 
     tokens.ETH.image = ethImg
-    // tokens.DAI.image = daiImg
-    tokens.LQD.image = lqdImg
+    if (tokens.DAI) tokens.DAI.image = daiImg
+    if (tokens.LQD) tokens.LQD.image = lqdImg
+    
     this.setState({tokens: tokens})
     cookie.save('availableTokens', tokens, { path: '/', maxAge: 60 })
   }
@@ -174,7 +178,6 @@ export default class LiquidityNetwork extends React.Component {
     }
     console.log(this.state.balances)
     cookie.save('tokenBalances', this.state.balances, { path: '/', maxAge: 60 })
-
   }
 
   async checkTokenBalance (name, tokenAddress) {
@@ -190,7 +193,7 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async getTransactions() {
-    let transactions = await this.state.nocustManager.getTransactionsForAddress(this.state.address, this.state.tokens.LQD.tokenAddress)
+    let transactions = await this.state.nocustManager.getTransactionsForAddress(this.state.address, this.state.tokens[TOKEN].tokenAddress)
     if (transactions.length) {
       transactions = transactions.reverse()
     }
@@ -200,19 +203,19 @@ export default class LiquidityNetwork extends React.Component {
   async checkWithdrawalInfo () {
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(toWei(this.props.gwei.toString(), "gwei"))
     const ethBlocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, this.state.tokens.ETH.tokenAddress)
-    const lqdBlocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, this.state.tokens.LQD.tokenAddress)
+    const tokenBlocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, this.state.tokens[TOKEN].tokenAddress)
     
     let tokenAddress
     let blocksToWithdrawal
     if (ethBlocksToWithdrawal === -1) {
-      tokenAddress = this.state.tokens.LQD.tokenAddress
-      blocksToWithdrawal = lqdBlocksToWithdrawal
-    } else if (lqdBlocksToWithdrawal === -1) {
-      tokenAddress = this.state.tokens.ETH.tokenAddress
+      tokenAddress = this.state.tokens[TOKEN].tokenAddress
+      blocksToWithdrawal = tokenBlocksToWithdrawal
+    } else if (tokenBlocksToWithdrawal === -1) {
+      tokenAddress = this.state.tokens[TOKEN].tokenAddress
       blocksToWithdrawal = ethBlocksToWithdrawal
     } else {
-      tokenAddress = (ethBlocksToWithdrawal < lqdBlocksToWithdrawal ? this.state.tokens.ETH.tokenAddress : this.state.tokens.LQD.tokenAddress )
-      blocksToWithdrawal = Math.min(ethBlocksToWithdrawal, lqdBlocksToWithdrawal)
+      tokenAddress = (ethBlocksToWithdrawal < tokenBlocksToWithdrawal ? this.state.tokens.ETH.tokenAddress : this.state.tokens[TOKEN].tokenAddress )
+      blocksToWithdrawal = Math.min(ethBlocksToWithdrawal, tokenBlocksToWithdrawal)
     }
 
     this.setState({withdrawInfo: { tokenAddress, blocksToWithdrawal, withdrawFee }})
@@ -252,7 +255,7 @@ export default class LiquidityNetwork extends React.Component {
           </div>
           <div className="col-6 p-1">
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
-              <Link to={{pathname:"/liquidity/send", search: "?token=LQD"}} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+              <Link to={{pathname:"/liquidity/send", search: "?token="+TOKEN}} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
                 </Scaler>
@@ -341,8 +344,8 @@ export default class LiquidityNetwork extends React.Component {
         <Route
           path="/liquidity/send"
           render={({ history, location }) => {
-            const token = this.state.tokens[qs.parse(location.search).token] || this.state.tokens.LQD
-            const tokenBalance = this.state.balances[qs.parse(location.search).token] || this.state.tokens.LQD
+            const token = this.state.tokens[qs.parse(location.search).token] || this.state.tokens[TOKEN]
+            const tokenBalance = this.state.balances[qs.parse(location.search).token] || this.state.tokens[TOKEN]
             return (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>
@@ -419,13 +422,13 @@ export default class LiquidityNetwork extends React.Component {
                 <Ruler/>
                 <LiquidityBridge
                   address={this.state.address}
-                  token={this.state.tokens.LQD}
-                  balance={this.state.balances.LQD}
+                  token={this.state.tokens[TOKEN]}
+                  balance={this.state.balances[TOKEN]}
                   buttonStyle={this.props.buttonStyle}
                   nocust={this.state.nocustManager}
                   ethBalance={this.state.balances.ETH.onchainBalance}
                   gasPrice={toWei(this.props.gwei.toString(), "gwei")}
-                  withdrawLimit={this.state.balances.LQD.withdrawalLimit}
+                  withdrawLimit={this.state.balances[TOKEN].withdrawalLimit}
                   changeAlert={this.props.changeAlert}
                   onSend={() => {
                     setTimeout(() => {
@@ -450,9 +453,9 @@ export default class LiquidityNetwork extends React.Component {
               <NavCard title={i18n.t('exchange_title')} />
               <LiquidityExchange
                 assetA={this.state.tokens.ETH}
-                assetB={this.state.tokens.LQD}
+                assetB={this.state.tokens[TOKEN]}
                 assetABalance={this.state.balances.ETH}
-                assetBBalance={this.state.balances.LQD}
+                assetBBalance={this.state.balances[TOKEN]}
                 address={this.state.address}
                 buttonStyle={this.props.buttonStyle}
                 nocust={this.state.nocustManager}
@@ -472,10 +475,10 @@ export default class LiquidityNetwork extends React.Component {
               <div className="form-group w-100">
 
                 <div style={{width:"100%",textAlign:"center"}}>
-                  <Link to={{pathname:"/liquidity/send", search: "?token=LQD"}} >
+                  <Link to={{pathname:"/liquidity/send", search: "?token="+TOKEN}} >
                     <Balance
-                      token={this.state.tokens.LQD}
-                      balance={this.state.balances.LQD}
+                      token={this.state.tokens[TOKEN]}
+                      balance={this.state.balances[TOKEN]}
                       offchain
                       selected
                       address={this.props.account}
@@ -484,8 +487,8 @@ export default class LiquidityNetwork extends React.Component {
                   </Link>
                   <Ruler/>
                   <Balance
-                    token={this.state.tokens.LQD}
-                    balance={this.state.balances.LQD}
+                    token={this.state.tokens[TOKEN]}
+                    balance={this.state.balances[TOKEN]}
                     address={this.props.account}
                     dollarDisplay={(balance)=>{return balance}}
                   />
@@ -516,7 +519,7 @@ export default class LiquidityNetwork extends React.Component {
                     dollarDisplay={(balance)=>{return balance}}
                     changeAlert={this.props.changeAlert}
                     address={this.state.account}
-                    token={this.state.tokens.LQD}
+                    token={this.state.tokens[TOKEN]}
                     recentTxs={this.state.transactions}
                   />
               </div>
