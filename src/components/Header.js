@@ -59,7 +59,7 @@ export  default ({openScanner, network, total, dollarDisplay, ens, title, titleI
   }
 
   let bottomRight = (
-    <Link to="/scanner" style={scanButtonStyle} >
+    <Link to={{pathname:"/scanner", search: location.search}} style={scanButtonStyle} >
       <div style={{position:'relative',backgroundImage:"linear-gradient("+mainStyle.mainColorAlt+","+mainStyle.mainColor+")",backgroundColor:mainStyle.mainColor,borderRadius:"50%",width:89,height:89,boxShadow: "0.5px 0.5px 5px #000000"}}>
         <div  style={{color:'#FFFFFF',position:'absolute',left:30,top:28}}>
           <i className="fas fa-qrcode" />
