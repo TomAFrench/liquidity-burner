@@ -316,8 +316,8 @@ export default class LiquidityNetwork extends React.Component {
         <Route
           path="/liquidity/send"
           render={({ history, location }) => {
-            const token = this.state.tokens[qs.parse(location.search).token] 
-            const tokenBalance = this.state.balances[qs.parse(location.search).token]
+            const token = this.state.tokens[qs.parse(location.search).token] || this.state.tokens.LQD
+            const tokenBalance = this.state.balances[qs.parse(location.search).token] || this.state.tokens.LQD
             return (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>
