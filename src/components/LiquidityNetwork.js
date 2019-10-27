@@ -340,7 +340,7 @@ export default class LiquidityNetwork extends React.Component {
                   toAddress={typeof location.state !== 'undefined' ? location.state.toAddress : undefined}
                   ensLookup={this.props.ensLookup}
                   buttonStyle={this.props.buttonStyle}
-                  offchainBalance={tokenBalance.displayOffchain}
+                  offchainBalance={tokenBalance.offchainBalance}
                   tokenAddress={token.tokenAddress}
                   address={this.state.address}
                   changeAlert={this.props.changeAlert}
@@ -350,7 +350,7 @@ export default class LiquidityNetwork extends React.Component {
                     setTimeout(() => {
                       this.checkTokenBalances()
                       this.getTransactions()
-                    }, 2000)
+                    }, 1000)
                   }}
                 />
               </div>

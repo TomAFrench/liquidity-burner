@@ -144,7 +144,7 @@ export default class LiquiditySendToAddress extends React.Component {
 
       console.log("this.props.balance",parseFloat(this.props.offchainBalance),"amountWei",amountWei.toString())
 
-      if(this.props.offchainBalance.lt(amountWei)){
+      if(toBN(this.props.offchainBalance).lt(amountWei)){
         console.log("Not enough funds", this.props.offchainBalance.toString())
         this.props.changeAlert({type: 'warning', message: "Not enough funds"})
       }else{
