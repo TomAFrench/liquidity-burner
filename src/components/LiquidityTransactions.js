@@ -17,13 +17,13 @@ let cleanTime = (s)=>{
   }
 }
 
-const TransactionEntry = ({dollarDisplay, tx, changeAlert}) => {
+const TransactionEntry = ({dollarDisplay, tx, changeAlert, token}) => {
 
   let blockAge = (Date.now() - tx.timestamp) / 1000
 
   let dollarView = (
     <span>
-      <span style={{opacity:0.33}}>-</span>{fromWei(tx.amount.toString(), 'ether')}<span style={{opacity:0.33}}>-></span>
+      <span style={{opacity:0.33}}>-</span>{fromWei(tx.amount.toString(), 'ether')} f{token.shortName}<span style={{opacity:0.33}}>-></span>
     </span>
   )
 
@@ -78,7 +78,7 @@ const TransactionEntry = ({dollarDisplay, tx, changeAlert}) => {
 
 }
 
-export default ({dollarDisplay, max, recentTxs, changeAlert}) => {
+export default ({dollarDisplay, max, recentTxs, changeAlert, token}) => {
   let txns = []
   let count=0
   if(!max) max=9999
@@ -86,7 +86,7 @@ export default ({dollarDisplay, max, recentTxs, changeAlert}) => {
 
     if(count++<max){
       txns.push(<hr key={"ruler"+recentTxs[r].tx_id} style={{ "color": "#DFDFDF",marginTop:0,marginBottom:7 }}/>)
-      txns.push(<TransactionEntry tx={recentTxs[r]} changeAlert={changeAlert}/>)
+      txns.push(<TransactionEntry tx={recentTxs[r]} changeAlert={changeAlert} token={token}/>)
     }
   }
   if(txns.length>0){

@@ -473,6 +473,7 @@ export default class LiquidityNetwork extends React.Component {
                     dollarDisplay={(balance)=>{return balance}}
                     changeAlert={this.props.changeAlert}
                     address={this.state.account}
+                    token={this.state.tokens.LQD}
                     recentTxs={this.state.transactions}
                   />
               </div>
