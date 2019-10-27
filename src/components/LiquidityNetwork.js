@@ -317,18 +317,19 @@ export default class LiquidityNetwork extends React.Component {
         <Route
           path="/liquidity/send"
           render={({ history, location }) => {
-            const token = this.state.tokens[qs.parse(location.search).token] || {}
-            const tokenBalance = this.state.balances[qs.parse(location.search).token] || {}
+            const token = this.state.tokens[qs.parse(location.search).token] 
+            const tokenBalance = this.state.balances[qs.parse(location.search).token]
+            console.log("token", token)
             return (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>
               
                 <NavCard title={i18n.t('send_to_address_title')} />
                 <Balance
-                  icon={token.image}
-                  selected={true}
-                  text={"f"+token.shortName}
-                  amount={tokenBalance.displayOffchain}
+                  token={token}
+                  balance={tokenBalance}
+                  offchain
+                  selected
                   address={this.props.account}
                   dollarDisplay={(balance)=>{return balance}}
                 />
@@ -372,33 +373,23 @@ export default class LiquidityNetwork extends React.Component {
               Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
               <Ruler/>
               <LiquidityBridge
-                text={this.state.tokens.ETH.shortName}
-                image={this.state.tokens.ETH.image}
-                tokenAddress={HUB_CONTRACT_ADDRESS}
                 address={this.state.address}
+                token={this.state.tokens.ETH}
+                balance={this.state.balances.ETH}
                 buttonStyle={this.props.buttonStyle}
                 nocust={this.state.nocustManager}
                 ethBalance={this.state.balances.ETH.onchainBalance}
-                onchainBalance={this.state.balances.ETH.onchainBalance}
-                offchainBalance={this.state.balances.ETH.offchainBalance}
-                onchainDisplay={this.state.balances.ETH.displayOnchain}
-                offchainDisplay={this.state.balances.ETH.displayOffchain}
                 gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                 withdrawLimit={this.state.ethWithdrawLimit}
               />
               <Ruler/>
               <LiquidityBridge
-                text={this.state.tokens.LQD.shortName}
-                image={this.state.tokens.LQD.image}
-                tokenAddress={TEST_DAI_ADDRESS}
                 address={this.state.address}
+                token={this.state.tokens.LQD}
+                balance={this.state.balances.LQD}
                 buttonStyle={this.props.buttonStyle}
                 nocust={this.state.nocustManager}
                 ethBalance={this.state.balances.ETH.onchainBalance}
-                onchainBalance={this.state.balances.LQD.onchainBalance}
-                offchainBalance={this.state.balances.LQD.offchainBalance}
-                onchainDisplay={this.state.balances.LQD.displayOnchain}
-                offchainDisplay={this.state.balances.LQD.displayOffchain}
                 gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                 withdrawLimit={this.state.daiWithdrawLimit}
               />
@@ -416,16 +407,10 @@ export default class LiquidityNetwork extends React.Component {
             <div className="main-card card w-100" style={{zIndex:1}}>
               <NavCard title={i18n.t('exchange_title')} />
               <LiquidityExchange
-                assetAText={"f"+this.state.tokens.ETH.shortName}
-                assetBText={"f"+this.state.tokens.LQD.shortName}
-                assetAAddress={HUB_CONTRACT_ADDRESS}
-                assetBAddress={TEST_DAI_ADDRESS}
-                assetAImage={this.state.tokens.ETH.image}
-                assetBImage={this.state.tokens.LQD.image}
-                assetABalance={this.state.balances.ETH.offchainBalance}
-                assetBBalance={this.state.balances.LQD.offchainBalance}
-                assetADisplay={this.state.balances.ETH.displayOffchain}
-                assetBDisplay={this.state.balances.LQD.displayOffchain}
+                assetA={this.state.tokens.ETH}
+                assetB={this.state.tokens.LQD}
+                assetABalance={this.state.balances.ETH}
+                assetBBalance={this.state.balances.LQD}
                 address={this.state.address}
                 buttonStyle={this.props.buttonStyle}
                 nocust={this.state.nocustManager}
@@ -447,43 +432,39 @@ export default class LiquidityNetwork extends React.Component {
                 <div style={{width:"100%",textAlign:"center"}}>
                   <Link to={{pathname:"/liquidity/send", search: "?token=LQD"}} >
                     <Balance
-                            icon={this.state.tokens.LQD.image}
-                            selected={true}
-                            text={"f"+this.state.tokens.LQD.shortName}
-                            amount={this.state.balances.LQD.displayOffchain}
-                            address={this.props.account}
-                            dollarDisplay={(balance)=>{return balance}}
-                          />
+                      token={this.state.tokens.LQD}
+                      balance={this.state.balances.LQD}
+                      offchain
+                      selected
+                      address={this.props.account}
+                      dollarDisplay={(balance)=>{return balance}}
+                  />
                   </Link>
                   <Ruler/>
                   <Balance
-                        icon={this.state.tokens.LQD.image}
-                        selected={true}
-                        text={this.state.tokens.LQD.shortName}
-                        amount={this.state.balances.LQD.displayOnchain}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
+                    token={this.state.tokens.LQD}
+                    balance={this.state.balances.LQD}
+                    address={this.props.account}
+                    dollarDisplay={(balance)=>{return balance}}
+                  />
                   <Ruler/>
                   <Link to={{pathname:"/liquidity/send", search: "?token=ETH"}}>
                     <Balance
-                          icon={this.state.tokens.ETH.image}
-                          selected={true}
-                          text={"f"+this.state.tokens.ETH.shortName}
-                          amount={this.state.balances.ETH.displayOffchain}
-                          address={this.props.account}
-                          dollarDisplay={(balance)=>{return balance}}
+                      token={this.state.tokens.ETH}
+                      balance={this.state.balances.ETH}
+                      offchain
+                      selected
+                      address={this.props.account}
+                      dollarDisplay={(balance)=>{return balance}}
                         />
                   </Link>
                   <Ruler/>
                   <Balance
-                        icon={this.state.tokens.ETH.image}
-                        selected={true}
-                        text={this.state.tokens.ETH.shortName}
-                        amount={typeof this.state.balances.ETH !== 'undefined' ? this.state.balances.ETH.displayOnchain: "0"}
-                        address={this.props.account}
-                        dollarDisplay={(balance)=>{return balance}}
-                      />
+                    token={this.state.tokens.ETH}
+                    balance={this.state.balances.ETH}
+                    address={this.props.account}
+                    dollarDisplay={(balance)=>{return balance}}
+                  />
                   <Ruler/>
 
                   {sendButtons}

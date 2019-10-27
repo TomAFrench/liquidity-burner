@@ -1,13 +1,16 @@
 import React from 'react';
 import Blockies from 'react-blockies';
 import { Scaler } from "dapparatus";
+import { Balance } from 'nocust-client';
 
-export  default ({icon, text, selected, amount, address, dollarDisplay}) => {
-
+export  default ({token, selected, balance, offchain, dollarDisplay}) => {
+  
   let opacity = 0.65
-  if(text == selected){
+  if(selected){
     opacity=0.95
   }
+
+  var amount = (offchain ? balance.displayOffchain : balance.displayOnchain)
 
   if(isNaN(amount) || typeof amount == "undefined"){
     amount=0.00
@@ -20,14 +23,14 @@ export  default ({icon, text, selected, amount, address, dollarDisplay}) => {
 
   let iconDisplay
 
-    if(typeof icon == "string" && icon.length<8){
+    if(typeof token.image == "string" && token.image.length<8){
     iconDisplay = (
       <div style={{width:50,height:50,fontSize:42,paddingTop:13}}>
-        {icon}
+        {token.image}
       </div>
     )
   }else{
-    iconDisplay = <img src={icon} style={{maxWidth:50,maxHeight:50}}/>
+    iconDisplay = <img src={token.image} style={{maxWidth:50,maxHeight:50}}/>
   }
 
 
@@ -36,7 +39,7 @@ export  default ({icon, text, selected, amount, address, dollarDisplay}) => {
       <div className="avatar col p-0">
         {iconDisplay}
         <div style={{position:'absolute',left:60,top:12,fontSize:14,opacity:0.77, whiteSpace: 'nowrap'}}>
-          {text}
+          {offchain? "f"+token.shortName : token.shortName }
         </div>
       </div>
       <div style={{position:"absolute",right:25,marginTop:15}}>

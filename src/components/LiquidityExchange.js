@@ -121,11 +121,11 @@ const TEXSwapBar = (props) => {
         icon={"fa-arrow-down"}
         buttonStyle={props.buttonStyle}
         orders={props.orderbook.sell_orders}
-        assetSellText={props.assetAText}
-        assetBuyText={props.assetBText}
+        assetSellText={"f"+props.assetA.shortName}
+        assetBuyText={"f"+props.assetB.shortName}
         assetBalance={props.assetABalance}
         successAction={(buyAmount, sellAmount) => {
-          console.log("Buying ", buyAmount, props.assetBText, " for ", sellAmount, props.assetAText)
+          console.log("Buying ", buyAmount, props.assetB.shortName, " for ", sellAmount, props.assetA.shortName)
           props.AtoBTrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
           setSwapMode(false)
         }}
@@ -141,11 +141,11 @@ const TEXSwapBar = (props) => {
         icon={"fa-arrow-up"}
         buttonStyle={props.buttonStyle}
         orders={props.orderbook.buy_orders}
-        assetSellText={props.assetBText}
-        assetBuyText={props.assetAText}
+        assetSellText={"f"+props.assetB.shortName}
+        assetBuyText={"f"+props.assetA.shortName}
         assetBalance={props.assetBBalance}
         successAction={(buyAmount, sellAmount) => {
-          console.log("Buying ", buyAmount, props.assetAText, " for ", sellAmount, props.assetBText)
+          console.log("Buying ", buyAmount, props.assetA.shortName, " for ", sellAmount, props.assetB.shortName)
           props.BtoATrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
           setSwapMode(false)
         }}
@@ -166,7 +166,7 @@ const TEXSwapBar = (props) => {
               }}
             >
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              <i className="fas fa-arrow-up"  /> {props.assetBText} to {props.assetAText}
+              <i className="fas fa-arrow-up"  /> {"f"+props.assetB.shortName} to {"f"+props.assetA.shortName}
               </Scaler>
             </button>
           </div>
@@ -180,7 +180,7 @@ const TEXSwapBar = (props) => {
                 }}
             >
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-arrow-down" /> {props.assetAText} to {props.assetBText}
+                <i className="fas fa-arrow-down" /> {"f"+props.assetA.shortName} to {"f"+props.assetB.shortName}
               </Scaler>
             </button>
           </div>  
@@ -281,7 +281,7 @@ export default class LiquidityExchange extends React.Component {
   }
 
   async getOrderBook(){
-    const orderbook = await this.props.nocust.getOrderBook(this.props.assetBAddress, this.props.assetAAddress)
+    const orderbook = await this.props.nocust.getOrderBook(this.props.assetB.tokenAddress, this.props.assetA.tokenAddress)
     this.setState({orderbook})
   }
 
@@ -292,43 +292,43 @@ export default class LiquidityExchange extends React.Component {
   }
 
   AtoBTrade(buyAmount, sellAmount) {
-    this.props.nocust.sendSwap(this.props.address, this.props.assetBAddress, this.props.assetAAddress, buyAmount, sellAmount)
+    this.props.nocust.sendSwap(this.props.address, this.props.assetB.tokenAddress, this.props.assetA.tokenAddress, buyAmount, sellAmount)
   }
 
   BtoATrade(buyAmount, sellAmount) {
-    this.props.nocust.sendSwap(this.props.address, this.props.assetAAddress, this.props.assetBAddress, buyAmount, sellAmount)
+    this.props.nocust.sendSwap(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress, buyAmount, sellAmount)
   }
 
   render() {
     return (
       <div>
         <Balance
-          icon={this.props.assetAImage}
-          text={this.props.assetAText}
-          amount={this.props.assetADisplay}
+          token={this.props.assetA}
+          balance={this.props.assetABalance}
+          offchain
+          selected
           address={this.props.account}
           dollarDisplay={(balance)=>{return balance}}
-          />
+        />
         <Ruler/>
         <TEXSwapBar
+          assetA={this.props.assetA}
+          assetB={this.props.assetB}
+          assetABalance={this.props.assetABalance.offchainBalance}
+          assetBBalance={this.props.assetBBalance.offchainBalance}
           buttonStyle={this.props.buttonStyle}
           orderbook={this.state.orderbook}
-          assetAText={this.props.assetAText}
-          assetBText={this.props.assetBText}
-          assetABalance={this.props.assetABalance}
-          assetBBalance={this.props.assetBBalance}
-          assetADisplay={this.props.assetADisplay}
-          assetBDisplay={this.props.assetBDisplay}
           AtoBTrade={(buyAmount, sellAmount) => this.AtoBTrade(buyAmount, sellAmount)}
           BtoATrade={(buyAmount, sellAmount) => this.BtoATrade(buyAmount, sellAmount)}
         />
         <Balance
-          icon={this.props.assetBImage}
-          text={this.props.assetBText}
-          amount={this.props.assetBDisplay}
+          token={this.props.assetB}
+          balance={this.props.assetBBalance}
+          offchain
+          selected
           address={this.props.account}
           dollarDisplay={(balance)=>{return balance}}
-          />
+        />
         <Ruler/>
       </div>
     )
