@@ -38,6 +38,7 @@ export default (props) => {
           try {
             await props.nocust.approveAndDeposit(props.address, amount, props.gasPrice, gasLimit, props.token.tokenAddress)
             history.push("/liquidity/sending", {title: "Sending " + props.token.shortName + " into the Liquidity Network...", subtitle: "Tokens can take between 5-10 minutes to appear on the hub"} )
+            props.onSend()
           } catch (e) {
             props.changeAlert({type: 'warning', message: "Transaction Failed"})
           }      
@@ -46,6 +47,7 @@ export default (props) => {
           try {
             await props.nocust.withdrawalRequest(props.address, amount, props.gasPrice, gasLimit, props.token.tokenAddress)
             history.push("/liquidity/sending", {title: "Requesting to withdraw " + props.token.shortName + " from the Liquidity Network...", subtitle: "Withdrawals can take up to 72 hours to become available to confirm onchain"} )
+            props.onSend()
           } catch (e) {
             props.changeAlert({type: 'warning', message: "Transaction Failed"})
           }

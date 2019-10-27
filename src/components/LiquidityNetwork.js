@@ -411,6 +411,12 @@ export default class LiquidityNetwork extends React.Component {
                   gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                   withdrawLimit={this.state.balances.ETH.withdrawalLimit}
                   changeAlert={this.props.changeAlert}
+                  onSend={() => {
+                    setTimeout(() => {
+                      this.checkTokenBalances()
+                      this.getTransactions()
+                    }, 1000)
+                  }}
                 />
                 <Ruler/>
                 <LiquidityBridge
@@ -423,6 +429,12 @@ export default class LiquidityNetwork extends React.Component {
                   gasPrice={toWei(this.props.gwei.toString(), "gwei")}
                   withdrawLimit={this.state.balances.LQD.withdrawalLimit}
                   changeAlert={this.props.changeAlert}
+                  onSend={() => {
+                    setTimeout(() => {
+                      this.checkTokenBalances()
+                      this.getTransactions()
+                    }, 1000)
+                  }}
                 />
               </div>
               <Link to="/liquidity">
