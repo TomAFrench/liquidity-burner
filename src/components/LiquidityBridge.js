@@ -31,8 +31,8 @@ export default (props) => {
         buttonStyle={props.buttonStyle}
         text={props.token.shortName}
         ethBalance={props.ethBalance}
-        onchainBalance={props.onchainBalance}
-        offchainBalance={props.offchainBalance}
+        onchainBalance={props.balance.onchainBalance}
+        offchainBalance={props.balance.offchainBalance}
         withdrawLimit={props.withdrawLimit}
         deposit={async (amount) => {
           try {
