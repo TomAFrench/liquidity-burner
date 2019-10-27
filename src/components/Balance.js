@@ -3,7 +3,7 @@ import Blockies from 'react-blockies';
 import { Scaler } from "dapparatus";
 import { Balance } from 'nocust-client';
 
-export  default ({token, selected, balance, offchain, dollarDisplay}) => {
+export default ({token, selected, balance, offchain, dollarDisplay}) => {
   
   let opacity = 0.65
   if(selected){

@@ -293,15 +293,25 @@ export default class LiquidityNetwork extends React.Component {
 
         <Route
           path="/liquidity/sending"
-          render={({history}) => (
+          render={({history, location}) => (
             <div>
               <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
-                <NavCard title={"Sending..."} darkMode/>
+                <NavCard title={(location.state && location.state.title) || "Sending..."} darkMode/>
               </div>
               <Loader
                 loaderImage={LOADERIMAGE}
                 mainStyle={this.props.mainStyle}
-                onFinish={() => { history.replace("/") }}/>
+                onFinish={() => { history.replace("/") }}
+              />
+              {location.state && location.state.subtitle &&
+                <div className="row" style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+                  <div style={{textAlign:"center",width:"100%",fontSize:16,marginTop:10}}>
+                    <Scaler config={{startZoomAt:400,origin:"50% 50%",adjustedZoom:1}}>
+                      {location.state.subtitle}
+                    </Scaler>
+                  </div>
+              </div>
+              }
             </div>
           )}
         />
@@ -364,41 +374,44 @@ export default class LiquidityNetwork extends React.Component {
         />
 
 
-        <Route path="/liquidity/bridge">
-          <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-              <NavCard title={i18n.t('liquidity.bridge.title')} />
-              Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
-              <Ruler/>
-              <LiquidityBridge
-                address={this.state.address}
-                token={this.state.tokens.ETH}
-                balance={this.state.balances.ETH}
-                buttonStyle={this.props.buttonStyle}
-                nocust={this.state.nocustManager}
-                ethBalance={this.state.balances.ETH.onchainBalance}
-                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
-                withdrawLimit={this.state.ethWithdrawLimit}
-              />
-              <Ruler/>
-              <LiquidityBridge
-                address={this.state.address}
-                token={this.state.tokens.LQD}
-                balance={this.state.balances.LQD}
-                buttonStyle={this.props.buttonStyle}
-                nocust={this.state.nocustManager}
-                ethBalance={this.state.balances.ETH.onchainBalance}
-                gasPrice={toWei(this.props.gwei.toString(), "gwei")}
-                withdrawLimit={this.state.daiWithdrawLimit}
-              />
+        <Route
+          path="/liquidity/bridge"
+          render={() => (
+            <div>
+              <div className="main-card card w-100" style={{zIndex:1}}>
+                <NavCard title={i18n.t('liquidity.bridge.title')} />
+                Withdrawal Fee: {typeof this.state.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawFee.toString(), 'ether').toString() : 0} ETH
+                <Ruler/>
+                <LiquidityBridge
+                  address={this.state.address}
+                  token={this.state.tokens.ETH}
+                  balance={this.state.balances.ETH}
+                  buttonStyle={this.props.buttonStyle}
+                  nocust={this.state.nocustManager}
+                  ethBalance={this.state.balances.ETH.onchainBalance}
+                  gasPrice={toWei(this.props.gwei.toString(), "gwei")}
+                  withdrawLimit={this.state.ethWithdrawLimit}
+                />
+                <Ruler/>
+                <LiquidityBridge
+                  address={this.state.address}
+                  token={this.state.tokens.LQD}
+                  balance={this.state.balances.LQD}
+                  buttonStyle={this.props.buttonStyle}
+                  nocust={this.state.nocustManager}
+                  ethBalance={this.state.balances.ETH.onchainBalance}
+                  gasPrice={toWei(this.props.gwei.toString(), "gwei")}
+                  withdrawLimit={this.state.daiWithdrawLimit}
+                />
+              </div>
+              <Link to="/liquidity">
+                <Bottom
+                  action={()=>{}}
+                />
+              </Link>
             </div>
-            <Link to="/liquidity">
-              <Bottom
-                action={()=>{}}
-              />
-            </Link>
-          </div>
-        </Route>
+          )}
+        />
 
         <Route path="/liquidity/exchange">
           <div>
