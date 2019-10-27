@@ -7,75 +7,86 @@ import i18n from '../i18n';
 
 const { toWei, fromWei } = require('web3-utils');
 
-export default ({dollarDisplay, max, buttonStyle, address, recentTxs, changeAlert}) => {
+let cleanTime = (s)=>{
+  if(s<60){
+    return s+"s"
+  }else if(s/60<60){
+    return Math.round(s/6)/10+"m"
+  }else {
+    return Math.round((s/60/6)/24)/10+"d"
+  }
+}
+
+const TransactionEntry = ({dollarDisplay, tx, changeAlert}) => {
+
+  let blockAge = (Date.now() - tx.timestamp) / 1000
+
+  let dollarView = (
+    <span>
+      <span style={{opacity:0.33}}>-</span>{fromWei(tx.amount.toString(), 'ether')}<span style={{opacity:0.33}}>-></span>
+    </span>
+  )
+
+  let fromBlockie = (
+    <CopyToClipboard text={tx.wallet.address} onCopy={() => {
+      changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
+    }}>
+      <div style={{cursor:"pointer"}}>
+        <Blockie
+          address={tx.wallet.address}
+          config={{size:4}}
+        />
+      </div>
+    </CopyToClipboard>
+  )
+
+  let toBlockie = (
+    <CopyToClipboard text={tx.recipient.address} onCopy={() => {
+      changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
+    }}>
+      <div style={{cursor:"pointer"}}>
+        <Blockie
+          address={tx.recipient.address}
+          config={{size:4}}
+        />
+      </div>
+    </CopyToClipboard>
+  )
+
+  return (
+    <div key={tx.tx_id} style={{position:'relative'}}  className="content bridge row" >
+      <div className="col-3 p-1" style={{textAlign:'center'}}>
+        {fromBlockie}
+      </div>
+      <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
+        <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
+          {dollarView}
+        </Scaler>
+      </div>
+      <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
+        {toBlockie}
+      </div>
+      <div className="col-2 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
+        <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
+          <span style={{marginLeft:5,marginTop:-5,opacity:0.4,fontSize:12}}>{cleanTime((blockAge))} ago</span>
+        </Scaler>
+      </div>
+
+    </div>
+  )
+  
+
+}
+
+export default ({dollarDisplay, max, recentTxs, changeAlert}) => {
   let txns = []
   let count=0
   if(!max) max=9999
   for(let r in recentTxs){
 
-    let dollarView = (
-      <span>
-        <span style={{opacity:0.33}}>-</span>{fromWei(recentTxs[r].amount.toString(), 'ether')}<span style={{opacity:0.33}}>-></span>
-      </span>
-    )
-
-    let fromBlockie = (
-      <CopyToClipboard text={recentTxs[r].wallet.address} onCopy={() => {
-        changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
-      }}>
-        <div style={{cursor:"pointer"}}>
-          <Blockie
-            address={recentTxs[r].wallet.address}
-            config={{size:4}}
-          />
-        </div>
-      </CopyToClipboard>
-    )
-
-    let toBlockie = (
-      <CopyToClipboard text={recentTxs[r].recipient.address} onCopy={() => {
-        changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
-      }}>
-        <div style={{cursor:"pointer"}}>
-          <Blockie
-            address={recentTxs[r].recipient.address}
-            config={{size:4}}
-          />
-        </div>
-      </CopyToClipboard>
-    )
-
     if(count++<max){
-      //if(txns.length>0){
-        txns.push(
-          <hr key={"ruler"+recentTxs[r].tx_id} style={{ "color": "#DFDFDF",marginTop:0,marginBottom:7 }}/>
-        )
-      //}
-
-      let blockAge = (Date.now() - recentTxs[r].timestamp) / 1000
-
-      txns.push(
-        // <div key={count} style={{position:'relative',cursor:'pointer'}} key={recentTxs[r].hash} className="content bridge row" >
-        <div key={recentTxs[r].tx_id} style={{position:'relative'}}  className="content bridge row" >
-          <div className="col-3 p-1" style={{textAlign:'center'}}>
-            {fromBlockie}
-          </div>
-          <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
-            <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
-              {dollarView}
-            </Scaler>
-          </div>
-          <div className="col-3 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
-            {toBlockie}
-          </div>
-          <div className="col-2 p-1" style={{textAlign:'center',whiteSpace:"nowrap",letterSpacing:-1}}>
-            <Scaler config={{startZoomAt:600,origin:"25% 50%",adjustedZoom:1}}>
-              <span style={{marginLeft:5,marginTop:-5,opacity:0.4,fontSize:12}}>{cleanTime((blockAge))} ago</span>
-            </Scaler>
-          </div>
-
-        </div>
-      )
+      txns.push(<hr key={"ruler"+recentTxs[r].tx_id} style={{ "color": "#DFDFDF",marginTop:0,marginBottom:7 }}/>)
+      txns.push(<TransactionEntry tx={recentTxs[r]} changeAlert={changeAlert}/>)
     }
   }
   if(txns.length>0){
@@ -88,15 +99,5 @@ export default ({dollarDisplay, max, buttonStyle, address, recentTxs, changeAler
     return (
       <span></span>
     )
-  }
-}
-
-let cleanTime = (s)=>{
-  if(s<60){
-    return s+"s"
-  }else if(s/60<60){
-    return Math.round(s/6)/10+"m"
-  }else {
-    return Math.round((s/60/6)/24)/10+"d"
   }
 }
