@@ -44,7 +44,6 @@ const qs = require('query-string');
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
 const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
 const RPC_URL = process.env.REACT_APP_RPC_URL
-const TEST_DAI_ADDRESS = process.env.REACT_APP_TEST_DAI_ADDRESS
 
 function getDisplayValue(value, decimals=4) {
   const displayVal = fromWei(value.toString(), 'ether');
@@ -188,7 +187,7 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async getTransactions() {
-    let transactions = await this.state.nocustManager.getTransactionsForAddress(this.state.address, TEST_DAI_ADDRESS)
+    let transactions = await this.state.nocustManager.getTransactionsForAddress(this.state.address, this.state.tokens.LQD.tokenAddress)
     if (transactions.length) {
       transactions = transactions.reverse()
     }
@@ -197,8 +196,8 @@ export default class LiquidityNetwork extends React.Component {
 
   async checkWithdrawalInfo () {
     const withdrawFee = await this.state.nocustManager.getWithdrawalFee(toWei(this.props.gwei.toString(), "gwei"))
-    const ethWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, HUB_CONTRACT_ADDRESS)
-    const daiWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, TEST_DAI_ADDRESS)
+    const ethWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, this.state.tokens.ETH.tokenAddress)
+    const daiWithdrawLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, this.state.tokens.LQD.tokenAddress)
     const blocksToWithdrawal = await this.state.nocustManager.getBlocksToWithdrawalConfirmation(this.state.address, undefined, HUB_CONTRACT_ADDRESS)
 
     this.setState({withdrawFee, ethWithdrawLimit, daiWithdrawLimit, blocksToWithdrawal})
