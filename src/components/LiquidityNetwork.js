@@ -319,7 +319,6 @@ export default class LiquidityNetwork extends React.Component {
           render={({ history, location }) => {
             const token = this.state.tokens[qs.parse(location.search).token] 
             const tokenBalance = this.state.balances[qs.parse(location.search).token]
-            console.log("token", token)
             return (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>
