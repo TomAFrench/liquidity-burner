@@ -650,7 +650,7 @@ class App extends Component {
       onUpdate={(state)=>{
         console.log("Gas price update:",state)
         this.setState(state,()=>{
-          this.state.gwei += 0.1
+          this.state.gwei = (this.state.gwei+0.1).toFixed(5)
           console.log("GWEI set:",this.state)
         })
       }}
