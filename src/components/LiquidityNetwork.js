@@ -6,6 +6,8 @@ import {
   Link,
   Redirect
 } from "react-router-dom";
+import cookie from 'react-cookies'
+
 import { Events, Blockie, Scaler } from "dapparatus";
 import Web3 from 'web3';
 import Ruler from "./Ruler";
@@ -30,6 +32,7 @@ import { NOCUSTManager } from 'nocust-client'
 
 import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
+import lqdImg from '../liquidity.png';
 import burnerlogo from '../liquidity.png';
 let LOADERIMAGE = burnerlogo
 
@@ -67,21 +70,24 @@ export default class LiquidityNetwork extends React.Component {
 
     console.log(nocustManager)
 
+    var tokens = cookie.load('availableTokens') 
+    if (typeof tokens === 'undefined') {
+      tokens = { "ETH": {}, "DAI": {}, "LQD": {} }
+    }
+
+    var balances = cookie.load('tokenBalances') 
+    if (typeof balances === 'undefined') {
+      balances = { "ETH": {}, "DAI": {}, "LQD": {} }
+    }
+
+    
     this.state = {
       nocustManager: nocustManager,
       address: limboweb3.eth.accounts.wallet[0].address,
       addressRegistered: false,
       blocksToWithdrawal: -1,
-      tokens: {
-        "ETH": {},
-        "DAI": {},
-        "LQD": {}
-      },
-      balances: {
-        "ETH": {},
-        "DAI": {},
-        "LQD": {}
-      }
+      tokens: tokens,
+      balances: balances
     }
 
     this.getAssets()
@@ -139,8 +145,10 @@ export default class LiquidityNetwork extends React.Component {
     }, {})
 
     tokens.ETH.image = ethImg
-    tokens.LQD.image = daiImg
+    // tokens.DAI.image = daiImg
+    tokens.LQD.image = lqdImg
     this.setState({tokens: tokens})
+    cookie.save('availableTokens', tokens, { path: '/', maxAge: 60 })
   }
 
   async registerWithHub(){
@@ -165,6 +173,8 @@ export default class LiquidityNetwork extends React.Component {
       }
     }
     console.log(this.state.balances)
+    cookie.save('tokenBalances', this.state.balances, { path: '/', maxAge: 60 })
+
   }
 
   async checkTokenBalance (name, tokenAddress) {
