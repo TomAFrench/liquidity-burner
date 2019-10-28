@@ -289,16 +289,21 @@ export default class LiquidityExchange extends React.Component {
 
   async syncSwaps(){
     console.log("Getting swaps for", this.props.address)
-    const swapresonse = await this.props.nocust.synchronizeSwapOrders(this.props.address)
-    console.log("Swap response", swapresonse)
+    const AtoBSwaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress)
+    const BtoASwaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetB.tokenAddress, this.props.assetA.tokenAddress)
+
+    console.log("AtoBSwaps response", AtoBSwaps)
+    console.log("BtoASwaps response", BtoASwaps)
   }
 
-  AtoBTrade(buyAmount, sellAmount) {
-    this.props.nocust.sendSwap(this.props.address, this.props.assetB.tokenAddress, this.props.assetA.tokenAddress, buyAmount, sellAmount)
+  async AtoBTrade(buyAmount, sellAmount) {
+    const swapResponse = await this.props.nocust.sendSwap(this.props.address, this.props.assetB.tokenAddress, this.props.assetA.tokenAddress, buyAmount, sellAmount)
+    console.log(swapResponse)
   }
 
-  BtoATrade(buyAmount, sellAmount) {
-    this.props.nocust.sendSwap(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress, buyAmount, sellAmount)
+  async BtoATrade(buyAmount, sellAmount) {
+    const swapResponse = await this.props.nocust.sendSwap(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress, buyAmount, sellAmount)
+    console.log(swapResponse)
   }
 
   render() {
