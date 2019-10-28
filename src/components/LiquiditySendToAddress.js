@@ -14,10 +14,6 @@ export default class LiquiditySendToAddress extends React.Component {
   constructor(props) {
     super(props);
 
-
-
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!! window.location.search",window.location.search)
-
     let startAmount = props.amount
     if(!startAmount) {
       startAmount = cookie.load('sendToStartAmount')

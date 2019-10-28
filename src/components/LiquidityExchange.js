@@ -314,7 +314,6 @@ export default class LiquidityExchange extends React.Component {
           balance={this.props.assetABalance}
           offchain
           selected
-          address={this.props.account}
           dollarDisplay={(balance)=>{return balance}}
         />
         <Ruler/>
@@ -333,7 +332,6 @@ export default class LiquidityExchange extends React.Component {
           balance={this.props.assetBBalance}
           offchain
           selected
-          address={this.props.account}
           dollarDisplay={(balance)=>{return balance}}
         />
         <Ruler/>
