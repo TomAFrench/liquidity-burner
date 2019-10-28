@@ -1,6 +1,4 @@
 import React from 'react';
-import Ruler from "./Ruler";
-import Balance from "./Balance";
 import cookie from 'react-cookies'
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import Blockies from 'react-blockies';
@@ -9,7 +7,6 @@ import i18n from '../i18n';
 import AddressBar from './AddressBar';
 import AmountBar from './AmountBar'
 
-const queryString = require('query-string');
 const { toWei, fromWei, toBN } = require('web3-utils');
 
 export default class LiquiditySendToAddress extends React.Component {
@@ -19,7 +16,7 @@ export default class LiquiditySendToAddress extends React.Component {
 
 
 
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!! window.location.search",window.location.search,parsed)
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!! window.location.search",window.location.search)
 
     let startAmount = props.amount
     if(!startAmount) {
@@ -42,18 +39,7 @@ export default class LiquiditySendToAddress extends React.Component {
       canSend: false,
     }
 
-    let startingAmount = 0.15
-    if(props.amount){
-      startingAmount = props.amount
-    }
-
-    const parsed = queryString.parse(window.location.search);
-    if(parsed){
-      initialState.params = parsed
-    }
-
     this.state = initialState
-  //  console.log("SendToAddress constructor",this.state)
   }
 
   updateState = async (key, value) => {
@@ -132,7 +118,7 @@ export default class LiquiditySendToAddress extends React.Component {
 
   send = async () => {
     let { toAddress, amount } = this.state;
-    let { dollarDisplay, convertToDollar} = this.props
+    let { convertToDollar } = this.props
 
     amount = convertToDollar(amount)
     console.log("CONVERTED TO DOLLAR AMOUNT",amount)

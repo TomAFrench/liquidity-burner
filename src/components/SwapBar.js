@@ -6,13 +6,7 @@ import i18n from '../i18n';
 import 'react-input-range/lib/css/index.css';
 
 import AmountBar from './AmountBar'
-const { toWei, fromWei, toBN } = require('web3-utils');
-
-
-const logoStyle = {
-  maxWidth:50,
-  maxHeight:50,
-}
+const { toWei, fromWei } = require('web3-utils');
 
 const colStyle = {
   textAlign:"center",

@@ -1,9 +1,6 @@
 import React from 'react';
 import Ruler from "./Ruler";
-import Balance from "./Balance";
 import i18n from '../i18n';
-
-
 
 export default ({mainStyle, address, balance, burnWallet, goBack, dollarDisplay}) => {
 

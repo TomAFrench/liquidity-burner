@@ -3,8 +3,6 @@ import { Scaler } from "dapparatus";
 
 import 'react-input-range/lib/css/index.css';
 
-const { toWei, fromWei, toBN } = require('web3-utils');
-
 export default React.forwardRef((props, ref) => {
 
   const maxButton = (

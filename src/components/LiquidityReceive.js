@@ -1,21 +1,13 @@
 import React from 'react';
-import Ruler from "./Ruler";
-
 import {CopyToClipboard} from "react-copy-to-clipboard";
-import Blockies from 'react-blockies';
-import { scroller } from 'react-scroll'
 import i18n from '../i18n';
+
 const QRCode = require('qrcode.react');
 
 export default class LiquidityReceive extends React.Component {
 
-  constructor(props) {
-    super(props);
-    let initialState = {
-    }
-  }
   render() {
-    let {buttonStyle, address, changeAlert, hubContract, hubApiUrl} = this.props
+    let {address, changeAlert, hubContract, hubApiUrl} = this.props
 
 
     let qrSize = Math.min(document.documentElement.clientWidth,512)-90
@@ -45,12 +37,5 @@ export default class LiquidityReceive extends React.Component {
           </div>
         </div>
     )
-            {/* <div name="theVeryBottom" className="text-center bottom-text">
-          <span style={{padding:10}}>
-            <a href="#" style={{color:"#FFFFFF"}} onClick={()=>{this.props.goBack()}}>
-              <i className="fas fa-times"/> {i18n.t('cancel')}
-            </a>
-          </span>
-        </div> */}
   }
 }

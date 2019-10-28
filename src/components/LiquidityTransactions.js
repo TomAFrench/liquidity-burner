@@ -1,11 +1,10 @@
 import React from 'react';
 import { Blockie } from "dapparatus";
-import Ruler from "./Ruler";
 import { Scaler } from "dapparatus";
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import i18n from '../i18n';
 
-const { toWei, fromWei } = require('web3-utils');
+const { fromWei } = require('web3-utils');
 
 let cleanTime = (s)=>{
   if(s<60){

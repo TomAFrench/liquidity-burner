@@ -6,19 +6,16 @@ import {
   Link,
   Redirect
 } from "react-router-dom";
-import { ContractLoader, Dapparatus, Transactions, Gas, Address, Events, Blockie, Scaler } from "dapparatus";
+import { ContractLoader, Dapparatus, Gas } from "dapparatus";
 import Web3 from 'web3';
 import axios from 'axios';
 import { I18nextProvider } from 'react-i18next';
-import gasless from 'tabookey-gasless';
 import { eth } from '@burner-wallet/assets';
 
 import i18n from './i18n';
 import './App.scss';
 import Header from './components/Header';
 import NavCard from './components/NavCard';
-import Balance from "./components/Balance";
-import Ruler from "./components/Ruler";
 import Advanced from './components/Advanced';
 import Footer from './components/Footer';
 import Loader from './components/Loader';
@@ -29,8 +26,6 @@ import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
 import core, { mainAsset as dai } from './core';
 
-import ethImg from './images/ethereum.png';
-import daiImg from './images/dai.jpg';
 import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
 import LiquiditySendByScan from './components/LiquiditySendByScan'
@@ -47,7 +42,6 @@ const MAINNET_CHAIN_ID = '1';
 
 let WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
 let LOADERIMAGE = burnerlogo
-let FAILCOUNT = 0
 
 let mainStyle = {
   width:"100%",
@@ -85,13 +79,6 @@ let buttonStyle = {
     cursor:"pointer",
   }
 }
-
-const invLogoStyle = {
-  maxWidth:50,
-  maxHeight:50,
-}
-
-let metaReceiptTracker = {}
 
 let dollarSymbol = "$"
 let dollarConversion = 1.0
@@ -413,9 +400,7 @@ class App extends Component {
 
 
   render() {
-    let {
-      web3, account, tx, gwei, block, avgBlockTime, etherscan, metaAccount, burnMetaAccount, alert, send
-    } = this.state;
+    let { web3, account, metaAccount, burnMetaAccount, alert } = this.state;
 
     let web3_setup = ""
     if(web3){

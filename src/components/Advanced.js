@@ -1,6 +1,5 @@
 import React from 'react';
 import { Scaler } from "dapparatus";
-import Ruler from "./Ruler";
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import i18n from '../i18n';
 const QRCode = require('qrcode.react');
@@ -16,7 +15,7 @@ export default class Advanced extends React.Component {
     }
   }
   render(){
-    let {isVendor, balance, address, privateKey, changeAlert, goBack, setPossibleNewPrivateKey} = this.props
+    let {isVendor, balance, privateKey, changeAlert, setPossibleNewPrivateKey} = this.props
 
     let url = window.location.protocol+"//"+window.location.hostname
     if(window.location.port&&window.location.port!=80&&window.location.port!=443){
@@ -65,7 +64,7 @@ export default class Advanced extends React.Component {
     let inputPrivateKeyRow = (
       <div className="content ops row">
         <div className={inputPrivateSize}>
-            <input type={this.state.privateKeyHidden?"password":"text"}  autocorrect="off" autocapitalize="none"  autocorrect="off" autocapitalize="none" className="form-control" placeholder="private key" value={this.state.newPrivateKey}
+            <input type={this.state.privateKeyHidden?"password":"text"}  autoCorrect="off" autoCapitalize="none" className="form-control" placeholder="private key" value={this.state.newPrivateKey}
                    onChange={event => this.setState({newPrivateKey:event.target.value})} />
         </div>
         {inputPrivateEyeButton}

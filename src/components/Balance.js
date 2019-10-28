@@ -1,7 +1,5 @@
 import React from 'react';
-import Blockies from 'react-blockies';
 import { Scaler } from "dapparatus";
-import { Balance } from 'nocust-client';
 
 export default ({token, selected, balance, offchain, dollarDisplay}) => {
   

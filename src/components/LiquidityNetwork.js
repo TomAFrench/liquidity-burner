@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
   Link,
@@ -8,10 +7,9 @@ import {
 } from "react-router-dom";
 import cookie from 'react-cookies'
 
-import { Events, Blockie, Scaler } from "dapparatus";
+import { Scaler } from "dapparatus";
 import Web3 from 'web3';
 import Ruler from "./Ruler";
-import axios from "axios"
 import i18n from '../i18n';
 import i18next from 'i18next';
 
@@ -19,7 +17,6 @@ import NavCard from './NavCard';
 import Bottom from './Bottom';
 import Loader from './Loader';
 
-import LiquiditySendByScan from './LiquiditySendByScan'
 import LiquidityReceive from './LiquidityReceive'
 import LiquiditySendToAddress from './LiquiditySendToAddress'
 import LiquidityTransactions from './LiquidityTransactions'
@@ -34,7 +31,6 @@ import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
 import lqdImg from '../liquidity.png';
 import burnerlogo from '../liquidity.png';
-import { min } from 'bn.js';
 let LOADERIMAGE = burnerlogo
 
 

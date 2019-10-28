@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory, useLocation, Link } from "react-router-dom";
-import { Scaler, Blockie } from "dapparatus";
+import { Blockie } from "dapparatus";
 import burnerloader from '../burnerloader.gif';
 
 export  default ({openScanner, network, total, dollarDisplay, ens, title, titleImage, mainStyle, balance, address}) => {

@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory } from "react-router-dom";
 
-import { Scaler } from "dapparatus";
 import Ruler from "./Ruler";
-import Blockies from 'react-blockies'
 import Balance from "./Balance";
 import SwapBar from './SwapBar'
-import AddressBar from './AddressBar';
-import AmountBar from './AmountBar';
 
-
-const { fromWei, toWei, toBN } = require('web3-utils');
 
 export default (props) => {
   let history = useHistory();
