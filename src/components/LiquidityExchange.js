@@ -281,8 +281,10 @@ export default class LiquidityExchange extends React.Component {
   }
 
   async getOrderBook(){
-    const orderbook = await this.props.nocust.getOrderBook(this.props.assetB.tokenAddress, this.props.assetA.tokenAddress)
-    this.setState({orderbook})
+    if ( typeof this.props.assetB.tokenAddress !== 'undefined' && typeof this.props.assetB.tokenAddress !== 'undefined'){
+      const orderbook = await this.props.nocust.getOrderBook(this.props.assetB.tokenAddress, this.props.assetA.tokenAddress)
+      this.setState({orderbook})
+    }
   }
 
   async syncSwaps(){
