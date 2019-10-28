@@ -596,6 +596,7 @@ class App extends Component {
         hide: true,
         requiredNetwork: ['Unknown', 'Rinkeby'],
         metatxAccountGenerator: false,
+        POLLINTERVAL: 10000
       }}
       //used to pass a private key into Dapparatus
       newPrivateKey={this.state.newPrivateKey}
