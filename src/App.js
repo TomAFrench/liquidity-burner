@@ -544,9 +544,8 @@ class App extends Component {
             {(!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network) ?
               <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/> :
               <LiquidityNetwork
-                privateKey={metaAccount.privateKey}
-
                 web3={this.state.web3}
+                privateKey={metaAccount.privateKey}
 
                 address={account}
 
@@ -555,17 +554,10 @@ class App extends Component {
 
                 mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
 
-                daiContract={this.state.daiContract}
                 ensContract={this.state.ensContract}
                 ensLookup={this.ensLookup.bind(this)}
 
-                ethBalance={this.state.ethBalance}
-                daiBalance={this.state.daiBalance}
-
-                eth={eth}
-                dai={dai}
                 ethprice={this.state.ethprice}
-
 
                 setGwei={this.setGwei}
                 gwei={this.state.gwei}
