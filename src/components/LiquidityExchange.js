@@ -289,11 +289,9 @@ export default class LiquidityExchange extends React.Component {
 
   async syncSwaps(){
     console.log("Getting swaps for", this.props.address)
-    const AtoBSwaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress)
-    const BtoASwaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetB.tokenAddress, this.props.assetA.tokenAddress)
+    const swaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress)
 
-    console.log("AtoBSwaps response", AtoBSwaps)
-    console.log("BtoASwaps response", BtoASwaps)
+    console.log("AtoBSwaps response", swaps)
   }
 
   async AtoBTrade(buyAmount, sellAmount) {
