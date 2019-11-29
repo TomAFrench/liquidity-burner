@@ -29,10 +29,6 @@ import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
 import LiquiditySendByScan from './components/LiquiditySendByScan'
 
-//https://github.com/lesnitsky/react-native-webview-messaging/blob/v1/examples/react-native/web/index.js
-//import RNMessageChannel from 'react-native-webview-messaging';
-const RNMessageChannel = false //disable React Native for now, it is breaking Safari
-
 let base64url = require('base64url')
 const EthCrypto = require('eth-crypto');
 
@@ -118,22 +114,6 @@ class App extends Component {
       hasUpdateOnce: false,
     };
     this.alertTimeout = null;
-
-    try{
-      RNMessageChannel.on('json', update => {
-        try{
-          let safeUpdate = {}
-          if(update.title) safeUpdate.title = update.title
-          if(update.extraHeadroom) safeUpdate.extraHeadroom = update.extraHeadroom
-          if(update.possibleNewPrivateKey) safeUpdate.possibleNewPrivateKey = update.possibleNewPrivateKey
-          this.setState(safeUpdate,()=>{
-            if(this.state.possibleNewPrivateKey){
-              this.dealWithPossibleNewPrivateKey()
-            }
-          })
-        }catch(e){console.log(e)}
-      })
-    }catch(e){console.log(e)}
 
   }
 
@@ -496,9 +476,6 @@ class App extends Component {
                   goBack={history.goBack}
                   dollarDisplay={dollarDisplay}
                   burnWallet={()=>{
-                    if(RNMessageChannel){
-                      RNMessageChannel.send("burn")
-                    }
                     if(localStorage&&typeof localStorage.setItem == "function"){
                       localStorage.setItem(this.state.account+"metaPrivateKey","")
                       localStorage.setItem("metaPrivateKey","")
