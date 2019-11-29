@@ -291,7 +291,14 @@ export default class LiquidityNetwork extends React.Component {
         </div>
       </div>
     )
-    
+    const backButton = (
+      <Link to={this.props.match.url}>
+        <Bottom
+          action={()=>{}}
+        />
+      </Link>
+    )
+
     return (
       <Switch>
         <Route path={`${this.props.match.url}/receive`}>
@@ -308,11 +315,7 @@ export default class LiquidityNetwork extends React.Component {
                   changeAlert={this.props.changeAlert}
                 />
               </div>
-              <Link to={this.props.match.url}>
-                <Bottom
-                  action={()=>{}}
-                />
-              </Link>
+              {backButton}
             </div>
         </Route>
 
@@ -389,11 +392,7 @@ export default class LiquidityNetwork extends React.Component {
                   }}
                 />
               </div>
-              <Link to={this.props.match.url}>
-                <Bottom
-                  action={()=>{}}
-                />
-              </Link>
+              {backButton}
             </div>
           )}}
         />
@@ -447,11 +446,7 @@ export default class LiquidityNetwork extends React.Component {
                   }}
                 />
               </div>
-              <Link to={this.props.match.url}>
-                <Bottom
-                  action={()=>{}}
-                />
-              </Link>
+              {backButton}
             </div>
           )}
         />
@@ -485,11 +480,7 @@ export default class LiquidityNetwork extends React.Component {
                   nocust={this.state.nocustManager}
                 />
               </div>
-              <Link to={this.props.match.url}>
-                <Bottom
-                  action={()=>{}}
-                />
-              </Link>
+              {backButton}
             </div>
             )}
             }
