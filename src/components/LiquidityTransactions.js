@@ -53,7 +53,7 @@ const TransactionEntry = ({dollarDisplay, tx, changeAlert, token}) => {
   )
 
   return (
-    <div key={tx.tx_id} style={{position:'relative'}}  className="content bridge row" >
+    <div style={{position:'relative'}}  className="content bridge row" >
       <div className="col-3 p-1" style={{textAlign:'center'}}>
         {fromBlockie}
       </div>
@@ -85,7 +85,7 @@ export default ({dollarDisplay, max, recentTxs, changeAlert, token}) => {
 
     if(count++<max){
       txns.push(<hr key={"ruler"+recentTxs[r].tx_id} style={{ "color": "#DFDFDF",marginTop:0,marginBottom:7 }}/>)
-      txns.push(<TransactionEntry tx={recentTxs[r]} changeAlert={changeAlert} token={token}/>)
+      txns.push(<TransactionEntry key={recentTxs[r].tx_id} tx={recentTxs[r]} changeAlert={changeAlert} token={token}/>)
     }
   }
   if(txns.length>0){
