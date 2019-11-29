@@ -33,6 +33,7 @@ export default (props) => {
             history.push("/liquidity/sending", {title: "Sending " + props.token.shortName + " into the Liquidity Network...", subtitle: "Tokens can take between 5-10 minutes to appear on the hub"} )
             props.onSend()
           } catch (e) {
+            console.log(e)
             props.changeAlert({type: 'warning', message: "Transaction Failed"})
           }      
         }}
@@ -42,6 +43,7 @@ export default (props) => {
             history.push("/liquidity/sending", {title: "Requesting to withdraw " + props.token.shortName + " from the Liquidity Network...", subtitle: "Withdrawals can take up to 72 hours to become available to confirm onchain"} )
             props.onSend()
           } catch (e) {
+            console.log(e)
             props.changeAlert({type: 'warning', message: "Transaction Failed"})
           }
         }}
