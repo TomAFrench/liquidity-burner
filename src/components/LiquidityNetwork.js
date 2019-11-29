@@ -388,7 +388,7 @@ export default class LiquidityNetwork extends React.Component {
                     setTimeout(() => {
                       this.checkTokenBalances()
                       this.getTransactions()
-                    }, 1000)
+                    }, 250)
                   }}
                 />
               </div>
