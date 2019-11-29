@@ -494,32 +494,41 @@ class App extends Component {
           />
 
           <Redirect exact from="/" to="/liquidity" />
-          <Route path="/liquidity">
-            {(!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network) ?
-              <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/> :
-              <LiquidityNetwork
-                web3={this.state.web3}
-                privateKey={metaAccount.privateKey}
-
-                address={account}
-
-                network={this.state.network}
-                block={this.state.block}
-
-                ensLookup={this.ensLookup.bind(this)}
-
-                ethprice={this.state.ethprice}
-
-                setGwei={this.setGwei}
-                gwei={this.state.gwei}
-
-                mainStyle={mainStyle}
-                buttonStyle={buttonStyle}
-                changeAlert={this.changeAlert}
-                dollarDisplay={dollarDisplay}
-              />
+          <Route
+            path="/liquidity"
+            render={({ match }) => {
+              if (!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network) {
+                return (
+                  <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
+                )
+              }
+              return (
+                <LiquidityNetwork
+                  match={match}
+                  web3={this.state.web3}
+                  privateKey={metaAccount.privateKey}
+  
+                  address={account}
+  
+                  network={this.state.network}
+                  block={this.state.block}
+  
+                  ensLookup={this.ensLookup.bind(this)}
+  
+                  ethprice={this.state.ethprice}
+  
+                  setGwei={this.setGwei}
+                  gwei={this.state.gwei}
+  
+                  mainStyle={mainStyle}
+                  buttonStyle={buttonStyle}
+                  changeAlert={this.changeAlert}
+                  dollarDisplay={dollarDisplay}
+                />
+              )
+              }
             }
-          </Route>
+          />
         </Switch>}
       
       { !web3 &&

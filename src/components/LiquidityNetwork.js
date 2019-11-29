@@ -252,7 +252,7 @@ export default class LiquidityNetwork extends React.Component {
         <div className="content ops row">
           <div className="col-6 p-1" >
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
-              <Link to="/liquidity/receive" style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+              <Link to={`${this.props.match.url}/receive`} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-qrcode"  /> {i18next.t('main_card.receive')}
                 </Scaler>
@@ -261,7 +261,7 @@ export default class LiquidityNetwork extends React.Component {
           </div>
           <div className="col-6 p-1">
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
-              <Link to={{pathname:"/liquidity/send", search: "?token="+TOKEN}} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+              <Link to={{pathname:`${this.props.match.url}/send`, search: "?token="+TOKEN}} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
                 </Scaler>
@@ -272,7 +272,7 @@ export default class LiquidityNetwork extends React.Component {
         <div className="content ops row">
           <div className="col-6 p-1" >
             <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
-              <Link to="/liquidity/bridge" style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
+              <Link to={`${this.props.match.url}/bridge`} style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.bridge.title')}
                 </Scaler>
@@ -281,7 +281,7 @@ export default class LiquidityNetwork extends React.Component {
           </div>
           <div className="col-6 p-1" >
             <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
-              <Link to={"/liquidity/exchange/ETH/" + TOKEN} style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
+              <Link to={`${this.props.match.url}/exchange/ETH/${TOKEN}`} style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-random"/> {i18next.t('exchange_title')}
                 </Scaler>
@@ -291,9 +291,10 @@ export default class LiquidityNetwork extends React.Component {
         </div>
       </div>
     )
+    
     return (
       <Switch>
-        <Route path="/liquidity/receive">
+        <Route path={`${this.props.match.url}/receive`}>
           <div>
               <div className="main-card card w-100" style={{zIndex:1}}>
 
@@ -307,7 +308,7 @@ export default class LiquidityNetwork extends React.Component {
                   changeAlert={this.props.changeAlert}
                 />
               </div>
-              <Link to="/liquidity">
+              <Link to={this.props.match.url}>
                 <Bottom
                   action={()=>{}}
                 />
@@ -316,7 +317,7 @@ export default class LiquidityNetwork extends React.Component {
         </Route>
 
         <Route
-          path="/liquidity/sending"
+          path={`${this.props.match.url}/sending`}
           render={({history, location}) => (
             <div>
               <div style={{zIndex:1,position:"relative",color:"#dddddd"}}>
@@ -341,14 +342,14 @@ export default class LiquidityNetwork extends React.Component {
         />
 
         <Route
-          path="/liquidity/send/:toAddress"
+          path={`${this.props.match.url}/send/:toAddress`}
           render={({ location, match }) => (
-            <Redirect to={{ pathname: "/liquidity/send", search: location.search, state: { toAddress: match.params.toAddress } }} />
+            <Redirect to={{ pathname: `${this.props.match.url}/send`, search: location.search, state: { toAddress: match.params.toAddress } }} />
             )}
         />
 
         <Route
-          path="/liquidity/send"
+          path={`${this.props.match.url}/send`}
           render={({ history, location }) => {
             const token = this.state.tokens[qs.parse(location.search).token] || this.state.tokens[TOKEN]
             const tokenBalance = this.state.balances[qs.parse(location.search).token] || this.state.tokens[TOKEN]
@@ -380,7 +381,7 @@ export default class LiquidityNetwork extends React.Component {
                   changeAlert={this.props.changeAlert}
                   dollarDisplay={(balance)=>{return balance}}
                   onSend={() => {
-                    history.push("/liquidity/sending")
+                    history.push(`${this.props.match.url}/sending`)
                     setTimeout(() => {
                       this.checkTokenBalances()
                       this.getTransactions()
@@ -388,7 +389,7 @@ export default class LiquidityNetwork extends React.Component {
                   }}
                 />
               </div>
-              <Link to="/liquidity">
+              <Link to={this.props.match.url}>
                 <Bottom
                   action={()=>{}}
                 />
@@ -399,7 +400,7 @@ export default class LiquidityNetwork extends React.Component {
 
 
         <Route
-          path="/liquidity/bridge"
+          path={`${this.props.match.url}/bridge`}
           render={() => (
             <div>
               <div className="main-card card w-100" style={{zIndex:1}}>
@@ -446,7 +447,7 @@ export default class LiquidityNetwork extends React.Component {
                   }}
                 />
               </div>
-              <Link to="/liquidity">
+              <Link to={this.props.match.url}>
                 <Bottom
                   action={()=>{}}
                 />
@@ -456,7 +457,7 @@ export default class LiquidityNetwork extends React.Component {
         />
 
         <Route
-          path="/liquidity/exchange/:assetA/:assetB"
+          path={`${this.props.match.url}/exchange/:assetA/:assetB`}
           render={({ history, match }) => {
             // check if tokens are valid
             const assetA = match.params.assetA
@@ -465,7 +466,7 @@ export default class LiquidityNetwork extends React.Component {
             // redirect to main page if invalid
             if (!this.isValidToken(assetA) || !this.isValidToken(assetB) ){
               return (
-                <Redirect to="/liquidity"/>
+                <Redirect to={this.props.match.url}/>
               )
               }
 
@@ -484,7 +485,7 @@ export default class LiquidityNetwork extends React.Component {
                   nocust={this.state.nocustManager}
                 />
               </div>
-              <Link to="/liquidity">
+              <Link to={this.props.match.url}>
                 <Bottom
                   action={()=>{}}
                 />
@@ -494,13 +495,13 @@ export default class LiquidityNetwork extends React.Component {
             }
           />
 
-        <Route path="/liquidity">
+        <Route path={`${this.props.match.url}`}>
         <div>
             <div className="send-to-address card w-100" style={{zIndex:1}}>
               <div className="form-group w-100">
 
                 <div style={{width:"100%",textAlign:"center"}}>
-                  <Link to={{pathname:"/liquidity/send", search: "?token="+TOKEN}} >
+                  <Link to={{pathname: `${this.props.match.url}/send`, search: "?token="+TOKEN}} >
                     <Balance
                       token={this.state.tokens[TOKEN]}
                       balance={this.state.balances[TOKEN]}
@@ -518,7 +519,7 @@ export default class LiquidityNetwork extends React.Component {
                     dollarDisplay={(balance)=>{return balance}}
                   />
                   <Ruler/>
-                  <Link to={{pathname:"/liquidity/send", search: "?token=ETH"}}>
+                  <Link to={{pathname: `${this.props.match.url}/send`, search: "?token=ETH"}}>
                     <Balance
                       token={this.state.tokens.ETH}
                       balance={this.state.balances.ETH}
