@@ -96,7 +96,7 @@ let dollarDisplay = (amount)=>{
   return dollarSymbol+convertFromDollar(amount).toFixed(2)
 }
 
-let interval
+
 let intervalLong
 let originalStyle = {}
 
@@ -243,9 +243,7 @@ class App extends Component {
         window.history.pushState({},"", "/");
       }
     }
-    setTimeout(this.poll.bind(this),150)
-    setTimeout(this.poll.bind(this),650)
-    interval = setInterval(this.poll.bind(this),1500)
+   
     intervalLong = setInterval(this.longPoll.bind(this),45000)
     setTimeout(this.longPoll.bind(this),150)
 
@@ -265,22 +263,8 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(interval)
     clearInterval(intervalLong)
     window.removeEventListener("resize", this.updateDimensions.bind(this));
-  }
-
-  async poll() {
-    if(this.state.account){
-      const ethBalance = await eth.getDisplayBalance(this.state.account, 20);
-      const daiBalance = await dai.getDisplayBalance(this.state.account, 20);
-
-      this.setState({
-        ethBalance,
-        daiBalance,
-        hasUpdateOnce:true
-      });
-    }
   }
 
   longPoll() {
