@@ -130,10 +130,7 @@ export default class LiquiditySendToAddress extends React.Component {
         console.log("Not enough funds", this.props.offchainBalance.toString())
         this.props.changeAlert({type: 'warning', message: "Not enough funds"})
       }else{
-        console.log("SWITCH TO LOADER VIEW...",amount)
-        // this.props.changeView('loader')
-        // setTimeout(()=>{window.scrollTo(0,0)},60)
-
+       
         let value = 0
         console.log("amount",amount)
         if(amount){
