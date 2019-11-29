@@ -28,7 +28,7 @@ const TransactionEntry = ({dollarDisplay, tx, changeAlert, token}) => {
 
   let fromBlockie = (
     <CopyToClipboard text={tx.wallet.address} onCopy={() => {
-      changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
+      changeAlert({type: 'success', message: i18n.t('receive.address_copied') + ": " + tx.wallet.address })
     }}>
       <div style={{cursor:"pointer"}}>
         <Blockie
@@ -41,7 +41,7 @@ const TransactionEntry = ({dollarDisplay, tx, changeAlert, token}) => {
 
   let toBlockie = (
     <CopyToClipboard text={tx.recipient.address} onCopy={() => {
-      changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
+      changeAlert({type: 'success', message: i18n.t('receive.address_copied') + ": " + tx.recipient.address })
     }}>
       <div style={{cursor:"pointer"}}>
         <Blockie
