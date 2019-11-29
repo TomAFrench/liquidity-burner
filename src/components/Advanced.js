@@ -110,7 +110,7 @@ export default class Advanced extends React.Component {
     let inputSeedRow = (
       <div className="content ops row" style={{paddingTop:10}}>
         <div className={inputSeedSize}>
-        <input type={this.state.seedPhraseHidden?"password":"text"}  autocorrect="off" autocapitalize="none" className="form-control" placeholder="seed phrase" value={this.state.newSeedPhrase}
+        <input type={this.state.seedPhraseHidden?"password":"text"}  autoCorrect="off" autoCapitalize="none" className="form-control" placeholder="seed phrase" value={this.state.newSeedPhrase}
                onChange={event => this.setState({newSeedPhrase:event.target.value})} />
         </div>
         {inputSeedEyeButton}
@@ -230,7 +230,7 @@ export default class Advanced extends React.Component {
 
         <div className="content ops row">
           <div className="col-6 p-1">
-              <input type="text" autocorrect="off" autocapitalize="none" className="form-control" placeholder="any text to encode" value={this.state.newQr}
+              <input type="text" autoCorrect="off" autoCapitalize="none" className="form-control" placeholder="any text to encode" value={this.state.newQr}
                      onChange={event => this.setState({newQr:event.target.value})} />
           </div>
           <div className="col-6 p-1">
