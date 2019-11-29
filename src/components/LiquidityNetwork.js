@@ -348,6 +348,7 @@ export default class LiquidityNetwork extends React.Component {
           render={({ history, location }) => {
             const token = this.state.tokens[qs.parse(location.search).token] || this.state.tokens[TOKEN]
             const tokenBalance = this.state.balances[qs.parse(location.search).token] || this.state.tokens[TOKEN]
+            const tokenAmount = qs.parse(location.search).amount
             return (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>
@@ -367,6 +368,7 @@ export default class LiquidityNetwork extends React.Component {
                   sendTransaction={(tx) => this.state.nocustManager.sendTransaction(tx)}
                   convertToDollar={(dollar) => {return dollar}}
                   toAddress={typeof location.state !== 'undefined' ? location.state.toAddress : undefined}
+                  amount={tokenAmount}
                   ensLookup={this.props.ensLookup}
                   buttonStyle={this.props.buttonStyle}
                   offchainBalance={tokenBalance.offchainBalance}
