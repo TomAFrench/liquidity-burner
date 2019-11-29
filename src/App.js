@@ -168,39 +168,6 @@ class App extends Component {
 
     console.log("document.getElementsByClassName('className').style",document.getElementsByClassName('.btn').style)
     window.addEventListener("resize", this.updateDimensions.bind(this));
-    if(window.location.pathname){
-      console.log("PATH",window.location.pathname,window.location.pathname.length,window.location.hash)
-      
-      if(window.location.pathname.indexOf("/pk")>=0){
-        let tempweb3 = new Web3();
-        let base64encodedPK = window.location.hash.replace("#","")
-        let rawPK
-        if(base64encodedPK.length==64||base64encodedPK.length==66){
-          console.log("raw pk ",base64encodedPK)
-          rawPK=base64encodedPK
-        }else{
-          rawPK=tempweb3.utils.bytesToHex(base64url.toBuffer(base64encodedPK))
-        }
-        this.setState({possibleNewPrivateKey:rawPK})
-        window.history.pushState({},"", "/");
-      }else if(
-        (window.location.pathname.length>=65&&window.location.pathname.length<=67&&window.location.pathname.indexOf(";")<0) ||
-        (window.location.hash.length>=65 && window.location.hash.length <=67 && window.location.hash.indexOf(";")<0)
-      ){
-        console.log("incoming private key")
-        let privateKey = window.location.pathname.replace("/","")
-        if(window.location.hash){
-          privateKey = window.location.hash
-        }
-        privateKey = privateKey.replace("#","")
-        if(privateKey.indexOf("0x")!=0){
-          privateKey="0x"+privateKey
-        }
-        //console.log("!!! possibleNewPrivateKey",privateKey)
-        this.setState({possibleNewPrivateKey:privateKey})
-        window.history.pushState({},"", "/");
-      }
-    }
    
     intervalLong = setInterval(this.longPoll.bind(this),45000)
     setTimeout(this.longPoll.bind(this),150)
@@ -240,25 +207,15 @@ class App extends Component {
 
         console.log("Checking on pk import...")
         console.log("this.state.metaAccount",this.state.metaAccount)
-        console.log("this.state.daiBalance",this.state.daiBalance)
         
-
-        if(!this.state.metaAccount || this.state.ethBalance>=0.0005 || this.state.daiBalance>=0.05){
-          this.setState({possibleNewPrivateKey:false,withdrawFromPrivateKey:this.state.possibleNewPrivateKey},()=>{
-            // this.changeView('withdraw_from_private')
-          })
-        }else{
-          this.setState({
-            possibleNewPrivateKey:false,
-            newPrivateKey:this.state.possibleNewPrivateKey,
-          })
-
-        }
+        this.setState({
+          possibleNewPrivateKey:false,
+          newPrivateKey:this.state.possibleNewPrivateKey,
+        })
       }
     }else{
       setTimeout(this.dealWithPossibleNewPrivateKey.bind(this),500)
     }
-
 
   }
 
