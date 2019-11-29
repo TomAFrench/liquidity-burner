@@ -48,7 +48,12 @@ console.log("TOKEN", TOKEN)
 function getDisplayValue(value, decimals=4) {
   const displayVal = fromWei(value.toString(), 'ether');
   if (displayVal.indexOf('.') >= 0){
-    return displayVal.substr(0, displayVal.indexOf('.') + decimals + 1);
+    if (displayVal.charAt(0) == "0") {
+      return displayVal.substr(0, displayVal.search(/[1-9]/) + decimals + 1);
+    }
+    else {
+      return displayVal.substr(0, displayVal.indexOf('.') + decimals + 1);
+    }
   }
   return displayVal
 }
