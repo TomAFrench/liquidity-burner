@@ -143,6 +143,10 @@ export default class LiquidityNetwork extends React.Component {
     cookie.save('availableTokens', tokenDict, { path: '/' })
   }
 
+  isValidToken(tokenShortName) {
+    return Object.keys(this.state.tokens).includes(tokenShortName)
+  }
+
   buildTokenDict(tokenList) {
     var tokens = tokenList.reduce((accumulator, pilot) => {
       return {...accumulator, [pilot.shortName]: {name: pilot.name, shortName: pilot.shortName, tokenAddress: pilot.tokenAddress}}
@@ -277,7 +281,7 @@ export default class LiquidityNetwork extends React.Component {
           </div>
           <div className="col-6 p-1" >
             <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
-              <Link to="/liquidity/exchange" style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
+              <Link to={"/liquidity/exchange/ETH/" + TOKEN} style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-random"/> {i18next.t('exchange_title')}
                 </Scaler>
@@ -451,27 +455,44 @@ export default class LiquidityNetwork extends React.Component {
           )}
         />
 
-        <Route path="/liquidity/exchange">
-          <div>
-            <div className="main-card card w-100" style={{zIndex:1}}>
-              <NavCard title={i18n.t('exchange_title')} />
-              <LiquidityExchange
-                assetA={this.state.tokens.ETH}
-                assetB={this.state.tokens[TOKEN]}
-                assetABalance={this.state.balances.ETH}
-                assetBBalance={this.state.balances[TOKEN]}
-                address={this.state.address}
-                buttonStyle={this.props.buttonStyle}
-                nocust={this.state.nocustManager}
-              />
+        <Route
+          path="/liquidity/exchange/:assetA/:assetB"
+          render={({ history, match }) => {
+            // check if tokens are valid
+            const assetA = match.params.assetA
+            const assetB = match.params.assetB
+
+            // redirect to main page if invalid
+            if (!this.isValidToken(assetA) || !this.isValidToken(assetB) ){
+              return (
+                <Redirect to="/liquidity"/>
+              )
+              }
+
+            console.log("valid exchange pair", assetA, "-", assetB)
+            return (
+              <div>
+              <div className="main-card card w-100" style={{zIndex:1}}>
+                <NavCard title={i18n.t('exchange_title')} />
+                <LiquidityExchange
+                  assetA={this.state.tokens[assetA]}
+                  assetB={this.state.tokens[assetB]}
+                  assetABalance={this.state.balances[assetA]}
+                  assetBBalance={this.state.balances[assetB]}
+                  address={this.state.address}
+                  buttonStyle={this.props.buttonStyle}
+                  nocust={this.state.nocustManager}
+                />
+              </div>
+              <Link to="/liquidity">
+                <Bottom
+                  action={()=>{}}
+                />
+              </Link>
             </div>
-            <Link to="/liquidity">
-              <Bottom
-                action={()=>{}}
-              />
-            </Link>
-          </div>
-        </Route>
+            )}
+            }
+          />
 
         <Route path="/liquidity">
         <div>
