@@ -117,26 +117,6 @@ class App extends Component {
 
   }
 
-  parseAndCleanPath(path){
-    let parts = path.split(";")
-    //console.log("PARTS",parts)
-    let state = {}
-    if(parts.length>0){
-      state.toAddress = parts[0].replace("/","")
-    }
-    if(parts.length>=2){
-      state.amount = parts[1]
-    }
-    if(parts.length>2){
-      state.message = decodeURI(parts[2]).replaceAll("%23","#").replaceAll("%3B",";").replaceAll("%3A",":").replaceAll("%2F","/")
-    }
-    if(parts.length>3){
-      state.extraMessage = decodeURI(parts[3]).replaceAll("%23","#").replaceAll("%3B",";").replaceAll("%3A",":").replaceAll("%2F","/")
-    }
-    //console.log("STATE",state)
-    return state;
-  }
-
   updateDimensions() {
     //force it to rerender when the window is resized to make sure qr fits etc
     this.forceUpdate();
@@ -452,7 +432,6 @@ class App extends Component {
             path="/scanner"
             render={({history, location}) => (
               <LiquiditySendByScan
-                parseAndCleanPath={this.parseAndCleanPath}
                 mainStyle={mainStyle}
                 onError={(error) =>{
                   this.changeAlert("danger",error)
