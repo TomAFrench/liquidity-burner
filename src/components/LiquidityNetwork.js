@@ -138,7 +138,13 @@ export default class LiquidityNetwork extends React.Component {
   async getAssets(){
     console.log("Retrieving which tokens are supported by hub")
     const tokenList = await this.state.nocustManager.getSupportedTokens()
+    const tokenDict = this.buildTokenDict(tokenList)
     
+    this.setState({tokens: tokenDict})
+    cookie.save('availableTokens', tokenDict, { path: '/' })
+  }
+
+  buildTokenDict(tokenList) {
     var tokens = tokenList.reduce((accumulator, pilot) => {
       return {...accumulator, [pilot.shortName]: {name: pilot.name, shortName: pilot.shortName, tokenAddress: pilot.tokenAddress}}
     }, {})
@@ -146,9 +152,8 @@ export default class LiquidityNetwork extends React.Component {
     tokens.ETH.image = ethImg
     if (tokens.DAI) tokens.DAI.image = daiImg
     if (tokens.LQD) tokens.LQD.image = lqdImg
-    
-    this.setState({tokens: tokens})
-    cookie.save('availableTokens', tokens, { path: '/', maxAge: 60 })
+
+    return tokens
   }
 
   async registerWithHub(){
@@ -168,15 +173,17 @@ export default class LiquidityNetwork extends React.Component {
   
   async checkTokenBalances(){
     if (this.state.tokens) {
-      for (let [key, value] of Object.entries(this.state.tokens)) {
-        this.checkTokenBalance(key, value.tokenAddress)
+      let newBalances = {}
+      for (let [key, value] of Object.entries(JSON.parse(JSON.stringify(this.state.tokens)))) {
+        newBalances[key] = await this.checkTokenBalance(value.tokenAddress)
       }
+      console.log(newBalances)
+      cookie.save('tokenBalances', newBalances, { path: '/' })
+      this.setState({balances: newBalances})
     }
-    console.log(this.state.balances)
-    cookie.save('tokenBalances', this.state.balances, { path: '/', maxAge: 60 })
   }
 
-  async checkTokenBalance (name, tokenAddress) {
+  async checkTokenBalance (tokenAddress) {
     const onchainBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, tokenAddress)
     const offchainBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address, tokenAddress)
 
@@ -185,7 +192,7 @@ export default class LiquidityNetwork extends React.Component {
 
     const withdrawalLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, tokenAddress)
 
-    this.setState({balances: {...this.state.balances, [name]: {onchainBalance, offchainBalance, displayOnchain, displayOffchain, withdrawalLimit}}})
+    return {onchainBalance, offchainBalance, displayOnchain, displayOffchain, withdrawalLimit}
   }
 
   async getTransactions() {
