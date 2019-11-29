@@ -269,9 +269,7 @@ export default class LiquidityExchange extends React.Component {
   }
 
   componentDidMount(props) {
-    this.syncSwaps()
-
-    const syncIntervalId = setInterval(this.syncSwaps.bind(this),10000)
+    const syncIntervalId = setInterval(this.syncSwaps.bind(this),30000)
     this.setState({syncIntervalId})
   }
 
