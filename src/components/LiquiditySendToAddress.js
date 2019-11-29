@@ -36,6 +36,10 @@ export default class LiquiditySendToAddress extends React.Component {
     }
 
     this.state = initialState
+
+    if(this.state.toAddress && this.state.toAddress.indexOf(".eth")>=0){
+      this.ensLookup(toAddress)
+    }
   }
 
   updateState = async (key, value) => {
@@ -54,23 +58,24 @@ export default class LiquiditySendToAddress extends React.Component {
     });
     if(key=="toAddress"){
       this.setState({fromEns:""})
-      //setTimeout(()=>{
-      //  this.scrollToBottom()
-      //},30)
-    }
-    if(key=="toAddress"&&value.indexOf(".eth")>=0){
-      console.log("Attempting to look up ",value)
-      let addr = await this.props.ensLookup(value)
-      console.log("Resolved:",addr)
-      if(addr!="0x0000000000000000000000000000000000000000"){
-        this.setState({toAddress:addr,fromEns:value},()=>{
-          if(key!="message"){
-            this.bounceToAmountIfReady()
-          }
-        })
+      if(value.indexOf(".eth")>=0){
+        this.ensLookup(value)
       }
     }
   };
+
+  async ensLookup(name) {
+    console.log("Attempting to look up ", name)
+    let addr = await this.props.ensLookup(name)
+    
+    console.log("Resolved:", addr)
+    if(addr!="0x0000000000000000000000000000000000000000"){
+      this.setState({toAddress:addr,fromEns:name},()=>{
+        this.bounceToAmountIfReady()
+      })
+    }
+  }
+
   bounceToAmountIfReady(){
     if(this.state.toAddress && this.state.toAddress.length === 42){
       this.amountInput.focus();
@@ -93,13 +98,6 @@ export default class LiquiditySendToAddress extends React.Component {
   }
 
   canSend() {
-    /*const resolvedAddress = await this.ensProvider.resolveName(this.state.toAddress)
-    console.log(`RESOLVED ADDRESS ${resolvedAddress}`)
-    if(resolvedAddress != null){
-      this.setState({
-        toAddress: resolvedAddress
-      })
-    }*/
     return (this.state.toAddress && this.state.toAddress.length === 42 && this.state.amount >= 0)
   }
 
@@ -179,7 +177,7 @@ export default class LiquiditySendToAddress extends React.Component {
               <AddressBar
                 buttonStyle={this.props.buttonStyle}
                 toAddress={this.state.toAddress}
-                setToAddress={(toAddress) => { this.setState({toAddress}) }}
+                setToAddress={(toAddress) => { this.updateState("toAddress", toAddress) }}
                 openScanner
                 addressInput={(input) => {this.addressInput = input}}
               />
