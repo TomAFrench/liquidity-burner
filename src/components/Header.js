@@ -14,37 +14,18 @@ export  default ({openScanner, network, total, dollarDisplay, ens, title, titleI
     name = address.substring(2,8)
   }
 
-  let moneyDisplay
-  let blockieDisplay
-  if(typeof total == "undefined" || Number.isNaN(total)){
-    moneyDisplay = (
-      <div style={{opacity:0.1,fontSize:28,paddingTop:15}}>
-        connecting...
-      </div>
-    )
-    blockieDisplay = (
-      <div>
-        <img src ={burnerloader} style={{maxHeight:50,opacity:0.25,marginLeft:-20}}/>
-      </div>
-    )
-  }else{
-    /*moneyDisplay = (
-      <div>
-        {dollarDisplay(total)}
-      </div>
-    )*/
-    moneyDisplay = (
-      <div style={{opacity:0.4,fontSize:22,paddingTop:18}}>
-        {network}
-      </div>
-    )
-    blockieDisplay = (
-      <Blockie
-          address={address}
-          config={{size:6}}>
-      </Blockie>
-    )
-  }
+  let moneyDisplay = (
+    <div style={{opacity:0.4,fontSize:22,paddingTop:18}}>
+      {network}
+    </div>
+  )
+
+  let blockieDisplay = (
+    <Blockie
+        address={address}
+        config={{size:6}}>
+    </Blockie>
+  )
 
   let sendButtonOpacity = 1.0
 
