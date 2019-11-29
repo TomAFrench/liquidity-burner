@@ -196,7 +196,7 @@ class App extends Component {
 
   async dealWithPossibleNewPrivateKey(){
     //this happens as page load and you need to wait until
-    if(this.state && this.state.hasUpdateOnce){
+    if(this.state){
       if(this.state.metaAccount && this.state.metaAccount.privateKey.replace("0x","") == this.state.possibleNewPrivateKey.replace("0x","")){
         this.setState({possibleNewPrivateKey:false})
         this.changeAlert({
