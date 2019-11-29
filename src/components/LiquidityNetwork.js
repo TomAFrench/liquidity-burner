@@ -83,7 +83,6 @@ export default class LiquidityNetwork extends React.Component {
     this.state = {
       nocustManager: nocustManager,
       address: limboweb3.eth.accounts.wallet[0].address,
-      addressRegistered: false,
       tokens: tokens,
       balances: balances,
       withdrawInfo: {}
