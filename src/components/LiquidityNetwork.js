@@ -158,7 +158,7 @@ export default class LiquidityNetwork extends React.Component {
   async registerWithHub(){
     console.log("Registering with hub")
     if (this.state.tokens) {
-      for (let [key, value] of Object.entries(this.state.tokens)) {
+      for (let [, value] of Object.entries(this.state.tokens)) {
         this.state.nocustManager.registerAddress(this.state.address, value.tokenAddress)
       }
     }

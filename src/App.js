@@ -10,7 +10,6 @@ import { ContractLoader, Dapparatus, Gas } from "dapparatus";
 import Web3 from 'web3';
 import axios from 'axios';
 import { I18nextProvider } from 'react-i18next';
-import { eth } from '@burner-wallet/assets';
 
 import i18n from './i18n';
 import './App.scss';
@@ -24,7 +23,7 @@ import BurnWallet from './components/BurnWallet'
 import Bottom from './components/Bottom';
 import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
-import core, { mainAsset as dai } from './core';
+import core from './core';
 
 import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
@@ -530,9 +529,6 @@ class App extends Component {
                 network={this.state.network}
                 block={this.state.block}
 
-                mainnetweb3={core.getWeb3(MAINNET_CHAIN_ID)}
-
-                ensContract={this.state.ensContract}
                 ensLookup={this.ensLookup.bind(this)}
 
                 ethprice={this.state.ethprice}

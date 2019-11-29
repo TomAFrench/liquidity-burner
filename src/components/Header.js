@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { Blockie } from "dapparatus";
-import burnerloader from '../burnerloader.gif';
+// import burnerloader from '../burnerloader.gif';
 
 export  default ({openScanner, network, total, dollarDisplay, ens, title, titleImage, mainStyle, balance, address}) => {
   
@@ -55,20 +55,20 @@ export  default ({openScanner, network, total, dollarDisplay, ens, title, titleI
   if(location.pathname !== "/liquidity/receive"){
     opacity = 1.0
     topLeft = (
-      <div style={{zIndex:-2,position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => history.push("/liquidity/receive")} >
+      <div style={{position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => history.push("/liquidity/receive")} >
           {blockieDisplay} <div style={{position:"absolute",left:60,top:15,fontSize:14}}>{name}</div>
       </div>
     )
   }else{
     topLeft = (
-      <div style={{zIndex:-2,position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => history.goBack()} >
+      <div style={{position:"absolute",left:16,top:4,zIndex:1,cursor:"pointer"}} onClick={() => history.goBack()} >
           {blockieDisplay} <div style={{position:"absolute",left:60,top:15,fontSize:14}}>{name}</div>
       </div>
     )
   }
 
   let topRight = (
-    <div style={{zIndex:-2,position:"absolute",right:28,top:-4,zIndex:1,fontSize:46,opacity:0.9}}  >
+    <div style={{position:"absolute",right:28,top:-4,zIndex:1,fontSize:46,opacity:0.9}}  >
       {moneyDisplay}
     </div>
   )
