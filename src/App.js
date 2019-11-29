@@ -30,7 +30,6 @@ import LiquidityNetwork from './components/LiquidityNetwork';
 import LiquiditySendByScan from './components/LiquiditySendByScan'
 
 let base64url = require('base64url')
-const EthCrypto = require('eth-crypto');
 
 const MAINNET_CHAIN_ID = '1';
 
@@ -309,35 +308,6 @@ class App extends Component {
       }, 2000);
     }
   };
-
-  async decryptInput(input){
-    let key = input.substring(0,32)
-    //console.log("looking in memory for key",key)
-    let cachedEncrypted = this.state[key]
-    if(!cachedEncrypted){
-      //console.log("nothing found in memory, checking local storage")
-      cachedEncrypted = localStorage.getItem(key)
-    }
-    if(cachedEncrypted){
-      return cachedEncrypted
-    }else{
-      if(this.state.metaAccount){
-        try{
-          let parsedData = EthCrypto.cipher.parse(input.substring(2))
-          const endMessage = await EthCrypto.decryptWithPrivateKey(
-            this.state.metaAccount.privateKey, // privateKey
-            parsedData // encrypted-data
-          );
-          return  endMessage
-        }catch(e){}
-      }else{
-        //no meta account? maybe try to setup signing keys?
-        //maybe have a contract that tries do decrypt? \
-      }
-    }
-    return false
-  }
-
 
   render() {
     let { web3, account, metaAccount, burnMetaAccount, alert } = this.state;
