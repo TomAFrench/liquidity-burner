@@ -247,19 +247,7 @@ class App extends Component {
     intervalLong = setInterval(this.longPoll.bind(this),45000)
     setTimeout(this.longPoll.bind(this),150)
 
-    this.connectToRPC()
-  }
-
-  connectToRPC(){
-    const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth;
-    const ensContract = new Contract(require("./contracts/ENS.abi.js"),require("./contracts/ENS.address.js"))
-    let daiContract
-    try{
-      daiContract = new Contract(require("./contracts/StableCoin.abi.js"),"0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359")
-    }catch(e){
-      console.log("ERROR LOADING DAI Stablecoin Contract",e)
-    }
-    this.setState({ ensContract, daiContract });
+    this.connectToENS()
   }
 
   componentWillUnmount() {
@@ -332,15 +320,24 @@ class App extends Component {
     return network === "Rinkeby" || network === "Unknown";
   }
 
+  connectToENS(){
+    const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth;
+    const ensContract = new Contract(require("./contracts/ENS.abi.js"),require("./contracts/ENS.address.js"))
+    this.setState({ ensContract });
+  }
+
   async ensLookup(name){
     let hash = namehash.hash(name)
-    console.log("namehash",name,hash)
+    console.log("namehash", name, hash)
+    
     let resolver = await this.state.ensContract.methods.resolver(hash).call()
     if(resolver=="0x0000000000000000000000000000000000000000") return "0x0000000000000000000000000000000000000000"
-    console.log("resolver",resolver)
+    console.log("resolver address", resolver)
+    
     const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth;
-    const ensResolver = new Contract(require("./contracts/ENSResolver.abi.js"),resolver)
-    console.log("ensResolver:",ensResolver)
+    const ensResolver = new Contract(require("./contracts/ENSResolver.abi.js"), resolver)
+    console.log("ensResolver:", ensResolver)
+    
     return ensResolver.methods.addr(hash).call()
   }
 
