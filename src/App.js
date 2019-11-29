@@ -29,8 +29,6 @@ import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
 import LiquiditySendByScan from './components/LiquiditySendByScan'
 
-let base64url = require('base64url')
-
 const MAINNET_CHAIN_ID = '1';
 
 
@@ -92,7 +90,6 @@ let dollarDisplay = (amount)=>{
 
 
 let intervalLong
-let originalStyle = {}
 
 class App extends Component {
   constructor(props) {
@@ -507,8 +504,3 @@ function isArrayAndHasEntries(array){
 }
 
 export default App;
-
-String.prototype.replaceAll = function(search, replacement) {
-  var target = this;
-  return target.replace(new RegExp(search, 'g'), replacement);
-};

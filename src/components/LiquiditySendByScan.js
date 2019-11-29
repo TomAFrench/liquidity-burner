@@ -6,6 +6,8 @@ import RNMessageChannel from 'react-native-webview-messaging';
 import qrimage from '../qrcode.png';
 import i18n from "../i18n";
 
+const qs = require('query-string');
+
 function base64ToBitmap(base64) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -24,26 +26,6 @@ function base64ToBitmap(base64) {
     };
     img.src = base64;
   });
-}
-
-function parseAndCleanPath(path){
-  let parts = path.split(";")
-  //console.log("PARTS",parts)
-  let state = {}
-  if(parts.length>0){
-    state.toAddress = parts[0].replace("/","")
-  }
-  if(parts.length>=2){
-    state.amount = parts[1]
-  }
-  if(parts.length>2){
-    state.message = decodeURI(parts[2]).replaceAll("%23","#").replaceAll("%3B",";").replaceAll("%3A",":").replaceAll("%2F","/")
-  }
-  if(parts.length>3){
-    state.extraMessage = decodeURI(parts[3]).replaceAll("%23","#").replaceAll("%3B",";").replaceAll("%3A",":").replaceAll("%2F","/")
-  }
-  //console.log("STATE",state)
-  return state;
 }
 
 let interval
@@ -79,54 +61,19 @@ class SendByScan extends Component {
     console.log("DATA")
     console.log(data)
 
-    //detect and respect status deep links...
-    if(data && data.indexOf("get.status.im")>=0){
-      let paymentLocation = data.indexOf("payment/")
-      let paymentParts = data.substring(paymentLocation)
-      let paymentPartsArray = paymentParts.split("/")
-      console.log("Status Deep Link paymentParts",paymentParts,paymentPartsArray)
-
-      if(paymentPartsArray.length>=4){
-        let toAddress = paymentPartsArray[1]
-        let amount = paymentPartsArray[2]
-        let orderId = paymentPartsArray[3]
-        this.props.returnToState({toAddress,amount,daiposOrderId:orderId,message:"Ching Order: "+orderId})
-      }
-    }else{
-      let dataAfterColon
-      if(data){
-        dataAfterColon = data
-        let colonAt = dataAfterColon.lastIndexOf(":")
-        if(colonAt>=0) dataAfterColon = dataAfterColon.substring(colonAt+1)
-        if(!dataAfterColon){
-          dataAfterColon = data
-        }
-        let slashAt = dataAfterColon.lastIndexOf("/")
-        if(slashAt>=0) dataAfterColon = dataAfterColon.substring(slashAt+1)
-        if(!dataAfterColon){
-          dataAfterColon = data
-        }
-        console.log("SCAN",data)
-        if(data.indexOf("/pk")>=0){
-          //don't mess with it
-        }else{
-          dataAfterColon=dataAfterColon.replace("#","")//had to pull this to get PKs to load in right
-        }
-
-      }
-      console.log("dataAfterColon:",dataAfterColon)
-      if (dataAfterColon) {
-        this.stopRecording();
-        console.log("RETURN STATE:",this.props.returnState)
-        if(this.props.returnState && this.props.returnState.view!="send_to_address"){
-          let returnState = parseAndCleanPath(dataAfterColon)
-          this.props.returnToState(returnState)
-          console.log("return state",returnState)
-        }else{
-          this.setState({success: true, toAddress: dataAfterColon})
-          // this.props.returnToState({toAddress:dataAfterColon})
-        }
-      }
+    //detect and respect LQD Net deep links...
+    if(data && data.indexOf("lqdnet://send")>=0){
+      const address = qs.parse(data).publicKey
+      const tokenAddress = qs.parse(data).tokenAddress
+      const amount = qs.parse(data).amount
+      
+      console.log("LQD Net Deep Link payment",address,tokenAddress, amount)
+      
+      this.stopRecording();
+      this.setState({success: true, toAddress: address})
+    } else if(data.length === 42 || data.indexOf(".eth") >= 0) {
+      this.stopRecording();
+      this.setState({success: true, toAddress: data})
     }
   };
   chooseDeviceId = (a,b) => {
