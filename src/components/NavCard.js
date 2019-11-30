@@ -8,7 +8,7 @@ export  default ({title,titleLink, goBack, darkMode}) => {
 
   if(titleLink){
     titleDisplay = (
-      <a href={titleLink} target="_blank">
+      <a href={titleLink} target="_blank" rel="noopener noreferrer">
         {title}
       </a>
     )

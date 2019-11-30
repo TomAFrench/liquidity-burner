@@ -105,7 +105,7 @@ class SendByScan extends Component {
   legacyHandleChange(e, results){
     //this.props.changeView('reader')
     results.forEach(result => {
-      const [e, file] = result;
+      const [, file] = result;
       let reader = new FileReader();
       reader.onload = (e) => {
         console.log("")

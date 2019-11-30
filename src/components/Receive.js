@@ -30,7 +30,7 @@ export default class Receive extends React.Component {
               </div>
             </CopyToClipboard>
             <div style={{width:"100%",textAlign:'center',padding:20}}>
-              <a href={"https://explorer.liquidity.network/?#/explorer?token=" + hubContract + "&address=" + address + "&url=" +hubApiUrl.replace(/\/$/, "")} target="_blank">
+              <a href={"https://explorer.liquidity.network/?#/explorer?token=" + hubContract + "&address=" + address + "&url=" +hubApiUrl.replace(/\/$/, "")} target="_blank" rel="noopener noreferrer">
                 View on Explorer
               </a>
             </div>

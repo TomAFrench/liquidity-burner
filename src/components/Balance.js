@@ -28,7 +28,7 @@ export default ({token, selected, balance, offchain, dollarDisplay}) => {
       </div>
     )
   }else{
-    iconDisplay = <img src={token.image} style={{maxWidth:50,maxHeight:50}}/>
+    iconDisplay = <img src={token.image} alt="Not available" style={{maxWidth:50,maxHeight:50}}/>
   }
 
 

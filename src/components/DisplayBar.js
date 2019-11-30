@@ -29,7 +29,7 @@ const DisplayBar = (props) => {
   return (
     <div className="content ops row" style={{paddingBottom:20}}>
       <div className="col-2 p-1">
-        <img style={logoStyle} src={props.icon} />
+        <img style={logoStyle} src={props.icon} alt="No icon available" />
       </div>
       <div className="col-3 p-1" style={{marginTop:10}}>
         {props.text}

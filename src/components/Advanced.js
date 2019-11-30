@@ -142,7 +142,7 @@ export default class Advanced extends React.Component {
         <div style={{width:"100%",textAlign:"center"}}><h5>Learn More</h5></div>
         <div className="content ops row" style={{marginBottom:10}}>
           <div className="col-6 p-1">
-            <a href="https://github.com/TomAFrench/liquidity-burner" style={{color:"#FFFFFF"}} target="_blank">
+            <a href="https://github.com/TomAFrench/liquidity-burner" style={{color:"#FFFFFF"}} target="_blank" rel="noopener noreferrer">
               <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-code"/> {i18n.t('code')}
@@ -151,7 +151,7 @@ export default class Advanced extends React.Component {
             </a>
           </div>
           <div className="col-6 p-1">
-            <a href="https://blog.liquidity.network/2018/11/21/nocust-101/" style={{color:"#FFFFFF"}} target="_blank">
+            <a href="https://blog.liquidity.network/2018/11/21/nocust-101/" style={{color:"#FFFFFF"}} target="_blank" rel="noopener noreferrer">
               <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
                   <i className="fas fa-info"/> {i18n.t('about')}
