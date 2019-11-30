@@ -40,7 +40,7 @@ const qs = require('query-string');
 
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
 const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
-const RPC_URL = process.env.REACT_APP_RPC_URL
+const RPC_URL = process.env.REACT_APP_WEB3_PROVIDER
 const TOKEN = process.env.REACT_APP_TOKEN
 
 console.log("TOKEN", TOKEN)
