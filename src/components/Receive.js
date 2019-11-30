@@ -4,7 +4,7 @@ import i18n from '../i18n';
 
 const QRCode = require('qrcode.react');
 
-export default class LiquidityReceive extends React.Component {
+export default class Receive extends React.Component {
 
   render() {
     let {address, changeAlert, hubContract, hubApiUrl} = this.props

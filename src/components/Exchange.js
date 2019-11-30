@@ -260,7 +260,7 @@ const getOtherAmount = (orders, amount, knownQuantity) => {
   return output
 }
 
-export default class LiquidityExchange extends React.Component {
+export default class Exchange extends React.Component {
 
   constructor(props) {
     super(props)

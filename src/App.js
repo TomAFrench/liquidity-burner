@@ -27,7 +27,7 @@ import core from './core';
 
 import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
-import LiquiditySendByScan from './components/LiquiditySendByScan'
+import SendByScan from './components/SendByScan'
 
 const MAINNET_CHAIN_ID = '1';
 
@@ -355,7 +355,7 @@ class App extends Component {
           <Route
             path="/scanner"
             render={({history, location}) => (
-              <LiquiditySendByScan
+              <SendByScan
                 mainStyle={mainStyle}
                 onError={(error) =>{
                   this.changeAlert("danger",error)

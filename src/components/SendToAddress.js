@@ -9,7 +9,7 @@ import AmountBar from './AmountBar'
 
 const { toWei, fromWei, toBN } = require('web3-utils');
 
-export default class LiquiditySendToAddress extends React.Component {
+export default class SendToAddress extends React.Component {
 
   constructor(props) {
     super(props);

@@ -17,11 +17,11 @@ import NavCard from './NavCard';
 import Bottom from './Bottom';
 import Loader from './Loader';
 
-import LiquidityReceive from './LiquidityReceive'
-import LiquiditySendToAddress from './LiquiditySendToAddress'
-import LiquidityTransactions from './LiquidityTransactions'
-import LiquidityBridge from './LiquidityBridge';
-import LiquidityExchange from './LiquidityExchange'
+import Receive from './Receive'
+import SendToAddress from './SendToAddress'
+import Transactions from './Transactions'
+import Bridge from './Bridge';
+import Exchange from './Exchange'
 
 import Balance from "./Balance";
 
@@ -311,7 +311,7 @@ export default class LiquidityNetwork extends React.Component {
               <div className="main-card card w-100" style={{zIndex:1}}>
 
                 <NavCard title={i18n.t('receive_title')}/>
-                <LiquidityReceive
+                <Receive
                   hubContract={HUB_CONTRACT_ADDRESS}
                   hubApiUrl={HUB_API_URL}
                   ensLookup={this.props.ensLookup}
@@ -376,7 +376,7 @@ export default class LiquidityNetwork extends React.Component {
                   dollarDisplay={(balance)=>{return balance}}
                 />
                 <Ruler/>
-                <LiquiditySendToAddress
+                <SendToAddress
                   token={token}
                   sendTransaction={(tx) => this.state.nocustManager.sendTransaction(tx)}
                   convertToDollar={(dollar) => {return dollar}}
@@ -415,7 +415,7 @@ export default class LiquidityNetwork extends React.Component {
                     </Scaler>
                 </div>
                 <Ruler/>
-                <LiquidityBridge
+                <Bridge
                   address={this.state.address}
                   token={this.state.tokens.ETH}
                   balance={this.state.balances.ETH}
@@ -433,7 +433,7 @@ export default class LiquidityNetwork extends React.Component {
                   }}
                 />
                 <Ruler/>
-                <LiquidityBridge
+                <Bridge
                   address={this.state.address}
                   token={this.state.tokens[TOKEN]}
                   balance={this.state.balances[TOKEN]}
@@ -475,7 +475,7 @@ export default class LiquidityNetwork extends React.Component {
               <div>
               <div className="main-card card w-100" style={{zIndex:1}}>
                 <NavCard title={i18n.t('exchange_title')} />
-                <LiquidityExchange
+                <Exchange
                   assetA={this.state.tokens[assetA]}
                   assetB={this.state.tokens[assetB]}
                   assetABalance={this.state.balances[assetA]}
@@ -537,7 +537,7 @@ export default class LiquidityNetwork extends React.Component {
                   {sendButtons}
 
                   </div>
-                  <LiquidityTransactions
+                  <Transactions
                     dollarDisplay={(balance)=>{return balance}}
                     changeAlert={this.props.changeAlert}
                     address={this.state.account}
