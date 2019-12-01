@@ -4,7 +4,7 @@
 
 🔥 The [Liquidity Burner Wallet](https://rinkeby.tomfren.ch) is a quick web wallet used to move small amounts of crypto quickly. On page load an Ethereum keypair is automatically generated and used to sign transactions with an incredibly simple interface. Sending funds is as easy as a QR code scan.
 
-🌊 Liquidity Burner Wallet is similar to the Burner Wallet but rather than using the relatively centralised xDai sidechain, it instead allows free near-instant transactions on the Liquidity Network commit chain. This means that your funds are secured by the main Ethereum network in a non-custodial fashion. The very small number of validators of the xDai chain (currently only 11!) can lock your funds indefinitely if they wanted to. __As it is non-custorial, no matter what happens to Liquidity Network you can always withdraw your money back to the Ethereum mainnet!__
+🌊 Liquidity Burner Wallet is similar to the Burner Wallet but rather than using the relatively centralised xDai sidechain, it instead allows free near-instant transactions on the [Liquidity Network](https://liquidity.network/) NOCUST commit chain. This means that your funds are secured by the main Ethereum network in a non-custodial fashion. The very small number of validators of the xDai chain (currently only 11!) can lock your funds indefinitely if they wanted to. __As it is non-custorial, no matter what happens to Liquidity Network you can always withdraw your money back to the Ethereum mainnet!__
 
 💵 Burners are analogous to cash: quick and easy but less secure. You wouldn't stuff thousands of dollars in your pocket on the way out the door at night, don't trust a seed phrase in localstorage with more than you are willing to lose.
 
