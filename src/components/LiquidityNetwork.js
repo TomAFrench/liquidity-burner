@@ -111,7 +111,9 @@ export default class LiquidityNetwork extends React.Component {
       
     this.checkTokenBalances()
     this.getTransactions()
-
+    Object.values(tokens).map((token) => this.state.nocustManager.syncWallet(this.state.address, token.tokenAddress))
+    
+    // Automatically refresh balances when receiving transactions.
     this.state.nocustManager.subscribeToIncomingTransfer(
       this.state.address,
       tx => {
