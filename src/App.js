@@ -396,11 +396,6 @@ class App extends Component {
           <Route
             path="/liquidity"
             render={({ match }) => {
-              if (!this.state || !this.state.customLoader  || !this.state.contracts || !this.state.network) {
-                return (
-                  <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle}/>
-                )
-              }
               return (
                 <LiquidityNetwork
                   match={match}
@@ -424,9 +419,7 @@ class App extends Component {
                   changeAlert={this.changeAlert}
                   dollarDisplay={dollarDisplay}
                 />
-              )
-              }
-            }
+              )}}
           />
         </Switch>}
       
