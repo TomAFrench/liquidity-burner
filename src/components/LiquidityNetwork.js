@@ -99,10 +99,12 @@ export default class LiquidityNetwork extends React.Component {
 
   async registerWithHub(){
     
-    var tokens = cookie.load('availableTokens') 
+    var tokens = cookie.load('availableTokens')
     if (typeof tokens === 'undefined') {
       tokens = await this.getAssets()
     }
+    console.log("Tokens available on hub:", tokens)
+    cookie.save('availableTokens', tokens, { path: '/' })
     this.setState({tokens})
     
     console.log("Registering with hub")
@@ -148,11 +150,7 @@ export default class LiquidityNetwork extends React.Component {
   async getAssets(){
     console.log("Retrieving which tokens are supported by hub")
     const tokenList = await this.state.nocustManager.getSupportedTokens()
-    const tokenDict = this.buildTokenDict(tokenList)
-    
-    console.log(tokenDict)
-    this.setState({tokens: tokenDict})
-    cookie.save('availableTokens', tokenDict, { path: '/' })
+    return this.buildTokenDict(tokenList)
   }
 
   isValidToken(tokenShortName) {
