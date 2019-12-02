@@ -72,11 +72,6 @@ export default class LiquidityNetwork extends React.Component {
 
     console.log(nocustManager)
 
-    var tokens = cookie.load('availableTokens') 
-    if (typeof tokens === 'undefined') {
-      tokens = { "ETH": {}, "DAI": {}, "LQD": {} }
-    }
-
     var balances = cookie.load('tokenBalances') 
     if (typeof balances === 'undefined') {
       balances = { "ETH": {}, "DAI": {}, "LQD": {} }
@@ -88,7 +83,7 @@ export default class LiquidityNetwork extends React.Component {
     this.state = {
       nocustManager: nocustManager,
       address: limboweb3.eth.accounts.wallet[0].address,
-      tokens: tokens,
+      tokens: {},
       balances: balances,
       withdrawInfo: {}
     }
@@ -96,16 +91,26 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   componentDidMount(){
+    this.registerWithHub()
+    
+    const longPollingIntervalId = setInterval(this.longPollInterval.bind(this),60000)
+    this.setState({longPollingIntervalId})
+  }
 
-    this.checkRegistration().then(async (addressRegistered) => {
-      this.getAssets()
-      if (!addressRegistered) {
-        const registration = await this.registerWithHub()
-        console.log("Completed registration")
-      }
-      this.checkTokenBalances()
-      this.getTransactions()
-    })
+  async registerWithHub(){
+    
+    var tokens = cookie.load('availableTokens') 
+    if (typeof tokens === 'undefined') {
+      tokens = await this.getAssets()
+    }
+    this.setState({tokens})
+    
+    console.log("Registering with hub")
+    const registration = await Promise.all(Object.values(tokens).map(async (token) => {return await this.registerToken(token.tokenAddress)}))
+    console.log("Completed registration:", registration)
+      
+    this.checkTokenBalances()
+    this.getTransactions()
 
     this.state.nocustManager.subscribeToIncomingTransfer(
       this.state.address,
@@ -116,9 +121,6 @@ export default class LiquidityNetwork extends React.Component {
       }, 
       'all'
     ).then((unsubscribe) => this.setState({unsubscribe}))
-    
-    const longPollingIntervalId = setInterval(this.longPollInterval.bind(this),60000)
-    this.setState({longPollingIntervalId})
   }
   
   componentWillUnmount(){
@@ -129,24 +131,6 @@ export default class LiquidityNetwork extends React.Component {
 
     console.log("No longer polling NOCUST")
     clearInterval(this.state.longPollingIntervalId)
-  }
-
-  async checkRegistration(){
-    try {
-      const addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address, HUB_CONTRACT_ADDRESS)
-      console.log(addressRegistered ? "Already registered" : "Address hasn't registered with the hub")
-      return addressRegistered 
-    } catch (e) {
-      console.log("Error when checking registration:", e)
-      return false
-    }
-  }
-
-  async registerWithHub(){
-    console.log("Registering with hub")
-    if (this.state.tokens) {
-      return Promise.all(Object.values(this.state.tokens).map(async (token) => this.registerToken(token.tokenAddress)))
-    }
   }
 
   async registerToken(tokenAddress) {
@@ -164,6 +148,7 @@ export default class LiquidityNetwork extends React.Component {
     const tokenList = await this.state.nocustManager.getSupportedTokens()
     const tokenDict = this.buildTokenDict(tokenList)
     
+    console.log(tokenDict)
     this.setState({tokens: tokenDict})
     cookie.save('availableTokens', tokenDict, { path: '/' })
   }
