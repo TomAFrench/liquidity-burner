@@ -379,10 +379,6 @@ class App extends Component {
                   goBack={history.goBack}
                   dollarDisplay={dollarDisplay}
                   burnWallet={()=>{
-                    if(localStorage&&typeof localStorage.setItem == "function"){
-                      localStorage.setItem(this.state.account+"metaPrivateKey","")
-                      localStorage.setItem("metaPrivateKey","")
-                    }
                     burnMetaAccount()
                     history.push("/")
                   }}
