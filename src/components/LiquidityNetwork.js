@@ -29,14 +29,12 @@ import { NOCUSTManager } from 'nocust-client'
 
 import ethImg from '../images/ethereum.png';
 import daiImg from '../images/dai.jpg';
-import lqdImg from '../liquidity.png';
-import burnerlogo from '../liquidity.png';
-let LOADERIMAGE = burnerlogo
-
+import lqdImg from '../images/liquidity.png';
 
 const { toWei, fromWei, toBN } = require('web3-utils');
 const qs = require('query-string');
 
+const LOADERIMAGE = lqdImg
 
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
 const HUB_API_URL = process.env.REACT_APP_HUB_API_URL

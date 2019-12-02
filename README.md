@@ -1,5 +1,5 @@
 <p align="center"> 
-  <img src="src/liquidity.png" alt="drawing" width="200"/>
+  <img src="src/images/liquidity.png" alt="drawing" width="200"/>
 </p>
 
 🔥 The [Liquidity Burner Wallet](https://rinkeby.tomfren.ch) is a quick web wallet used to move small amounts of crypto quickly. On page load an Ethereum keypair is automatically generated and used to sign transactions with an incredibly simple interface. Sending funds is as easy as a QR code scan.

@@ -18,14 +18,13 @@ import NavCard from './components/NavCard';
 import Advanced from './components/Advanced';
 import Footer from './components/Footer';
 import Loader from './components/Loader';
-import burnerlogo from './liquidity.png';
+import burnerlogo from './images/liquidity.png';
 import BurnWallet from './components/BurnWallet'
 import Bottom from './components/Bottom';
 import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
 import core from './core';
 
-import Wyre from './services/wyre';
 import LiquidityNetwork from './components/LiquidityNetwork';
 import SendByScan from './components/SendByScan'
 
@@ -159,7 +158,7 @@ class App extends Component {
 
     document.body.style.backgroundColor = mainStyle.backgroundColor
 
-    Wyre.configure();
+    // Wyre.configure();
 
     this.detectContext()
 
