@@ -8,7 +8,10 @@ export default ({token, selected, balance, offchain, dollarDisplay}) => {
     opacity=0.95
   }
 
-  var amount = (offchain ? balance.displayOffchain : balance.displayOnchain)
+  var amount = "0"
+  if (balance) {
+    amount = (offchain ? balance.displayOffchain : balance.displayOnchain)
+  }
 
   if(isNaN(amount) || typeof amount == "undefined"){
     amount=0.00
