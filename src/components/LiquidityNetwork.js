@@ -195,10 +195,16 @@ export default class LiquidityNetwork extends React.Component {
   async checkTokenBalances(){
     console.log("Checking token balances...")
     if (this.state.tokens) {
-      let newBalances = {}
-      for (let [key, value] of Object.entries(JSON.parse(JSON.stringify(this.state.tokens)))) {
-        newBalances[key] = await this.checkTokenBalance(value.tokenAddress)
+      const newBalances = (await Promise.all(Object.entries(this.state.tokens).map(async (value) =>{
+        const [key, token] = value
+        return [key, await this.checkTokenBalance(token.tokenAddress)]
       }
+      ))).reduce((accumulator, value) => {
+        const [token, balance] = value
+        accumulator[token] = balance
+        return accumulator
+      }, {})
+
       console.log(newBalances)
       cookie.save('tokenBalances', newBalances, { path: '/' })
       this.setState({balances: newBalances})
