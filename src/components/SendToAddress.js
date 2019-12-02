@@ -191,7 +191,7 @@ export default class SendToAddress extends React.Component {
               <AmountBar
                 ref={(input) => { this.amountInput = input; }}
                 buttonStyle={this.props.buttonStyle}
-                unit={"f"+this.props.token.shortName}
+                unit={this.props.token ? "f"+this.props.token.shortName : "Loading..."}
                 value={this.state.amount}
                 updateValue={amount => this.updateState('amount', amount)}
                 maxValue={typeof this.props.offchainBalance !== 'undefined' && fromWei(this.props.offchainBalance.toString(), 'ether')}

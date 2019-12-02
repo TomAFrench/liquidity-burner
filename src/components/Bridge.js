@@ -22,7 +22,7 @@ export default (props) => {
       <Ruler/>
       <SwapBar
         buttonStyle={props.buttonStyle}
-        text={props.token.shortName}
+        text={props.token ? props.token.shortName : "Loading..."}
         ethBalance={props.ethBalance}
         onchainBalance={props.balance.onchainBalance}
         offchainBalance={props.balance.offchainBalance}

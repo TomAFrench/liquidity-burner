@@ -394,7 +394,7 @@ export default class LiquidityNetwork extends React.Component {
                   amount={tokenAmount}
                   ensLookup={this.props.ensLookup}
                   buttonStyle={this.props.buttonStyle}
-                  offchainBalance={tokenBalance.offchainBalance}
+                  offchainBalance={tokenBalance && tokenBalance.offchainBalance}
                   address={this.state.address}
                   changeAlert={this.props.changeAlert}
                   dollarDisplay={(balance)=>{return balance}}
