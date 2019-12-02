@@ -157,6 +157,12 @@ export default class LiquidityNetwork extends React.Component {
     return Object.keys(this.state.tokens).includes(tokenShortName)
   }
 
+  lookupTokenAddress(tokenAddress) {
+    return Object.values(this.state.tokens).find((token) => {
+      return tokenAddress === token.tokenAddress
+    })
+  }
+
   buildTokenDict(tokenList) {
     var tokens = tokenList.reduce((accumulator, pilot) => {
       return {...accumulator, [pilot.shortName]: {name: pilot.name, shortName: pilot.shortName, tokenAddress: pilot.tokenAddress}}
@@ -369,9 +375,14 @@ export default class LiquidityNetwork extends React.Component {
         <Route
           path={`${this.props.match.url}/send`}
           render={({ history, location }) => {
-            const token = this.state.tokens[qs.parse(location.search).token] || this.state.tokens[TOKEN]
-            const tokenBalance = this.state.balances[qs.parse(location.search).token] || this.state.tokens[TOKEN]
-            const tokenAmount = qs.parse(location.search).amount
+            const query = qs.parse(location.search)
+            
+            // First look up token shortname.
+            // May have been given the token's address so perform lookup if that fails
+            // Finally default to main token.
+            const token = this.state.tokens[query.token] || this.lookupTokenAddress(query.token) || this.state.tokens[TOKEN]
+            const tokenBalance = this.state.balances[token]
+            const tokenAmount = typeof query.amount === 'string' ? fromWei(query.amount, 'ether') : undefined
             return (
             <div>
               <div className="send-to-address card w-100" style={{zIndex:1}}>

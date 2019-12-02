@@ -61,13 +61,13 @@ class SendByScan extends Component {
     //detect and respect LQD Net deep links...
     if(data && data.indexOf("lqdnet://send")>=0){
       const address = qs.parse(data).publicKey
-      const tokenAddress = qs.parse(data).tokenAddress
+      const token = qs.parse(data).tokenAddress
       const amount = qs.parse(data).amount
       
-      console.log("LQD Net Deep Link payment", address, tokenAddress, amount)
+      console.log("LQD Net Deep Link payment", address, token, amount)
       
       this.stopRecording();
-      this.setState({success: true, toAddress: address})
+      this.setState({success: true, toAddress: address, search: { token, amount }})
     } else if(data && (data.length === 42 || data.indexOf(".eth") >= 0)) {
       console.log("Found Address/ENS:", data)
       this.stopRecording();
@@ -150,7 +150,7 @@ class SendByScan extends Component {
   render() {
 
     if (this.state.success){
-      return <Redirect to={{pathname: "/liquidity/send/"+this.state.toAddress, search: this.props.search}} />
+      return <Redirect to={{pathname: "/liquidity/send/"+this.state.toAddress, search: qs.stringify({...qs.parse(this.props.search), ...this.state.search})}} />
     }
 
     let displayedImage = ""
