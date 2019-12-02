@@ -20,7 +20,7 @@
 
 🏦 Press the `[Exchange]` button to buy fDAI with fETH using the [TEX](https://tex.liquidity.network/).
 
-🗝️ If you would like more permanence, press the [Advanced] button and [use a short pass phrase](https://youtu.be/3zAFo-8p_tg?t=48) to seed a keypair. 
+🗝️ If you would like more permanence, press the `[Advanced]` button and [use a short pass phrase](https://youtu.be/3zAFo-8p_tg?t=48) to seed a keypair. 
 
 ✅ All projects should have a 'burner' version of their product. Take simple fundamentals from your app and put them in an easy to access web version before the barriers to entry. Use this to educate your users about your product and incentivize them to take the next step and download your app. 
 
