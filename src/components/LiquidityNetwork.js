@@ -102,7 +102,8 @@ export default class LiquidityNetwork extends React.Component {
     this.checkRegistration().then(async (addressRegistered) => {
       this.getAssets()
       if (!addressRegistered) {
-        await this.registerWithHub()
+        const registration = await this.registerWithHub()
+        console.log("Completed registration")
       }
       this.checkTokenBalances()
       this.getTransactions()
@@ -143,6 +144,23 @@ export default class LiquidityNetwork extends React.Component {
     }
   }
 
+  async registerWithHub(){
+    console.log("Registering with hub")
+    if (this.state.tokens) {
+      return Promise.all(Object.values(this.state.tokens).map(async (token) => this.registerToken(token.tokenAddress)))
+    }
+  }
+
+  async registerToken(tokenAddress) {
+    console.log("Registering token:", tokenAddress)
+    try {
+      return this.state.nocustManager.registerAddress(this.state.address, tokenAddress)
+    } catch (e) {
+      console.log("Error registering", e)
+      return setTimeout(this.registerToken(tokenAddress), 1000)
+    }
+  }
+
   async getAssets(){
     console.log("Retrieving which tokens are supported by hub")
     const tokenList = await this.state.nocustManager.getSupportedTokens()
@@ -166,15 +184,6 @@ export default class LiquidityNetwork extends React.Component {
     if (tokens.LQD) tokens.LQD.image = lqdImg
 
     return tokens
-  }
-
-  async registerWithHub(){
-    console.log("Registering with hub")
-    if (this.state.tokens) {
-      for (let [, value] of Object.entries(this.state.tokens)) {
-        this.state.nocustManager.registerAddress(this.state.address, value.tokenAddress)
-      }
-    }
   }
 
   async longPollInterval(){
