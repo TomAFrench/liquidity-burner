@@ -58,23 +58,24 @@ class SendByScan extends Component {
     console.log(data)
   }
   handleScan = data => {
-    console.log("DATA")
-    console.log(data)
-
     //detect and respect LQD Net deep links...
     if(data && data.indexOf("lqdnet://send")>=0){
       const address = qs.parse(data).publicKey
       const tokenAddress = qs.parse(data).tokenAddress
       const amount = qs.parse(data).amount
       
-      console.log("LQD Net Deep Link payment",address,tokenAddress, amount)
+      console.log("LQD Net Deep Link payment", address, tokenAddress, amount)
       
       this.stopRecording();
       this.setState({success: true, toAddress: address})
-    } else if(data.length === 42 || data.indexOf(".eth") >= 0) {
+    } else if(data && (data.length === 42 || data.indexOf(".eth") >= 0)) {
+      console.log("Found Address/ENS:", data)
       this.stopRecording();
       this.setState({success: true, toAddress: data})
+    } else {
+      console.log("Can't decode data:", data)
     }
+
   };
   chooseDeviceId = (a,b) => {
     console.log("chooseDeviceId ",a,b)
