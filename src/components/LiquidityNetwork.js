@@ -84,6 +84,8 @@ export default class LiquidityNetwork extends React.Component {
       balances = { "ETH": {}, "DAI": {}, "LQD": {} }
     }
 
+    console.log("Initial balances:", balances)
+
     
     this.state = {
       nocustManager: nocustManager,
@@ -93,16 +95,18 @@ export default class LiquidityNetwork extends React.Component {
       withdrawInfo: {}
     }
 
-    this.getAssets()
-
-    this.checkRegistration().then((addressRegistered) => {
-      if (!addressRegistered) {
-        this.registerWithHub()
-      }
-    })
   }
 
   componentDidMount(){
+
+    this.checkRegistration().then(async (addressRegistered) => {
+      this.getAssets()
+      if (!addressRegistered) {
+        await this.registerWithHub()
+      }
+      this.checkTokenBalances()
+      this.getTransactions()
+    })
 
     this.state.nocustManager.subscribeToIncomingTransfer(
       this.state.address,
@@ -113,11 +117,7 @@ export default class LiquidityNetwork extends React.Component {
       }, 
       'all'
     ).then((unsubscribe) => this.setState({unsubscribe}))
-    this.checkTokenBalances()
-    this.getTransactions()
-
-
-    setTimeout(this.longPollInterval.bind(this),30)
+    
     const longPollingIntervalId = setInterval(this.longPollInterval.bind(this),60000)
     this.setState({longPollingIntervalId})
   }
@@ -133,10 +133,14 @@ export default class LiquidityNetwork extends React.Component {
   }
 
   async checkRegistration(){
-    const addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address)
-    console.log(addressRegistered ? "Already registered" : "Address hasn't registered with the hub")
-    this.setState({addressRegistered})
-    return addressRegistered 
+    try {
+      const addressRegistered = await this.state.nocustManager.isAddressRegistered(this.state.address, HUB_CONTRACT_ADDRESS)
+      console.log(addressRegistered ? "Already registered" : "Address hasn't registered with the hub")
+      return addressRegistered 
+    } catch (e) {
+      console.log("Error when checking registration:", e)
+      return false
+    }
   }
 
   async getAssets(){
@@ -180,6 +184,7 @@ export default class LiquidityNetwork extends React.Component {
   }
   
   async checkTokenBalances(){
+    console.log("Checking token balances...")
     if (this.state.tokens) {
       let newBalances = {}
       for (let [key, value] of Object.entries(JSON.parse(JSON.stringify(this.state.tokens)))) {
@@ -189,18 +194,26 @@ export default class LiquidityNetwork extends React.Component {
       cookie.save('tokenBalances', newBalances, { path: '/' })
       this.setState({balances: newBalances})
     }
+    return true
   }
 
   async checkTokenBalance (tokenAddress) {
-    const onchainBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, tokenAddress)
-    const offchainBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address, tokenAddress)
+    try {
+      const onchainBalance = await this.state.nocustManager.getOnChainBalance(this.state.address, tokenAddress)
+      const offchainBalance = await this.state.nocustManager.getNOCUSTBalance(this.state.address, tokenAddress)
 
-    const displayOnchain = getDisplayValue(toBN(onchainBalance))
-    const displayOffchain = getDisplayValue(toBN(offchainBalance))
-
-    const withdrawalLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, tokenAddress)
-
-    return {onchainBalance, offchainBalance, displayOnchain, displayOffchain, withdrawalLimit}
+      const displayOnchain = getDisplayValue(toBN(onchainBalance))
+      const displayOffchain = getDisplayValue(toBN(offchainBalance))
+  
+      const withdrawalLimit = await this.state.nocustManager.getWithdrawalLimit(this.state.address, tokenAddress)
+  
+      return {onchainBalance, offchainBalance, displayOnchain, displayOffchain, withdrawalLimit}
+    } catch (e) {
+      return this.state.nocustManager.registerAddress(this.state.address, tokenAddress).then(() => {
+        return this.checkTokenBalance(tokenAddress)
+      })
+      
+    }
   }
 
   async getTransactions() {
@@ -237,7 +250,6 @@ export default class LiquidityNetwork extends React.Component {
 
     const txhash = await this.state.nocustManager.withdrawalConfirmation(this.state.address, toWei(this.props.gwei.toString(), "gwei"), gasLimit, this.state.withdrawInfo.token)
     console.log("withdrawal", txhash)
-    this.checkTokenBalances()
   }
 
   render(){
