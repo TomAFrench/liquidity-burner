@@ -8,7 +8,6 @@
     "copy": "Скопировать приватный ключ",
     "create": "Создать",
     "receive_title": "Получить",
-    "receipt_title": "Отчет",
     "send_to_address_title": "Отправить на адрес",
     "advance": "Продвинутые настройки",
     "advance_title": "Продвинутые настройки",
@@ -19,35 +18,15 @@
     "amount": "Сумма",
     "send": "Отправить",
     "withdraw": "Вывод средств",
-    "history_chat": "История и чат",
     "request_funds_title": "Запросить средства",
     "request": "Запросить",
-    "vendors": "Вендоры",
     "main_card": {
       "receive": "Получиь",
       "send": "Отправить",
-      "share": "Поделиться",
-      "link": "Ссылка",
-      "vendors": "Вендоры"
-    },
-    "send_with_link": {
-      "error": "Пожалуйста, введите допустимую сумму"
+      "share": "Поделиться"
     },
     "share": {
       "copied": "Ссылка скопирована в буфер обмена"
-    },
-    "vendor": {
-      "updating": "Обновление",
-      "open": "Открыт",
-      "closed": "Закрыт",
-      "add_product": "Добавить продукт",
-      "adding": "Добавление"
-    },
-    "withdraw_from_private": {
-      "from_address": "Вывод средств с адреса",
-      "amount": "Сумма для вывода",
-      "withdraw": "Вывод",
-      "error": "Пожалуйста, введите допустимую сумму для вывода"
     },
     "send_to_address": {
       "to_address": "Адрес назначения",
@@ -67,37 +46,19 @@
     "receive": {
       "address_copied": "Адрес скопирован в буфер обмена"
     },
-    "history": {
-      "metamask_error": "Зашифрованные сообщения недоступны при использовании MetaMask",
-      "wave": "Wave"
+    "bridge": {
+      "title": "Bridge",
+      "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first."
     },
     "exchange": {
-      "withdrawal_explanation": "Только вендоры могут выводить больше, чем вложили",
-      "funds_transferred": "Средства переведены!",
-      "funds_bridged": "Средства обменены",
-      "insufficient_funds": "Недостаточно средств",
-      "invalid_to_address": "Пожалуйста, введите допустимый адрес назначения",
-      "invalid_to_amount": "Пожалуйста, введите допустимую сумму",
-      "calculate_gas_price": "Расчёт наилучшей цены газа...",
-      "go_to_etherscan": "go to etherscan?",
-      "idk": "idk where to go from here? something that explains the bridge?"
+      "insufficient_funds": "Недостаточно средств"
     },
     "request_funds": {
-      "item_message": "Продукт или сообщение",
       "button": "Запросить",
       "amount": "Сумма запроса"
     },
-    "admin": {
-      "add_admin": "Добавить администратора",
-      "adding": "Добавление",
-      "add_vendor": "Добавить вендора"
-    },
     "advanced": {
       "to_qr": "Сгенерировать QR-код"
-    },
-    "balance_display": {
-      "waiting_for_api": "Waiting for API",
-      "no_currency_api": "No Currency API Data Available"
     },
     "burn_wallet": {
       "burn_private_key_question": "Вы уверены что хотите сжечь этот приватный ключ?",

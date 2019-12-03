@@ -8,7 +8,6 @@
     "copy": "秘密鍵を複製",
     "create": "作成",
     "receive_title": "受け取る",
-    "receipt_title": "レシート",
     "send_to_address_title": "アドレスに送金",
     "advance": "高度な設定",
     "advance_title": "高度な設定",
@@ -19,35 +18,15 @@
     "amount": "金額",
     "send": "送金",
     "withdraw": "引き出し",
-    "history_chat": "履歴 & チャット",
     "request_funds_title": "資金を請求",
     "request": "請求",
-    "vendors": "売り手",
     "main_card": {
       "receive": "受け取る",
       "send": "送金",
-      "share": "共有",
-      "link": "リンク",
-      "vendors": "売り手"
-    },
-    "send_with_link": {
-      "error": "有効な金額を入力してください"
+      "share": "共有"
     },
     "share": {
       "copied": "URLがクリップボードにコピーされました"
-    },
-    "vendor": {
-      "updating": "アップデート中",
-      "open": "開く",
-      "closed": "閉じる",
-      "add_product": "商品を追加",
-      "adding": "追加中"
-    },
-    "withdraw_from_private": {
-      "from_address": "アドレスから引き出す",
-      "amount": "引き出し金額",
-      "withdraw": "引き出す",
-      "error": "有効な引き出し金額を入力してください"
     },
     "send_to_address": {
       "to_address": "送金先アドレス",
@@ -67,37 +46,19 @@
     "receive": {
       "address_copied": "アドレスをクリップボードにコピーしました"
     },
-    "history": {
-      "metamask_error": "MetaMaskでは暗号文は利用できません",
-      "wave": "ウェーブ"
+    "bridge": {
+      "title": "Bridge",
+      "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first."
     },
     "exchange": {
-      "withdrawal_explanation": "売り手のみが預託金より多く引き出しが可能です",
-      "funds_transferred": "資金を移動しました!",
-      "funds_bridged": "資金を交換しました",
-      "insufficient_funds": "資金が不足しています",
-      "invalid_to_address": "有効な送金先を入力してください",
-      "invalid_to_amount": "有効な送金額を入力してください",
-      "calculate_gas_price": "最適なガス代を計算しています...",
-      "go_to_etherscan": "etherscanへ移動しますか?",
-      "idk": "どこへ行ったらよいかお困りですか? ブリッジについての説明が必要ですか?"
+      "insufficient_funds": "資金が不足しています"
     },
     "request_funds": {
-      "item_message": "商品またはメッセージ",
       "button": "請求",
       "amount": "請求金額"
     },
-    "admin": {
-      "add_admin": "管理者を追加",
-      "adding": "追加中",
-      "add_vendor": "売り手を追加"
-    },
     "advanced": {
       "to_qr": "送金先QR"
-    },
-    "balance_display": {
-      "waiting_for_api": "APIを待っています",
-      "no_currency_api": "取得可能な通貨APIデータがありません"
     },
     "burn_wallet": {
       "burn_private_key_question": "本当にこの秘密鍵を焼却しますか?",
