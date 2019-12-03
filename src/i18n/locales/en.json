@@ -48,7 +48,10 @@
     },
     "bridge": {
       "title": "Bridge",
-      "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first."
+      "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first.",
+      "exceed_withdrawal_limit": "Insufficient withdrawal limit. Your limit will refresh within 72 hours.",
+      "zero_withdrawal": "Please choose an amount greater than 0",
+      "insufficient_funds": "Insufficient funds"
     },
     "exchange": {
       "insufficient_funds": "Insufficient funds"
