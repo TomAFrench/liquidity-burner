@@ -8,7 +8,6 @@
     "copy": "Copiar PK",
     "create": "Crear",
     "receive_title": "Rebre",
-    "receipt_title": "Rebut",
     "send_to_address_title": "Enviar a una Adreça",
     "advance": "Avançat",
     "advance_title": "Avançat",
@@ -19,35 +18,15 @@
     "amount": "Quantitat",
     "send": "Enviar",
     "withdraw": "Retirar",
-    "history_chat": "Historial i Converses",
     "request_funds_title": "Sol·licitar fons",
     "request": "Sol·licitar",
-    "vendors": "Venedors",
     "main_card": {
       "receive": "Rebre",
       "send": "Enviar",
-      "share": "Compartir",
-      "link": "Enllaçar",
-      "vendors": "Venedors"
-    },
-    "send_with_link": {
-      "error": "Si us plau introdueix una quantitat vàlida"
+      "share": "Compartir"
     },
     "share": {
       "copied": "URL copiada al porta-retalls"
-    },
-    "vendor": {
-      "updating": "Actualitzant",
-      "open": "Obert",
-      "closed": "Tancat",
-      "add_product": "Afegir un producte",
-      "adding": "Afegint"
-    },
-    "withdraw_from_private": {
-      "from_address": "Retirar d'una adreça",
-      "amount": "Retirar la quantitat",
-      "withdraw": "Retirar",
-      "error": "Si us plau introdueix una quantitat per retirar vàlida"
     },
     "send_to_address": {
       "to_address": "A l'adreça",
@@ -67,37 +46,19 @@
     "receive": {
       "address_copied": "Adreça copiada al porta-retalls"
     },
-    "history": {
-      "metamask_error": "Els missatges xifratsno estan disponibles amb MetaMask",
-      "wave": "Conectar-se"
+    "bridge": {
+      "title": "Bridge",
+      "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first."
     },
     "exchange": {
-      "withdrawal_explanation": "Només els venedors poden retirar més del que han dipositat",
-      "funds_transferred": "Fons transferits!",
-      "funds_bridged": "Fons intercanviats",
-      "insufficient_funds": "Fons insuficients",
-      "invalid_to_address": "Si us plau introdueix una adreça vàlida",
-      "invalid_to_amount": "Si us plau introdueix una quantitat vàlida",
-      "calculate_gas_price": "Calculant el millor preu del gas...",
-      "go_to_etherscan": "anar a etherscan?",
-      "idk": "no sé que fer? Com funciona l'intercanvi?"
+      "insufficient_funds": "Fons insuficients"
     },
     "request_funds": {
-      "item_message": "Ítem o Missatge",
       "button": "Sol·licitar",
       "amount": "Sol·licitar Quantitat"
     },
-    "admin": {
-      "add_admin": "Afegir un administrador",
-      "adding": "Afegint",
-      "add_vendor": "Afegir un venedor"
-    },
     "advanced": {
       "to_qr": "A QR"
-    },
-    "balance_display": {
-      "waiting_for_api": "Esperant la API",
-      "no_currency_api": "No hi ha dades de la API per la conversió de divises"
     },
     "burn_wallet": {
       "burn_private_key_question": "N'estàs segur que vols cremar aquesta clau privada?",

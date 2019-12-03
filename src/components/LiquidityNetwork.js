@@ -309,7 +309,7 @@ export default class LiquidityNetwork extends React.Component {
             <button className="btn btn-large w-100" style={this.props.buttonStyle.secondary}>
               <Link to={`${this.props.match.url}/bridge`} style={{ textDecoration: 'none', color: this.props.buttonStyle.secondary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-hand-holding-usd"/> {i18next.t('liquidity.bridge.title')}
+                  <i className="fas fa-hand-holding-usd"/> {i18next.t('bridge.title')}
                 </Scaler>
               </Link>
             </button>

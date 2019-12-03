@@ -8,7 +8,6 @@
     "copy": "להעתיק PK",
     "create": "לייצר",
     "receive_title": "קבל",
-    "receipt_title": "קבלה",
     "send_to_address_title": "שלח לכתובת",
     "advance": "מתקדם",
     "advance_title": "הגדרות מתקדמות",
@@ -19,35 +18,15 @@
     "amount": "סכום",
     "send": "לשלוח",
     "withdraw": "משיכה",
-    "history_chat": "היסטוריה וצ'אט",
     "request_funds_title": "בקש כספים",
     "request": "בקשה",
-    "vendors": "ספקים",
     "main_card": {
       "receive": "לקבל",
       "send": "שלח",
-      "share": "לשתף",
-      "link": "קישור",
-      "vendors": "ספקים"
-    },
-    "send_with_link": {
-      "error": "אנא הכנס סכום חוקי"
+      "share": "לשתף"
     },
     "share": {
       "copied": "הקישור הועתקה ללוח"
-    },
-    "vendor": {
-      "updating": "מעדכן",
-      "open": "פתוח",
-      "closed": "סגור",
-      "add_product": "הוסף מוצר",
-      "adding": "הוסף"
-    },
-    "withdraw_from_private": {
-      "from_address": "משוך מהכתובת",
-      "amount": "משוך סכום",
-      "withdraw": "משיכה",
-      "error": "אנא הכנס סכום חוקי למשיכה"
     },
     "send_to_address": {
       "to_address": "לכתובת",
@@ -67,37 +46,19 @@
     "receive": {
       "address_copied": "הכתובת הועתקה ללוח"
     },
-    "history": {
-      "metamask_error": "הודעות מוצפנות לא זמינות עם MetaMask",
-      "wave": "Wave"
+    "bridge": {
+      "title": "Bridge",
+      "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first."
     },
     "exchange": {
-      "withdrawal_explanation": "רק ספקים יכולים לסגת יותר ממה שהופקדו",
-      "funds_transferred": "כספים הועברו!",
-      "funds_bridged": "כספים החליפו",
-      "insufficient_funds": "אין מספיק כסף",
-      "invalid_to_address": "הזן כתובת יעד חוקית",
-      "invalid_to_amount": "הזן סכום יעד חוקי",
-      "calculate_gas_price": "חישוב מחיר הגז הטוב ביותר...",
-      "go_to_etherscan": "go to etherscan?",
-      "idk": "idk where to go from here? something that explains the bridge?"
+      "insufficient_funds": "אין מספיק כסף"
     },
     "request_funds": {
-      "item_message": "פריט או הודעה",
       "button": "בקשה",
       "amount": "סכום בקשה"
     },
-    "admin": {
-      "add_admin": "Add Admin",
-      "adding": "Adding",
-      "add_vendor": "Add Vendor"
-    },
     "advanced": {
       "to_qr": "QR ליצור"
-    },
-    "balance_display": {
-      "waiting_for_api": "Waiting for API",
-      "no_currency_api": "No Currency API Data Available"
     },
     "burn_wallet": {
       "burn_private_key_question": "האם אתה בטוח שברצונך לצרוב את המפתח הפרט?",

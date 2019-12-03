@@ -5,6 +5,7 @@
     "code": "Código",
     "burn": "Quemar",
     "show": "Mostrar",
+    "copy": "Copiar",
     "create": "Crear",
     "receive_title": "Recibir",
     "send_to_address_title": "Enviar a la dirección",
@@ -17,35 +18,15 @@
     "amount": "Monto",
     "send": "Enviar",
     "withdraw": "Retirar",
-    "history_chat": "Historia y Conversaciones",
     "request_funds_title": "Solicitar Fondos",
     "request": "Solicitar",
-    "vendors": "Vendedores",
     "main_card": {
       "receive": "Recibir",
       "send": "Enviar",
-      "share": "Compartir",
-      "link": "Link",
-      "vendors": "Vendedores"
-    },
-    "send_with_link": {
-      "error": "Por favor ingrese un monto válido."
+      "share": "Compartir"
     },
     "share": {
       "copied": "URL copiado al portapapeles."
-    },
-    "vendor": {
-      "updating": "Actualizando",
-      "open": "Abrir",
-      "closed": "Cerrar",
-      "add_product": "Añadir producto",
-      "adding": "Agregando"
-    },
-    "withdraw_from_private": {
-      "from_address": "Retirar de la dirección",
-      "amount": "Retirar monto",
-      "withdraw": "Retirar",
-      "error": "Por favor ingrese un monto válido."
     },
     "send_to_address": {
       "to_address": "Destinatario",
@@ -65,37 +46,19 @@
     "receive": {
       "address_copied": "Dirección copiada"
     },
-    "history": {
-      "metamask_error": "Los mensajes encriptados no son compatibles con Metamask",
-      "wave": "Conectarse"
+    "bridge": {
+      "title": "Bridge",
+      "warning": "Are you sure you want to withdraw to this wallet? Withdrawals can take up to 72 hours to complete. It might be safer to transfer to a more permanent wallet first."
     },
     "exchange": {
-      "withdrawal_explanation": "Solo los vendedores pueden retirar más fondos de lo depositado",
-      "funds_transferred": "Fondos transferidos!",
-      "funds_bridged": "Fondos intercambiados!",
-      "insufficient_funds": "Fondos insufcientes",
-      "invalid_to_address": "Por favor ingresa una dirección válida",
-      "invalid_to_amount": "Por favor ingresa un monto válido",
-      "calculate_gas_price": "Calculando el mejor precio del gas...",
-      "go_to_etherscan": "Ir a Etherscan?",
-      "idk": "No sé qué hacer? Cómo funciona el intercambio?"
+      "insufficient_funds": "Fondos insufcientes"
     },
     "request_funds": {
-      "item_message": "Artículo o Mensaje",
       "button": "Solicitar",
       "amount": "Solicitar Cantidad"
     },
-    "admin": {
-      "add_admin": "Agregar Administrador",
-      "adding": "Agregando",
-      "add_vendor": "Agregar Vendedor"
-    },
     "advanced": {
       "to_qr": "Transformar en QR"
-    },
-    "balance_display": {
-      "waiting_for_api": "Esperando la carga del API",
-      "no_currency_api": "No hay datos del API para la conversión de divisas"
     },
     "burn_wallet": {
       "burn_private_key_question": "Estás seguro que quieres quemar esta llave privada?",
