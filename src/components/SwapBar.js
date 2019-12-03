@@ -6,7 +6,7 @@ import i18n from '../i18n';
 import 'react-input-range/lib/css/index.css';
 
 import AmountBar from './AmountBar'
-const { toWei, fromWei } = require('web3-utils');
+const { toWei, fromWei, toBN } = require('web3-utils');
 
 const colStyle = {
   textAlign:"center",
@@ -16,6 +16,13 @@ const colStyle = {
 const Swapper = (props) => {
   
   const [amount, setAmount] = useState("");
+
+  let canSwap = false
+  try {
+    canSwap = toBN(toWei(amount, 'ether')).gt(toBN("0")) && amountBN.lte(toBN(props.maxValue))
+  } catch (e) {
+    //Do nothing
+  }
 
   let cancelButton = (
     <span style={{padding:10,whiteSpace:"nowrap"}}>
@@ -47,8 +54,8 @@ const Swapper = (props) => {
         </Scaler>
       </div>
       <div className="col-3 p-1">
-        <button className="btn btn-large w-100" disabled={props.buttonsDisabled} style={props.buttonStyle.primary} onClick={async ()=>{
-          props.successAction(amount)
+        <button className={`btn btn-large w-100 ${canSwap ? '' : 'disabled'}`} style={props.buttonStyle.primary} onClick={()=>{
+          return canSwap ? props.successAction(amount) : props.failAction(amount)
         }}>
           <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
             <i className={`fas ${props.icon}`} /> Send
@@ -68,52 +75,34 @@ export default class SwapBar extends React.Component {
 
     this.state = {
       swapMode: false,
-      loaderBarStatusText: i18n.t('loading'),
-      loaderBarStartTime:Date.now(),
-      loaderBarPercent: 2,
-      loaderBarColor: "#aaaaaa",
-      gwei: 5,
-      maxWithdrawlAmount: 0.00,
-      withdrawalExplanation: i18n.t('exchange.withdrawal_explanation'),
     }
   }
 
   render() {
     let {swapMode} = this.state
 
-    let buttonsDisabled = (
-      swapMode=="depositing" || swapMode=="withdrawing"
-    )
-
     let adjustedFontSize = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*24)
     let adjustedTop = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*-20)+9
 
     let display =  i18n.t('loading')
 
-    if(swapMode=="depositing" || swapMode=="withdrawing"){
-      display = (
-        <div className="content ops row" style={{position:"relative"}}>
-          <button style={{width:Math.min(100,this.state.loaderBarPercent)+"%",backgroundColor:this.state.loaderBarColor,color:"#000000"}}
-            className="btn btn-large"
-          >
-          </button>
-          <div style={{position:'absolute',left:"50%",width:"100%",marginLeft:"-50%",fontSize:adjustedFontSize,top:adjustedTop,opacity:0.95,textAlign:"center"}}>
-            {this.state.loaderBarStatusText}
-          </div>
-        </div>
-      )
-
-    }else if(swapMode=="deposit"){
+    if(swapMode=="deposit"){
       display = (
         <Swapper 
           icon={"fa-arrow-up"}
           text={this.props.text}
           buttonStyle={this.props.buttonStyle}
           maxValue={this.props.onchainBalance}
-          buttonsDisabled={buttonsDisabled}
           successAction={(amount) => {
             this.props.deposit(toWei(amount, "ether"))
             this.setState({swapMode:false})
+          }}
+          failAction={(amount) => {
+            if(amount && toBN(toWei(amount, 'ether')).gt(toBN("0"))) {
+              return this.props.changeAlert({type: "warning", message: i18n.t("bridge.insufficient_funds")})
+            } else {
+              return this.props.changeAlert({type: "warning", message: i18n.t("bridge.zero_withdrawal")})
+            }
           }}
           cancelAction={() => {
             this.setState({swapMode:false})
@@ -139,10 +128,16 @@ export default class SwapBar extends React.Component {
             text={this.props.text}
             buttonStyle={this.props.buttonStyle}
             maxValue={this.props.withdrawLimit}
-            buttonsDisabled={buttonsDisabled}
             successAction={(amount) => {
               this.props.requestWithdraw(toWei(amount, "ether"))
               this.setState({swapMode:false})
+            }}
+            failAction={(amount) => {
+              if(amount && toBN(toWei(amount, 'ether')).gt(toBN("0"))) {
+                this.props.changeAlert({type: "warning", message: i18n.t("bridge.exceed_withdrawal_limit")})
+              } else {
+                this.props.changeAlert({type: "warning", message: i18n.t("bridge.zero_withdrawal")})
+              }
             }}
             cancelAction={() => {
               this.setState({swapMode:false})
@@ -156,7 +151,7 @@ export default class SwapBar extends React.Component {
          <div className="content ops row">
 
            <div className="col-6 p-1">
-             <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary} disabled={buttonsDisabled}  onClick={()=>{
+             <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary}  onClick={()=>{
                this.setState({swapMode:"deposit"})
              }}>
                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
@@ -166,7 +161,7 @@ export default class SwapBar extends React.Component {
            </div>
 
            <div className="col-6 p-1">
-             <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary} disabled={buttonsDisabled}  onClick={()=>{
+             <button className="btn btn-large w-100"  style={this.props.buttonStyle.primary}  onClick={()=>{
                this.setState({swapMode:"withdraw"})
              }}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>

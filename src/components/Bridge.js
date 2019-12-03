@@ -24,6 +24,7 @@ export default (props) => {
       <Ruler/>
       <SwapBar
         buttonStyle={props.buttonStyle}
+        changeAlert={props.changeAlert}
         text={props.token ? props.token.shortName : i18n.t('loading')}
         ethBalance={props.ethBalance}
         onchainBalance={props.balance.onchainBalance}
