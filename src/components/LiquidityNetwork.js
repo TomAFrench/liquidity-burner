@@ -18,6 +18,7 @@ import Bottom from './Bottom';
 import Loader from './Loader';
 
 import Receive from './Receive'
+import Request from './Request'
 import SendToAddress from './SendToAddress'
 import Transactions from './Transactions'
 import Bridge from './Bridge';
@@ -87,6 +88,8 @@ export default class LiquidityNetwork extends React.Component {
       balances: balances,
       withdrawInfo: {}
     }
+
+    limboweb3.eth.net.getId().then((netId) => this.setState({netId}))
 
   }
 
@@ -271,6 +274,17 @@ export default class LiquidityNetwork extends React.Component {
           </div>
         </div>}
         <div className="content ops row">
+          <div className="col-12 p-1">
+            <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
+              <Link to={{pathname:`${this.props.match.url}/send`, search: "?token="+TOKEN}} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                  <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
+                </Scaler>
+              </Link>
+            </button>
+          </div>
+        </div>
+        <div className="content ops row">
           <div className="col-6 p-1" >
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
               <Link to={`${this.props.match.url}/receive`} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
@@ -282,9 +296,9 @@ export default class LiquidityNetwork extends React.Component {
           </div>
           <div className="col-6 p-1">
             <button className="btn btn-large w-100" style={this.props.buttonStyle.primary}>
-              <Link to={{pathname:`${this.props.match.url}/send`, search: "?token="+TOKEN}} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
+              <Link to={`${this.props.match.url}/request/${TOKEN}`} style={{ textDecoration: 'none', color: this.props.buttonStyle.primary.color }}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-paper-plane"/> {i18next.t('main_card.send')}
+                  <i className="fas fa-money-bill-alt"/> {i18next.t('more_buttons.request')}
                 </Scaler>
               </Link>
             </button>
@@ -504,6 +518,40 @@ export default class LiquidityNetwork extends React.Component {
                   address={this.state.address}
                   buttonStyle={this.props.buttonStyle}
                   nocust={this.state.nocustManager}
+                />
+              </div>
+              {backButton}
+            </div>
+            )}
+            }
+          />
+
+        <Route
+          path={`${this.props.match.url}/request/:token`}
+          render={({ history, match }) => {
+            const token = match.params.token
+
+            return (
+              <div>
+              <div className="main-card card w-100" style={{zIndex:1}}>
+                <NavCard title={i18n.t('request_funds')} />
+                <Balance
+                      token={this.state.tokens[token]}
+                      balance={this.state.balances[token]}
+                      offchain
+                      selected
+                      address={this.props.account}
+                      dollarDisplay={(balance)=>{return balance}}
+                  />
+                <Ruler/>
+                <Request
+                  mainStyle={this.props.mainStyle}
+                  buttonStyle={this.props.buttonStyle}
+                  token={this.state.tokens[token]}
+                  address={this.state.address}
+                  hubAddress={HUB_CONTRACT_ADDRESS}
+                  networkId={this.state.netId}
+                  changeAlert={this.props.changeAlert}
                 />
               </div>
               {backButton}
