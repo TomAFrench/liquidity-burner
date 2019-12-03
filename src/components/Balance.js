@@ -1,4 +1,6 @@
 import React from 'react';
+import i18n from '../i18n';
+
 import { Scaler } from "dapparatus";
 
 export default ({token, selected, balance, offchain, dollarDisplay}) => {
@@ -35,7 +37,7 @@ export default ({token, selected, balance, offchain, dollarDisplay}) => {
       </div>
     )
   }else{
-    iconDisplay = <img src={token &&token.image} alt="Loading..." style={{maxWidth:50,maxHeight:50}}/>
+    iconDisplay = <img src={token &&token.image} alt={i18n.t('loading')} style={{maxWidth:50,maxHeight:50}}/>
   }
 
   if (token) {
@@ -47,7 +49,7 @@ export default ({token, selected, balance, offchain, dollarDisplay}) => {
   } else {
     tokenName = (
       <div style={{position:'absolute',left:60,top:12,fontSize:14,opacity:0.77, whiteSpace: 'nowrap'}}>
-        Loading...
+        i18n.t('loading')
       </div>
     )
   }

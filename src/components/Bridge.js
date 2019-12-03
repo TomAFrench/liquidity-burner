@@ -1,6 +1,8 @@
 import React from 'react';
 import { useHistory } from "react-router-dom";
 
+import i18n from '../i18n';
+
 import Ruler from "./Ruler";
 import Balance from "./Balance";
 import SwapBar from './SwapBar'
@@ -22,7 +24,7 @@ export default (props) => {
       <Ruler/>
       <SwapBar
         buttonStyle={props.buttonStyle}
-        text={props.token ? props.token.shortName : "Loading..."}
+        text={props.token ? props.token.shortName : i18n.t('loading')}
         ethBalance={props.ethBalance}
         onchainBalance={props.balance.onchainBalance}
         offchainBalance={props.balance.offchainBalance}

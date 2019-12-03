@@ -85,7 +85,7 @@ export default class RequestFunds extends React.Component {
               <label htmlFor="amount_input">{i18n.t('request_funds.amount')}</label>
               <div className="input-group">
                 <div className="input-group-prepend">
-                  <div className="input-group-text">{this.props.token ? 'f'+this.props.token.shortName : 'Loading...'}</div>
+                  <div className="input-group-text">{this.props.token ? 'f'+this.props.token.shortName : i18n.t('loading')}</div>
                 </div>
                 <input type="number" className="form-control" placeholder="0.00" value={this.state.amount}
                        onChange={event => this.updateState('amount', event.target.value)} />
