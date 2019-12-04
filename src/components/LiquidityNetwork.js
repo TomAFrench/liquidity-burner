@@ -395,7 +395,7 @@ export default class LiquidityNetwork extends React.Component {
             // May have been given the token's address so perform lookup if that fails
             // Finally default to main token.
             const token = this.state.tokens[query.token] || this.lookupTokenAddress(query.token) || this.state.tokens[TOKEN]
-            const tokenBalance = this.state.balances[token]
+            const tokenBalance = typeof token !== 'undefined' ? this.state.balances[token.shortName] : undefined
             const tokenAmount = typeof query.amount === 'string' ? fromWei(query.amount, 'ether') : undefined
             return (
             <div>

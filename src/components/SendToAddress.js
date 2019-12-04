@@ -124,9 +124,11 @@ export default class SendToAddress extends React.Component {
       }
       let amountWei = toBN(toWei(this.state.amount, 'ether'))
 
-      console.log("this.props.balance",parseFloat(this.props.offchainBalance),"amountWei",amountWei.toString())
+      console.log("this.props.balance",this.props.offchainBalance ,"amountWei",amountWei.toString())
 
-      if(toBN(this.props.offchainBalance).lt(amountWei)){
+      if(typeof this.props.offchainBalance === 'undefined'){
+        this.props.changeAlert({type: 'warning', message: "Can't read balance"})
+      } else if(toBN(this.props.offchainBalance).lt(amountWei)){
         console.log("Not enough funds", this.props.offchainBalance.toString())
         this.props.changeAlert({type: 'warning', message: "Not enough funds"})
       }else{
