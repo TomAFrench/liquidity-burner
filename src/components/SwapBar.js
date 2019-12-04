@@ -19,7 +19,7 @@ const Swapper = (props) => {
 
   let canSwap = false
   try {
-    canSwap = toBN(toWei(amount, 'ether')).gt(toBN("0")) && amountBN.lte(toBN(props.maxValue))
+    canSwap = toBN(toWei(amount, 'ether')).gt(toBN("0")) && toBN(toWei(amount, 'ether')).lte(toBN(props.maxValue))
   } catch (e) {
     //Do nothing
   }
