@@ -91,7 +91,7 @@ export default class RequestFunds extends React.Component {
               </div>
             </div>
             <button
-              style={{ backgroundColor: this.props.mainStyle.mainColor }} className={`btn btn-success btn-lg w-100 ${canRequest ? '' : 'disabled'}`}
+              style={buttonStyle.primary} className={`btn btn-success btn-lg w-100 ${canRequest ? '' : 'disabled'}`}
               onClick={this.handleRequest}
             >
               {i18n.t('request_funds.button')}
