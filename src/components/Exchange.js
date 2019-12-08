@@ -306,7 +306,6 @@ export default class Exchange extends React.Component {
           balance={this.props.assetABalance}
           offchain
           selected
-          dollarDisplay={(balance) => { return balance }}
         />
         <Ruler />
         <TEXSwapBar
@@ -324,7 +323,6 @@ export default class Exchange extends React.Component {
           balance={this.props.assetBBalance}
           offchain
           selected
-          dollarDisplay={(balance) => { return balance }}
         />
         <Ruler />
       </div>

@@ -70,22 +70,6 @@ const buttonStyle = {
   }
 }
 
-const dollarSymbol = '$'
-const dollarConversion = 1.0
-// let dollarSymbol = "€"
-// let dollarConversion = 0.88
-const convertToDollar = (amount) => {
-  return (parseFloat(amount) / dollarConversion)
-}
-const convertFromDollar = (amount) => {
-  return (parseFloat(amount) * dollarConversion)
-}
-const dollarDisplay = (amount) => {
-  const floatAmount = parseFloat(amount)
-  amount = Math.floor(amount * 100) / 100
-  return dollarSymbol + convertFromDollar(amount).toFixed(2)
-}
-
 let intervalLong
 
 class App extends Component {
@@ -303,7 +287,6 @@ class App extends Component {
             titleImage={titleImage}
             mainStyle={mainStyle}
             address={this.state.account}
-            dollarDisplay={dollarDisplay}
           />
         </div>
       )
@@ -370,7 +353,6 @@ class App extends Component {
                               mainStyle={mainStyle}
                               address={account}
                               goBack={history.goBack}
-                              dollarDisplay={dollarDisplay}
                               burnWallet={() => {
                                 burnMetaAccount()
                                 history.push('/')
@@ -410,7 +392,6 @@ class App extends Component {
                             mainStyle={mainStyle}
                             buttonStyle={buttonStyle}
                             changeAlert={this.changeAlert}
-                            dollarDisplay={dollarDisplay}
                           />
                         )
                       }}

@@ -3,7 +3,7 @@ import i18n from '../i18n'
 
 import { Scaler } from 'dapparatus'
 
-export default ({ token, selected, balance, offchain, dollarDisplay }) => {
+export default ({ token, selected, balance, offchain }) => {
   let opacity = 0.65
   if (selected) {
     opacity = 0.95
@@ -53,7 +53,7 @@ export default ({ token, selected, balance, offchain, dollarDisplay }) => {
   const balanceDisplay = (
     <Scaler config={{ startZoomAt: 400, origin: '200px 30px', adjustedZoom: 1 }}>
       <div style={{ fontSize: 40, letterSpacing: -2 }}>
-        {dollarDisplay(amount)}
+        {amount}
       </div>
     </Scaler>
   )

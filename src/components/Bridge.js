@@ -18,7 +18,6 @@ export default (props) => {
         balance={props.balance}
         offchain
         selected
-        dollarDisplay={(balance) => { return balance }}
       />
       <Ruler />
       <SwapBar
@@ -54,7 +53,6 @@ export default (props) => {
         token={props.token}
         balance={props.balance}
         selected
-        dollarDisplay={(balance) => { return balance }}
       />
       <Ruler />
     </div>
