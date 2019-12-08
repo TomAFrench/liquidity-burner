@@ -435,7 +435,7 @@ export default class LiquidityNetwork extends React.Component {
           render={() => (
             <div>
               <div className='main-card card w-100' style={{ zIndex: 1 }}>
-                <NavCard title={i18n.t('liquidity.bridge.title')} />
+                <NavCard title={i18n.t('bridge.title')} />
                 <div style={{ textAlign: 'center', width: '100%', fontSize: 16, marginTop: 10 }}>
                   <Scaler config={{ startZoomAt: 400, origin: '50% 50%', adjustedZoom: 1 }}>
                     Withdrawal Fee: {typeof this.state.withdrawInfo.withdrawFee !== 'undefined' ? fromWei(this.state.withdrawInfo.withdrawFee.toString(), 'ether').toString() : 0} ETH
