@@ -13,7 +13,7 @@ jobs:
     - name: Checkout release commit
       uses: actions/checkout@v1
       with:
-        ref: $GITHUB_REF
+        ref: ${{ github.ref }}
     
     - name: Build and push tagged image to Docker Hub
       uses: elgohr/Publish-Docker-Github-Action@2.9     
