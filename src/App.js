@@ -174,8 +174,12 @@ class App extends Component {
   longPoll () {
     axios.get('https://api.coinmarketcap.com/v2/ticker/1027/')
       .then((response) => {
-        const ethprice = response.data.data.quotes.USD.price
-        this.setState({ ethprice })
+        try {
+          const ethprice = response.data.data.quotes.USD.price
+          this.setState({ ethprice })
+        } catch (e) {
+          console.error(e)
+        }
       })
   }
 
