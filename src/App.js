@@ -441,6 +441,9 @@ class App extends Component {
 
                   if (state.web3Provider) {
                     state.web3 = new Web3(state.web3Provider)
+                    if (state.metaAccount) {
+                      state.web3.eth.accounts.wallet.add(state.metaAccount.privateKey)
+                    }
 
                     this.setState(state, () => {
                       this.detectContext()

@@ -8,7 +8,6 @@ import {
 import cookie from 'react-cookies'
 
 import { Scaler } from 'dapparatus'
-import Web3 from 'web3'
 import Ruler from './Ruler'
 import i18n from '../i18n'
 import i18next from 'i18next'
@@ -39,7 +38,6 @@ const LOADERIMAGE = lqdImg
 
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
 const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
-const RPC_URL = process.env.REACT_APP_WEB3_PROVIDER
 const TOKEN = process.env.REACT_APP_TOKEN
 
 console.log('TOKEN', TOKEN)
@@ -60,11 +58,8 @@ export default class LiquidityNetwork extends React.Component {
   constructor (props) {
     super(props)
 
-    const limboweb3 = new Web3(new Web3.providers.HttpProvider(RPC_URL))
-    limboweb3.eth.accounts.wallet.add(props.privateKey)
-
     const nocustManager = new NOCUSTManager({
-      rpcApi: limboweb3,
+      rpcApi: props.web3,
       operatorApiUrl: HUB_API_URL,
       contractAddress: HUB_CONTRACT_ADDRESS
     })
@@ -80,13 +75,11 @@ export default class LiquidityNetwork extends React.Component {
 
     this.state = {
       nocustManager: nocustManager,
-      address: limboweb3.eth.accounts.wallet[0].address,
+      address: props.web3.utils.toChecksumAddress(props.address),
       tokens: {},
       balances: balances,
       withdrawInfo: {}
     }
-
-    limboweb3.eth.net.getId().then((netId) => this.setState({ netId }))
   }
 
   componentDidMount () {

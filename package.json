@@ -30,7 +30,7 @@
     "react-qr-reader": "^2.1.1",
     "react-router-dom": "5.1.2",
     "react-scroll": "^1.7.10",
-    "web3": "1.0.0-beta.37"
+    "web3": "1.0.0-beta.36"
   },
   "scripts": {
     "start": "PORT=3000 node scripts/start.js",
