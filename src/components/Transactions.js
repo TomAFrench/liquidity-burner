@@ -16,7 +16,7 @@ const cleanTime = (s) => {
   }
 }
 
-const TransactionEntry = ({ dollarDisplay, tx, changeAlert, token }) => {
+const TransactionEntry = ({ tx, changeAlert, token }) => {
   const blockAge = (Date.now() - tx.timestamp) / 1000
 
   const dollarView = (
@@ -78,7 +78,7 @@ const TransactionEntry = ({ dollarDisplay, tx, changeAlert, token }) => {
   )
 }
 
-export default ({ dollarDisplay, max, recentTxs, changeAlert, token }) => {
+export default ({ max, recentTxs, changeAlert, token }) => {
   const txns = []
   let count = 0
   if (!max) max = 9999

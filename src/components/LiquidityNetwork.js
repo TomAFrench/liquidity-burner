@@ -393,7 +393,6 @@ export default class LiquidityNetwork extends React.Component {
                     offchain
                     selected
                     address={this.props.account}
-                    dollarDisplay={(balance) => { return balance }}
                   />
                   <Ruler />
                   <SendToAddress
@@ -407,7 +406,6 @@ export default class LiquidityNetwork extends React.Component {
                     offchainBalance={tokenBalance && tokenBalance.offchainBalance}
                     address={this.state.address}
                     changeAlert={this.props.changeAlert}
-                    dollarDisplay={(balance) => { return balance }}
                     onSend={() => {
                       history.push(`${this.props.match.url}/sending`)
                       setTimeout(() => {
@@ -526,7 +524,6 @@ export default class LiquidityNetwork extends React.Component {
                     offchain
                     selected
                     address={this.props.account}
-                    dollarDisplay={(balance) => { return balance }}
                   />
                   <Ruler />
                   <Request
@@ -558,7 +555,6 @@ export default class LiquidityNetwork extends React.Component {
                       offchain
                       selected
                       address={this.props.account}
-                      dollarDisplay={(balance) => { return balance }}
                     />
                   </Link>
                   <Ruler />
@@ -566,7 +562,6 @@ export default class LiquidityNetwork extends React.Component {
                     token={this.state.tokens[TOKEN]}
                     balance={this.state.balances[TOKEN]}
                     address={this.props.account}
-                    dollarDisplay={(balance) => { return balance }}
                   />
                   <Ruler />
                   <Link to={{ pathname: `${this.props.match.url}/send`, search: '?token=ETH' }}>
@@ -576,7 +571,6 @@ export default class LiquidityNetwork extends React.Component {
                       offchain
                       selected
                       address={this.props.account}
-                      dollarDisplay={(balance) => { return balance }}
                     />
                   </Link>
                   <Ruler />
@@ -584,7 +578,6 @@ export default class LiquidityNetwork extends React.Component {
                     token={this.state.tokens.ETH}
                     balance={this.state.balances.ETH}
                     address={this.props.account}
-                    dollarDisplay={(balance) => { return balance }}
                   />
                   <Ruler />
 
@@ -592,7 +585,6 @@ export default class LiquidityNetwork extends React.Component {
 
                 </div>
                 <Transactions
-                  dollarDisplay={(balance) => { return balance }}
                   changeAlert={this.props.changeAlert}
                   address={this.state.account}
                   token={this.state.tokens[TOKEN]}

@@ -3,7 +3,7 @@ import { useHistory, useLocation, Link } from 'react-router-dom'
 import { Blockie } from 'dapparatus'
 // import burnerloader from '../burnerloader.gif';
 
-export default ({ openScanner, network, total, dollarDisplay, ens, title, titleImage, mainStyle, balance, address }) => {
+export default ({ openScanner, network, total, ens, title, titleImage, mainStyle, balance, address }) => {
   const history = useHistory()
   const location = useLocation()
 
