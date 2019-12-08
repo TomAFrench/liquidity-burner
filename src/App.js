@@ -70,6 +70,21 @@ const buttonStyle = {
   }
 }
 
+const backgroundStyle = {
+  WEB3: {
+    image: 'linear-gradient(#234063, #305582)',
+    color: '#305582'
+  },
+  METAMASK: {
+    image: 'linear-gradient(#553319, #ca6e28)',
+    color: '#ca6e28'
+  },
+  INCOGNITO: {
+    image: 'linear-gradient(#862727, #671c1c)',
+    color: '#671c1c'
+  }
+}
+
 let intervalLong
 
 class App extends Component {
@@ -104,32 +119,19 @@ class App extends Component {
     console.log('DETECTING CONTEXT....')
     // snagged from https://stackoverflow.com/questions/52759238/private-incognito-mode-detection-for-ios-12-safari
     incogDetect(async (result) => {
-      var contextElement
       if (result) {
         console.log('INCOG')
-        document.getElementById('main').style.backgroundImage = 'linear-gradient(#862727, #671c1c)'
-        document.body.style.backgroundColor = '#671c1c'
-        contextElement = document.getElementById('context')
-        contextElement.innerHTML = 'INCOGNITO'
+        this.setState({ context: 'INCOGNITO' })
       } else if (typeof web3 !== 'undefined') {
-        console.log('NOT INCOG', this.state.metaAccount)
         try {
           if (window.web3 && window.web3.currentProvider && window.web3.currentProvider.isMetaMask === true && window.web3.eth && typeof window.web3.eth.getAccounts === 'function' && isArrayAndHasEntries(await window.web3.eth.getAccounts())) {
-            document.getElementById('main').style.backgroundImage = 'linear-gradient(#553319, #ca6e28)'
-            document.body.style.backgroundColor = '#ca6e28'
-            contextElement = document.getElementById('context')
-            contextElement.innerHTML = 'METAMASK'
+            this.setState({ context: 'METAMASK' })
           } else if (this.state.account && !this.state.metaAccount) {
-            console.log('~~~*** WEB3', this.state.metaAccount, result)
-            document.getElementById('main').style.backgroundImage = 'linear-gradient(#234063, #305582)'
-            document.body.style.backgroundColor = '#305582'
-            contextElement = document.getElementById('context')
-            contextElement.innerHTML = 'WEB3'
+            this.setState({ context: 'WEB3' })
           }
-        } catch (ee) {
-          console.log('CONTEXT ERR', ee)
+        } catch (e) {
+          console.log('CONTEXT ERROR', e)
         }
-        console.log('done with context')
       }
     })
   }
@@ -244,7 +246,12 @@ class App extends Component {
   };
 
   render () {
-    const { web3, account, metaAccount, burnMetaAccount, alert } = this.state
+    const { web3, account, metaAccount, burnMetaAccount, alert, context } = this.state
+
+    if (document.getElementById('main') && context) {
+      document.getElementById('main').style.backgroundImage = backgroundStyle[context].image
+      document.body.style.backgroundColor = backgroundStyle[context].color
+    }
 
     let web3Setup = ''
     if (web3) {
@@ -261,6 +268,7 @@ class App extends Component {
             this.setState({ contracts: contracts, customLoader: customLoader }, async () => {
               console.log('Contracts Are Ready:', contracts)
             })
+            this.detectContext()
           }}
         />
       )
@@ -427,7 +435,6 @@ class App extends Component {
                     }
 
                     this.setState(state, () => {
-                      this.detectContext()
                       // console.log("state set:",this.state)
                       if (this.state.possibleNewPrivateKey) {
                         this.dealWithPossibleNewPrivateKey()
@@ -447,7 +454,9 @@ class App extends Component {
                 }}
               />
 
-              <div id='context' style={{ position: 'absolute', right: 5, top: -15, opacity: 0.2, zIndex: 100, fontSize: 60, color: '#FFFFFF' }} />
+              <div id='context' style={{ position: 'absolute', right: 5, top: -15, opacity: 0.2, zIndex: 100, fontSize: 60, color: '#FFFFFF' }}>
+                {this.state.context}
+              </div>
 
             </div>
           </div>
