@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Scaler } from "dapparatus";
-import Ruler from "./Ruler";
-import Balance from "./Balance";
+import React, { useState } from 'react'
+import { Scaler } from 'dapparatus'
+import Ruler from './Ruler'
+import Balance from './Balance'
 import AmountBar from './AmountBar'
-import i18n from '../i18n';
+import i18n from '../i18n'
 
-const { toWei, fromWei, toBN } = require('web3-utils');
+const { toWei, fromWei, toBN } = require('web3-utils')
 
 const colStyle = {
-  textAlign:"center",
-  whiteSpace:"nowrap"
+  textAlign: 'center',
+  whiteSpace: 'nowrap'
 }
 
 const rowStyle = {
@@ -28,16 +28,15 @@ const flexColStyle = {
 }
 
 const TEXSwapper = (props) => {
-  
-  const [buyAmount, setBuyAmount] = useState("");
-  const [sellAmount, setSellAmount] = useState("");
+  const [buyAmount, setBuyAmount] = useState('')
+  const [sellAmount, setSellAmount] = useState('')
 
   const [maxInput, maxOutput] = getMaxOutputs(props.orders, props.assetBalance)
 
-  let cancelButton = (
-    <span style={{padding:10,whiteSpace:"nowrap"}}>
-      <a href="#" style={{color:"#000000"}} onClick={() => props.cancelAction()}>
-        <i className="fas fa-times"/> {i18n.t('cancel')}
+  const cancelButton = (
+    <span style={{ padding: 10, whiteSpace: 'nowrap' }}>
+      <a href='#' style={{ color: '#000000' }} onClick={() => props.cancelAction()}>
+        <i className='fas fa-times' /> {i18n.t('cancel')}
       </a>
     </span>
   )
@@ -50,12 +49,11 @@ const TEXSwapper = (props) => {
       updateValue={amount => {
         setBuyAmount(amount)
         if (amount && typeof props.orders !== 'undefined') {
-          setSellAmount(fromWei(getAmountIn(props.orders, toWei(amount,'ether')),'ether'))
+          setSellAmount(fromWei(getAmountIn(props.orders, toWei(amount, 'ether')), 'ether'))
         }
-        }
-      }
+      }}
       maxValue={fromWei(maxOutput.toString(), 'ether')}
-      minValue={"0"}
+      minValue='0'
     />
   )
 
@@ -67,40 +65,41 @@ const TEXSwapper = (props) => {
       updateValue={amount => {
         setSellAmount(amount)
         if (amount && typeof props.orders !== 'undefined') {
-          setBuyAmount(fromWei(getAmountOut(props.orders, toWei(amount,'ether')),'ether'))
+          setBuyAmount(fromWei(getAmountOut(props.orders, toWei(amount, 'ether')), 'ether'))
         }
-        }
-      }
+      }}
       maxValue={fromWei(maxInput.toString(), 'ether')}
-      minValue={"0"}
+      minValue='0'
     />
   )
 
   return (
-    <div className="content ops row" style={rowStyle}>
+    <div className='content ops row' style={rowStyle}>
 
-      <div className="col-1 p-1"  style={colStyle}>
-        <i className={`fas ${props.icon}`}  />
+      <div className='col-1 p-1' style={colStyle}>
+        <i className={`fas ${props.icon}`} />
       </div>
-      <div className="col-6 p-1" style={flexColStyle}>
-        <div style={{flexGrow: 1}}>
+      <div className='col-6 p-1' style={flexColStyle}>
+        <div style={{ flexGrow: 1 }}>
           {props.reversed ? buyAmountBar : sellAmountBar}
         </div>
-        <div style={{flexGrow: 1}}>
+        <div style={{ flexGrow: 1 }}>
           {props.reversed ? sellAmountBar : buyAmountBar}
         </div>
       </div>
 
-      <div className="col-2 p-1"  style={colStyle}>
-        <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
-        {cancelButton}
+      <div className='col-2 p-1' style={colStyle}>
+        <Scaler config={{ startZoomAt: 650, origin: '0% 85%' }}>
+          {cancelButton}
         </Scaler>
       </div>
-      <div className="col-3 p-1">
-        <button className="btn btn-large w-100" disabled={props.buttonsDisabled} style={props.buttonStyle.primary} onClick={async ()=>{
-          props.successAction(buyAmount, sellAmount)
-        }}>
-          <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
+      <div className='col-3 p-1'>
+        <button
+          className='btn btn-large w-100' disabled={props.buttonsDisabled} style={props.buttonStyle.primary} onClick={async () => {
+            props.successAction(buyAmount, sellAmount)
+          }}
+        >
+          <Scaler config={{ startZoomAt: 600, origin: '10% 50%' }}>
             <i className={`fas ${props.icon}`} /> Send
           </Scaler>
         </button>
@@ -110,23 +109,22 @@ const TEXSwapper = (props) => {
 }
 
 const TEXSwapBar = (props) => {
-
   const [swapMode, setSwapMode] = useState(false)
 
-  let display =  i18n.t('loading')
+  let display = i18n.t('loading')
 
-  if (swapMode === "AtoB"){
+  if (swapMode === 'AtoB') {
     display = (
       <TEXSwapper
-        icon={"fa-arrow-down"}
+        icon='fa-arrow-down'
         buttonStyle={props.buttonStyle}
         orders={props.orderbook.sell_orders}
-        assetSellText={"f"+props.assetA.shortName}
-        assetBuyText={"f"+props.assetB.shortName}
+        assetSellText={'f' + props.assetA.shortName}
+        assetBuyText={'f' + props.assetB.shortName}
         assetBalance={props.assetABalance}
         successAction={(buyAmount, sellAmount) => {
-          console.log("Buying ", buyAmount, props.assetB.shortName, " for ", sellAmount, props.assetA.shortName)
-          props.AtoBTrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
+          console.log('Buying ', buyAmount, props.assetB.shortName, ' for ', sellAmount, props.assetA.shortName)
+          props.AtoBTrade(toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
           setSwapMode(false)
         }}
         cancelAction={() => {
@@ -134,19 +132,19 @@ const TEXSwapBar = (props) => {
         }}
       />
     )
-  } else if (swapMode === "BtoA") {
+  } else if (swapMode === 'BtoA') {
     display = (
       <TEXSwapper
         reversed
-        icon={"fa-arrow-up"}
+        icon='fa-arrow-up'
         buttonStyle={props.buttonStyle}
         orders={props.orderbook.buy_orders}
-        assetSellText={"f"+props.assetB.shortName}
-        assetBuyText={"f"+props.assetA.shortName}
+        assetSellText={'f' + props.assetB.shortName}
+        assetBuyText={'f' + props.assetA.shortName}
         assetBalance={props.assetBBalance}
         successAction={(buyAmount, sellAmount) => {
-          console.log("Buying ", buyAmount, props.assetA.shortName, " for ", sellAmount, props.assetB.shortName)
-          props.BtoATrade(toWei(buyAmount, "ether"), toWei(sellAmount, "ether"))
+          console.log('Buying ', buyAmount, props.assetA.shortName, ' for ', sellAmount, props.assetB.shortName)
+          props.BtoATrade(toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
           setSwapMode(false)
         }}
         cancelAction={() => {
@@ -154,42 +152,42 @@ const TEXSwapBar = (props) => {
         }}
       />
     )
-  } else { 
+  } else {
     display = (
-        <div className="content ops row">
-          <div className="col-6 p-1">
-            <button
-              className="btn btn-large w-100"
-              style={props.buttonStyle.primary}
-              onClick={()=>{
-                setSwapMode("BtoA")
-              }}
-            >
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              <i className="fas fa-arrow-up"  /> {"f"+props.assetB.shortName} to {"f"+props.assetA.shortName}
-              </Scaler>
-            </button>
-          </div>
-
-          <div className="col-6 p-1">
-            <button
-              className="btn btn-large w-100"
-              style={props.buttonStyle.primary}
-              onClick={()=>{
-                setSwapMode("AtoB")
-                }}
-            >
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-arrow-down" /> {"f"+props.assetA.shortName} to {"f"+props.assetB.shortName}
-              </Scaler>
-            </button>
-          </div>  
+      <div className='content ops row'>
+        <div className='col-6 p-1'>
+          <button
+            className='btn btn-large w-100'
+            style={props.buttonStyle.primary}
+            onClick={() => {
+              setSwapMode('BtoA')
+            }}
+          >
+            <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
+              <i className='fas fa-arrow-up' /> {'f' + props.assetB.shortName} to {'f' + props.assetA.shortName}
+            </Scaler>
+          </button>
         </div>
-      )
+
+        <div className='col-6 p-1'>
+          <button
+            className='btn btn-large w-100'
+            style={props.buttonStyle.primary}
+            onClick={() => {
+              setSwapMode('AtoB')
+            }}
+          >
+            <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
+              <i className='fas fa-arrow-down' /> {'f' + props.assetA.shortName} to {'f' + props.assetB.shortName}
+            </Scaler>
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="main-card card w-100">
+    <div className='main-card card w-100'>
       {display}
     </div>
   )
@@ -199,9 +197,9 @@ const getMaxOutputs = (orders, amount) => {
   if (!orders.length) {
     return ['0', '0']
   }
-  let amountRemaining = (typeof amount !== 'undefined' ? toBN(amount) : toBN('0'))
-  let maxIn = toBN("0")
-  let maxOut = toBN("0")
+  const amountRemaining = (typeof amount !== 'undefined' ? toBN(amount) : toBN('0'))
+  const maxIn = toBN('0')
+  const maxOut = toBN('0')
   for (var i = 0; i < orders.length; i++) {
     const order = orders[i]
 
@@ -214,7 +212,7 @@ const getMaxOutputs = (orders, amount) => {
     }
 
     amountRemaining.isub(toBN(order.remaining_in))
-    if (amountRemaining.lte(toBN('0'))){
+    if (amountRemaining.lte(toBN('0'))) {
       break
     }
   }
@@ -239,11 +237,11 @@ const getOtherAmount = (orders, amount, knownQuantity) => {
     unknownQuantity = 'remaining_in'
   }
 
-  let amountRemaining = toBN(amount)
+  const amountRemaining = toBN(amount)
   let orderIdx = 0
-  let output = toBN("0")
-  while (amountRemaining.gt(toBN("0"))) {
-    try{
+  const output = toBN('0')
+  while (amountRemaining.gt(toBN('0'))) {
+    try {
       const order = orders[orderIdx]
       if (amountRemaining.gte(toBN(order[knownQuantity]))) {
         output.iadd(toBN(order[unknownQuantity]))
@@ -252,57 +250,55 @@ const getOtherAmount = (orders, amount, knownQuantity) => {
       }
       amountRemaining.isub(toBN(order[knownQuantity]))
       orderIdx += 1
-    }
-    catch(e) {
-      throw "Not enough liquidity on exchange"
+    } catch (e) {
+      throw new Error('Not enough liquidity on exchange')
     }
   }
   return output
 }
 
 export default class Exchange extends React.Component {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {}
     this.getOrderBook()
   }
 
-  componentDidMount(props) {
-    const syncIntervalId = setInterval(this.syncSwaps.bind(this),30000)
-    this.setState({syncIntervalId})
+  componentDidMount (props) {
+    const syncIntervalId = setInterval(this.syncSwaps.bind(this), 30000)
+    this.setState({ syncIntervalId })
   }
 
-  componentWillUnmount() {
-    console.log("Stopping checking for fulfilled swaps")
+  componentWillUnmount () {
+    console.log('Stopping checking for fulfilled swaps')
     clearInterval(this.state.syncIntervalId)
   }
 
-  async getOrderBook(){
-    if ( typeof this.props.assetA.tokenAddress !== 'undefined' && typeof this.props.assetB.tokenAddress !== 'undefined'){
+  async getOrderBook () {
+    if (typeof this.props.assetA.tokenAddress !== 'undefined' && typeof this.props.assetB.tokenAddress !== 'undefined') {
       const orderbook = await this.props.nocust.getOrderBook(this.props.assetB.tokenAddress, this.props.assetA.tokenAddress)
-      this.setState({orderbook})
+      this.setState({ orderbook })
     }
   }
 
-  async syncSwaps(){
-    console.log("Getting swaps for", this.props.address)
+  async syncSwaps () {
+    console.log('Getting swaps for', this.props.address)
     const swaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress)
 
-    console.log("AtoBSwaps response", swaps)
+    console.log('AtoBSwaps response', swaps)
   }
 
-  async AtoBTrade(buyAmount, sellAmount) {
+  async AtoBTrade (buyAmount, sellAmount) {
     const swapResponse = await this.props.nocust.sendSwap(this.props.address, this.props.assetB.tokenAddress, this.props.assetA.tokenAddress, buyAmount, sellAmount)
     console.log(swapResponse)
   }
 
-  async BtoATrade(buyAmount, sellAmount) {
+  async BtoATrade (buyAmount, sellAmount) {
     const swapResponse = await this.props.nocust.sendSwap(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress, buyAmount, sellAmount)
     console.log(swapResponse)
   }
 
-  render() {
+  render () {
     return (
       <div>
         <Balance
@@ -310,9 +306,9 @@ export default class Exchange extends React.Component {
           balance={this.props.assetABalance}
           offchain
           selected
-          dollarDisplay={(balance)=>{return balance}}
+          dollarDisplay={(balance) => { return balance }}
         />
-        <Ruler/>
+        <Ruler />
         <TEXSwapBar
           assetA={this.props.assetA}
           assetB={this.props.assetB}
@@ -328,9 +324,9 @@ export default class Exchange extends React.Component {
           balance={this.props.assetBBalance}
           offchain
           selected
-          dollarDisplay={(balance)=>{return balance}}
+          dollarDisplay={(balance) => { return balance }}
         />
-        <Ruler/>
+        <Ruler />
       </div>
     )
   }
