@@ -24,7 +24,7 @@ function isIE10OrLater (userAgent) {
   if (ua.indexOf('msie') === 0 && ua.indexOf('trident') === 0) {
     return false
   }
-  var match = /(?:msie|rv:)\s?([\d\.]+)/.exec(ua)
+  var match = /(?:msie|rv:)\s?([\d.]+)/.exec(ua)
   if (match && parseInt(match[1], 10) >= 10) {
     return true
   }
