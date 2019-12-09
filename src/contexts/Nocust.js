@@ -108,7 +108,7 @@ function buildTokenDict (tokenList) {
     return { ...accumulator, [pilot.shortName]: { name: pilot.name, shortName: pilot.shortName, tokenAddress: pilot.tokenAddress } }
   }, {})
 
-  tokens.ETH.image = ethImg
+  if (tokens.ETH) tokens.ETH.image = ethImg
   if (tokens.DAI) tokens.DAI.image = daiImg
   if (tokens.LQD) tokens.LQD.image = lqdImg
 
