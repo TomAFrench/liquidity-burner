@@ -171,8 +171,10 @@ export default (props) => {
                   offchainBalance={tokenBalance && tokenBalance.offchainBalance}
                   address={props.address}
                   changeAlert={props.changeAlert}
-                  onSend={() => {
+                  onSend={async (txhash) => {
                     history.push(`${props.match.url}/sending`)
+                    const tx = await nocust.getTransaction(await txhash)
+                    console.log(tx)
                   }}
                 />
               </div>
