@@ -111,9 +111,19 @@ const TEXSwapper = (props) => {
 const TEXSwapBar = (props) => {
   const [swapMode, setSwapMode] = useState(false)
 
+  const invalidOrderbook = typeof props.orderbook === 'undefined'
+
   let display = i18n.t('loading')
 
-  if (swapMode === 'AtoB') {
+  if (invalidOrderbook) {
+    display = (
+      <div style={{ textAlign: 'center', width: '100%', fontSize: 20, marginTop: 10 }}>
+        <Scaler config={{ startZoomAt: 400, origin: '50% 50%', adjustedZoom: 1 }}>
+          Error connecting to TEX
+        </Scaler>
+      </div>
+    )
+  } else if (swapMode === 'AtoB') {
     display = (
       <TEXSwapper
         icon='fa-arrow-down'
