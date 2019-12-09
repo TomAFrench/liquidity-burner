@@ -11,6 +11,10 @@ export default (props) => {
   const history = useHistory()
 
   const gasLimit = '300000'
+
+  if (!props.balance || !props.balance.onchainBalance || !props.balance.offchainBalance) {
+    return null
+  }
   return (
     <div>
       <Balance
