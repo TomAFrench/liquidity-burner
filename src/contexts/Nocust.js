@@ -91,11 +91,7 @@ export function useNocustClient (address) {
           }
           return undefined
         }
-        )).then(
-          registration => {
-            console.log('Completed registration:', registration)
-          }
-        )
+        ))
       }
 
       if (!stale) {
