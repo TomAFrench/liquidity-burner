@@ -14,7 +14,9 @@ export default ({ token, selected, balance, offchain }) => {
   var amount = '0'
   if (balance) {
     amount = (offchain ? balance.offchainBalance : balance.onchainBalance)
-    amount = getDisplayValue(toBN(amount))
+    if (amount) {
+      amount = getDisplayValue(toBN(amount))
+    }
   }
 
   if (isNaN(amount) || typeof amount === 'undefined') {

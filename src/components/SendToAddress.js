@@ -149,10 +149,15 @@ export default class SendToAddress extends React.Component {
 
         console.log(transaction)
 
-        this.props.sendTransaction(transaction)
-        // console.log("transaction response", response)
-        if (typeof this.props.onSend === 'function') {
-          this.props.onSend()
+        try {
+          const txhash = this.props.sendTransaction(transaction)
+          // console.log("transaction response", response)
+          if (typeof this.props.onSend === 'function') {
+            this.props.onSend(txhash)
+          }
+        } catch (e) {
+          console.error(e)
+          this.props.changeAlert({ type: 'error', message: 'Transaction Failed' })
         }
       }
     } else {
