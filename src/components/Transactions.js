@@ -3,6 +3,7 @@ import { Blockie, Scaler } from 'dapparatus'
 
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import i18n from '../i18n'
+import { useTokenTransactions } from '../contexts/Transactions'
 
 const { fromWei } = require('web3-utils')
 
@@ -78,14 +79,16 @@ const TransactionEntry = ({ tx, changeAlert, token }) => {
   )
 }
 
-export default ({ max, recentTxs, changeAlert, token }) => {
+export default ({ max, address, changeAlert, token }) => {
+  const transactions = useTokenTransactions(address, token.tokenAddress)
+
   const txns = []
   let count = 0
   if (!max) max = 9999
-  for (const r in recentTxs) {
+  for (const r in transactions) {
     if (count++ < max) {
-      txns.push(<hr key={'ruler' + recentTxs[r].tx_id} style={{ color: '#DFDFDF', marginTop: 0, marginBottom: 7 }} />)
-      txns.push(<TransactionEntry key={recentTxs[r].tx_id} tx={recentTxs[r]} changeAlert={changeAlert} token={token} />)
+      txns.push(<hr key={'ruler' + transactions[r].tx_id} style={{ color: '#DFDFDF', marginTop: 0, marginBottom: 7 }} />)
+      txns.push(<TransactionEntry key={transactions[r].tx_id} tx={transactions[r]} changeAlert={changeAlert} token={token} />)
     }
   }
   if (txns.length > 0) {

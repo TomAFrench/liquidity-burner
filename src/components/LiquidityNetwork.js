@@ -28,7 +28,6 @@ import { isValidToken, lookupTokenAddress, useNocustClient, useTokens } from '..
 
 import lqdImg from '../images/liquidity.png'
 import { useAllTokenBalances, useAddressBalance } from '../contexts/Balances'
-import { useTokenTransactions } from '../contexts/Transactions'
 import MainButtons from './MainButtons'
 import { useWithdrawalFee } from '../contexts/Withdrawal'
 
@@ -47,7 +46,6 @@ export default (props) => {
   const nocust = useNocustClient(props.address)
   const tokens = useTokens()
   const balances = useAllTokenBalances(props.address)
-  const transactions = useTokenTransactions(props.address, tokens[TOKEN].tokenAddress)
 
   useAddressBalance(props.address, tokens.ETH ? tokens.ETH.tokenAddress : undefined)
   useAddressBalance(props.address, tokens.LQD ? tokens.LQD.tokenAddress : undefined)
@@ -329,7 +327,6 @@ export default (props) => {
                 changeAlert={props.changeAlert}
                 address={props.address}
                 token={tokens[TOKEN]}
-                recentTxs={transactions}
               />
             </div>
           </div>
