@@ -7,8 +7,11 @@ import Ruler from './Ruler'
 import Balance from './Balance'
 import SwapBar from './SwapBar'
 
+import { useWithdrawalLimit } from '../contexts/Withdrawal'
+
 export default (props) => {
   const history = useHistory()
+  const withdrawLimit = useWithdrawalLimit(props.address, props.token.tokenAddress)
 
   const gasLimit = '300000'
 
@@ -31,7 +34,7 @@ export default (props) => {
         ethBalance={props.ethBalance}
         onchainBalance={props.balance.onchainBalance}
         offchainBalance={props.balance.offchainBalance}
-        withdrawLimit={props.withdrawLimit}
+        withdrawLimit={withdrawLimit}
         deposit={async (amount) => {
           try {
             await props.nocust.approveAndDeposit(props.address, amount, props.gasPrice, gasLimit, props.token.tokenAddress)

@@ -31,6 +31,7 @@ import SendByScan from './components/SendByScan'
 
 import NocustContext from './contexts/Nocust'
 import BalanceContext from './contexts/Balances'
+import WithdrawalContext from './contexts/Withdrawal'
 import TransactionContext from './contexts/Transactions'
 
 const MAINNET_CHAIN_ID = '1'
@@ -318,102 +319,104 @@ class App extends Component {
                 {web3 &&
                   <NocustContext web3={this.state.web3}>
                     <BalanceContext>
-                      <TransactionContext>
-                        <Switch>
-                          <Route
-                            path='/advanced'
-                            render={({ history }) => (
-                              <div>
-                                <div className='main-card card w-100' style={{ zIndex: 1 }}>
-                                  <NavCard title={i18n.t('advance_title')} />
-                                  <Advanced
-                                    buttonStyle={buttonStyle}
-                                    address={account}
-                                    history={history}
-                                    privateKey={metaAccount.privateKey}
-                                    changeAlert={this.changeAlert}
-                                    setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
-                                  />
+                      <WithdrawalContext>
+                        <TransactionContext>
+                          <Switch>
+                            <Route
+                              path='/advanced'
+                              render={({ history }) => (
+                                <div>
+                                  <div className='main-card card w-100' style={{ zIndex: 1 }}>
+                                    <NavCard title={i18n.t('advance_title')} />
+                                    <Advanced
+                                      buttonStyle={buttonStyle}
+                                      address={account}
+                                      history={history}
+                                      privateKey={metaAccount.privateKey}
+                                      changeAlert={this.changeAlert}
+                                      setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
+                                    />
+                                  </div>
+                                  <Link to='/'>
+                                    <Bottom
+                                      action={() => {}}
+                                    />
+                                  </Link>
                                 </div>
-                                <Link to='/'>
-                                  <Bottom
-                                    action={() => {}}
-                                  />
-                                </Link>
-                              </div>
-                            )}
-                          />
+                              )}
+                            />
 
-                          <Route
-                            path='/scanner'
-                            render={({ history, location }) => (
-                              <SendByScan
-                                mainStyle={mainStyle}
-                                onError={(error) => {
-                                  this.changeAlert('danger', error)
-                                }}
-                                search={location.search}
-                                goBack={history.goBack}
-                              />
-                            )}
-                          />
-
-                          <Route
-                            path='/burn'
-                            render={({ history }) => (
-                              <div>
-                                <div className='main-card card w-100' style={{ zIndex: 1 }}>
-
-                                  <NavCard title='Burn Private Key' goBack={history.goBack} />
-                                  <BurnWallet
-                                    mainStyle={mainStyle}
-                                    address={account}
-                                    goBack={history.goBack}
-                                    burnWallet={() => {
-                                      burnMetaAccount()
-                                      history.push('/')
-                                    }}
-                                  />
-                                </div>
-                                <Bottom
-                                  text={i18n.t('cancel')}
-                                  action={history.goBack}
-                                />
-                              </div>
-                            )}
-                          />
-
-                          <Redirect exact from='/' to='/liquidity' />
-                          <Route
-                            path='/liquidity'
-                            render={({ match }) => {
-                              return (
-                                <LiquidityNetwork
-                                  match={match}
-                                  web3={this.state.web3}
-                                  privateKey={metaAccount.privateKey}
-
-                                  address={toChecksumAddress(account)}
-
-                                  network={this.state.network}
-                                  block={this.state.block}
-
-                                  ensLookup={this.ensLookup.bind(this)}
-
-                                  ethprice={this.state.ethprice}
-
-                                  setGwei={this.setGwei}
-                                  gwei={this.state.gwei}
-
+                            <Route
+                              path='/scanner'
+                              render={({ history, location }) => (
+                                <SendByScan
                                   mainStyle={mainStyle}
-                                  buttonStyle={buttonStyle}
-                                  changeAlert={this.changeAlert}
+                                  onError={(error) => {
+                                    this.changeAlert('danger', error)
+                                  }}
+                                  search={location.search}
+                                  goBack={history.goBack}
                                 />
-                              )
-                            }}
-                          />
-                        </Switch>
-                      </TransactionContext>
+                              )}
+                            />
+
+                            <Route
+                              path='/burn'
+                              render={({ history }) => (
+                                <div>
+                                  <div className='main-card card w-100' style={{ zIndex: 1 }}>
+
+                                    <NavCard title='Burn Private Key' goBack={history.goBack} />
+                                    <BurnWallet
+                                      mainStyle={mainStyle}
+                                      address={account}
+                                      goBack={history.goBack}
+                                      burnWallet={() => {
+                                        burnMetaAccount()
+                                        history.push('/')
+                                      }}
+                                    />
+                                  </div>
+                                  <Bottom
+                                    text={i18n.t('cancel')}
+                                    action={history.goBack}
+                                  />
+                                </div>
+                              )}
+                            />
+
+                            <Redirect exact from='/' to='/liquidity' />
+                            <Route
+                              path='/liquidity'
+                              render={({ match }) => {
+                                return (
+                                  <LiquidityNetwork
+                                    match={match}
+                                    web3={this.state.web3}
+                                    privateKey={metaAccount.privateKey}
+
+                                    address={toChecksumAddress(account)}
+
+                                    network={this.state.network}
+                                    block={this.state.block}
+
+                                    ensLookup={this.ensLookup.bind(this)}
+
+                                    ethprice={this.state.ethprice}
+
+                                    setGwei={this.setGwei}
+                                    gwei={this.state.gwei}
+
+                                    mainStyle={mainStyle}
+                                    buttonStyle={buttonStyle}
+                                    changeAlert={this.changeAlert}
+                                  />
+                                )
+                              }}
+                            />
+                          </Switch>
+                        </TransactionContext>
+                      </WithdrawalContext>
                     </BalanceContext>
                   </NocustContext>}
 
