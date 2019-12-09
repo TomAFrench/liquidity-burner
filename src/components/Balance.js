@@ -2,6 +2,8 @@ import React from 'react'
 import i18n from '../i18n'
 
 import { Scaler } from 'dapparatus'
+import { toBN } from 'web3-utils'
+import { getDisplayValue } from '../contexts/Balances'
 
 export default ({ token, selected, balance, offchain }) => {
   let opacity = 0.65
@@ -11,7 +13,8 @@ export default ({ token, selected, balance, offchain }) => {
 
   var amount = '0'
   if (balance) {
-    amount = (offchain ? balance.displayOffchain : balance.displayOnchain)
+    amount = (offchain ? balance.offchainBalance : balance.onchainBalance)
+    amount = getDisplayValue(toBN(amount))
   }
 
   if (isNaN(amount) || typeof amount === 'undefined') {

@@ -164,7 +164,7 @@ const TEXSwapBar = (props) => {
             }}
           >
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-              <i className='fas fa-arrow-up' /> {'f' + props.assetB.shortName} to {'f' + props.assetA.shortName}
+              <i className='fas fa-arrow-up' /> {typeof props.assetB !== 'undefined' ? 'f' + props.assetB.shortName : i18n.t('loading')} to {typeof props.assetA !== 'undefined' ? 'f' + props.assetA.shortName : i18n.t('loading')}
             </Scaler>
           </button>
         </div>
@@ -178,7 +178,7 @@ const TEXSwapBar = (props) => {
             }}
           >
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-              <i className='fas fa-arrow-down' /> {'f' + props.assetA.shortName} to {'f' + props.assetB.shortName}
+              <i className='fas fa-arrow-down' /> {typeof props.assetA !== 'undefined' ? 'f' + props.assetA.shortName : i18n.t('loading')} to {typeof props.assetB !== 'undefined' ? 'f' + props.assetB.shortName : i18n.t('loading')}
             </Scaler>
           </button>
         </div>
@@ -311,8 +311,8 @@ export default class Exchange extends React.Component {
         <TEXSwapBar
           assetA={this.props.assetA}
           assetB={this.props.assetB}
-          assetABalance={this.props.assetABalance.offchainBalance}
-          assetBBalance={this.props.assetBBalance.offchainBalance}
+          assetABalance={typeof this.props.assetABalance !== 'undefined' ? this.props.assetABalance.offchainBalance : undefined}
+          assetBBalance={typeof this.props.assetBBalance !== 'undefined' ? this.props.assetBBalance.offchainBalance : undefined}
           buttonStyle={this.props.buttonStyle}
           orderbook={this.state.orderbook}
           AtoBTrade={(buyAmount, sellAmount) => this.AtoBTrade(buyAmount, sellAmount)}
