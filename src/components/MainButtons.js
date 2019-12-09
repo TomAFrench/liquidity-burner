@@ -2,30 +2,42 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { Scaler } from 'dapparatus'
-
 import i18next from 'i18next'
+
+import { useBlocksToWithdrawal } from '../contexts/Withdrawal'
+
 const { toWei } = require('web3-utils')
 
-async function confirmWithdrawal (nocust, address, gwei, token) {
+async function confirmWithdrawal (nocust, address, gwei, tokenAddress) {
   const gasLimit = '300000'
 
-  const txhash = await nocust.withdrawalConfirmation(address, toWei(gwei.toString(), 'gwei'), gasLimit, token)
+  const txhash = await nocust.withdrawalConfirmation(address, toWei(gwei.toString(), 'gwei'), gasLimit, tokenAddress)
   console.log('withdrawal', txhash)
 }
 
 export default (props) => {
+  const blocksToWithdrawal = useBlocksToWithdrawal(props.address, props.tokenAddress)
+
+  const withdrawalInProgess = (typeof blocksToWithdrawal !== 'undefined' && blocksToWithdrawal !== -1)
+
+  let withdrawalButton
+  if (withdrawalInProgess) {
+    withdrawalButton = (
+      <div className='content ops row'>
+        <div className='col-12 p-1' onClick={() => { if (blocksToWithdrawal === 0) confirmWithdrawal(props.nocust, props.tokenAddress, props.gwei, props.tokenAddress) }}>
+          <button className={`btn btn-large w-100 ${blocksToWithdrawal === 0 ? '' : 'disabled'}`} style={props.buttonStyle.primary}>
+            <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
+              <i className={`fas ${blocksToWithdrawal === 0 ? 'fa-check' : 'fa-clock'}`} /> {blocksToWithdrawal === 0 ? i18next.t('liquidity.withdraw.confirm') : blocksToWithdrawal + ' blocks until confirmation'}
+            </Scaler>
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
-      {typeof props.withdrawInfo !== 'undefined' && typeof props.withdrawInfo.blocksToWithdrawal !== 'undefined' && props.withdrawInfo.blocksToWithdrawal !== -1 &&
-        <div className='content ops row'>
-          <div className='col-12 p-1' onClick={() => { if (props.withdrawInfo.blocksToWithdrawal === 0) confirmWithdrawal(props.nocust, props.tokenAddress, props.gwei, props.token) }}>
-            <button className={`btn btn-large w-100 ${props.withdrawInfo.blocksToWithdrawal === 0 ? '' : 'disabled'}`} style={props.buttonStyle.primary}>
-              <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-                <i className={`fas ${props.withdrawInfo.locksToWithdrawal === 0 ? 'fa-check' : 'fa-clock'}`} /> {props.withdrawInfo.blocksToWithdrawal === 0 ? i18next.t('liquidity.withdraw.confirm') : props.withdrawInfo.blocksToWithdrawal + ' blocks until confirmation'}
-              </Scaler>
-            </button>
-          </div>
-        </div>}
+      {withdrawalButton}
       <div className='content ops row'>
         <div className='col-12 p-1'>
           <button className='btn btn-large w-100' style={props.buttonStyle.primary}>

@@ -30,6 +30,7 @@ import lqdImg from '../images/liquidity.png'
 import { useAllTokenBalances, useAddressBalance } from '../contexts/Balances'
 import { useTokenTransactions } from '../contexts/Transactions'
 import MainButtons from './MainButtons'
+import { useWithdrawalFee } from '../contexts/Withdrawal'
 
 const { toWei, fromWei } = require('web3-utils')
 const qs = require('query-string')
@@ -42,27 +43,6 @@ const TOKEN = process.env.REACT_APP_TOKEN
 
 console.log('TOKEN', TOKEN)
 
-async function checkWithdrawalInfo (nocust, address, tokens, gwei) {
-  const withdrawFee = await nocust.getWithdrawalFee(toWei(gwei.toString(), 'gwei'))
-  const ethBlocksToWithdrawal = await nocust.getBlocksToWithdrawalConfirmation(address, undefined, tokens.ETH.tokenAddress)
-  const tokenBlocksToWithdrawal = await nocust.getBlocksToWithdrawalConfirmation(address, undefined, tokens[TOKEN].tokenAddress)
-
-  let tokenAddress
-  let blocksToWithdrawal
-  if (ethBlocksToWithdrawal === -1) {
-    tokenAddress = tokens[TOKEN].tokenAddress
-    blocksToWithdrawal = tokenBlocksToWithdrawal
-  } else if (tokenBlocksToWithdrawal === -1) {
-    tokenAddress = tokens[TOKEN].tokenAddress
-    blocksToWithdrawal = ethBlocksToWithdrawal
-  } else {
-    tokenAddress = (ethBlocksToWithdrawal < tokenBlocksToWithdrawal ? tokens.ETH.tokenAddress : tokens[TOKEN].tokenAddress)
-    blocksToWithdrawal = Math.min(ethBlocksToWithdrawal, tokenBlocksToWithdrawal)
-  }
-
-  return { withdrawInfo: { tokenAddress, blocksToWithdrawal, withdrawFee } }
-}
-
 export default (props) => {
   const nocust = useNocustClient(props.address)
   const tokens = useTokens()
@@ -72,10 +52,11 @@ export default (props) => {
   useAddressBalance(props.address, tokens.ETH ? tokens.ETH.tokenAddress : undefined)
   useAddressBalance(props.address, tokens.LQD ? tokens.LQD.tokenAddress : undefined)
 
+  const withdrawFee = useWithdrawalFee(props.gwei)
+
   if (!nocust || !tokens) return null
 
   const netId = 4
-  const withdrawInfo = checkWithdrawalInfo(nocust, props.address, tokens, props.gwei)
 
   const backButton = (
     <Link to={props.match.url}>
@@ -193,7 +174,7 @@ export default (props) => {
                 <NavCard title={i18n.t('bridge.title')} />
                 <div style={{ textAlign: 'center', width: '100%', fontSize: 16, marginTop: 10 }}>
                   <Scaler config={{ startZoomAt: 400, origin: '50% 50%', adjustedZoom: 1 }}>
-                    Withdrawal Fee: {typeof withdrawInfo.withdrawFee !== 'undefined' ? fromWei(withdrawInfo.withdrawFee.toString(), 'ether').toString() : 0} ETH
+                    Withdrawal Fee: {typeof withdrawFee !== 'undefined' ? fromWei(withdrawFee.toString(), 'ether').toString() : 0} ETH
                   </Scaler>
                 </div>
                 <Ruler />
@@ -205,7 +186,6 @@ export default (props) => {
                   nocust={nocust}
                   ethBalance={typeof balances[tokens.ETH.tokenAddress] !== 'undefined' ? balances[tokens.ETH.tokenAddress].onchainBalance : undefined}
                   gasPrice={toWei(props.gwei.toString(), 'gwei')}
-                  withdrawLimit={typeof balances[tokens.ETH.tokenAddress] !== 'undefined' ? balances[tokens.ETH.tokenAddress].withdrawalLimit : undefined}
                   changeAlert={props.changeAlert}
                   onSend={() => {}}
                 />
@@ -218,7 +198,6 @@ export default (props) => {
                   nocust={nocust}
                   ethBalance={typeof balances[tokens.ETH.tokenAddress] !== 'undefined' ? balances[tokens.ETH.tokenAddress].onchainBalance : undefined}
                   gasPrice={toWei(props.gwei.toString(), 'gwei')}
-                  withdrawLimit={typeof balances[tokens[TOKEN].tokenAddress] !== 'undefined' ? balances[tokens[TOKEN].tokenAddress].withdrawalLimit : undefined}
                   changeAlert={props.changeAlert}
                   onSend={() => {}}
                 />
@@ -342,7 +321,6 @@ export default (props) => {
                   nocust={nocust}
                   tokenAddress={tokens[TOKEN].tokenAddress}
                   gwei={props.gwei}
-                  withdrawalInfo={props.withdrawalInfo}
                   token={TOKEN}
                 />
 
