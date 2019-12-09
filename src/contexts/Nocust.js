@@ -79,12 +79,24 @@ export function useNocustClient (address) {
         contractAddress: HUB_CONTRACT_ADDRESS
       })
 
-      console.log('Registering with hub')
-      Promise.all(Object.values(tokens).map(async (token) => { return registerToken(nocustManager, address, token.tokenAddress) })).then(
-        registration => {
-          console.log('Completed registration:', registration)
+      if (tokens) {
+        Promise.all(Object.values(tokens).map(async (token) => {
+          if (token.tokenAddress) {
+            const registered = await nocustManager.isAddressRegistered(address, token.tokenAddress)
+            if (!registered) {
+              console.log('Registering with hub')
+              return registerToken(nocustManager, address, token.tokenAddress)
+            }
+            return true
+          }
+          return undefined
         }
-      )
+        )).then(
+          registration => {
+            console.log('Completed registration:', registration)
+          }
+        )
+      }
 
       if (!stale) {
         try {
