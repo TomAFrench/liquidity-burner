@@ -187,7 +187,6 @@ export default (props) => {
       <Route
         path={`${props.match.url}/bridge`}
         render={() => {
-          console.log(tokens)
           return (
             <div>
               <div className='main-card card w-100' style={{ zIndex: 1 }}>
@@ -252,8 +251,8 @@ export default (props) => {
                 <Exchange
                   assetA={tokens[assetA]}
                   assetB={tokens[assetB]}
-                  assetABalance={balances[assetA]}
-                  assetBBalance={balances[assetB]}
+                  assetABalance={balances[tokens[assetA].tokenAddress]}
+                  assetBBalance={balances[tokens[assetB].tokenAddress]}
                   address={props.address}
                   buttonStyle={props.buttonStyle}
                   nocust={nocust}
@@ -307,7 +306,7 @@ export default (props) => {
                 <Link to={{ pathname: `${props.match.url}/send`, search: '?token=' + TOKEN }}>
                   <Balance
                     token={tokens[TOKEN]}
-                    balance={balances[TOKEN]}
+                    balance={balances[tokens[TOKEN].tokenAddress]}
                     offchain
                     selected
                     address={props.address}
@@ -316,14 +315,14 @@ export default (props) => {
                 <Ruler />
                 <Balance
                   token={tokens[TOKEN]}
-                  balance={balances[TOKEN]}
+                  balance={balances[tokens[TOKEN].tokenAddress]}
                   address={props.address}
                 />
                 <Ruler />
                 <Link to={{ pathname: `${props.match.url}/send`, search: '?token=ETH' }}>
                   <Balance
                     token={tokens.ETH}
-                    balance={balances.ETH}
+                    balance={balances[tokens.ETH.tokenAddress]}
                     offchain
                     selected
                     address={props.address}
@@ -332,7 +331,7 @@ export default (props) => {
                 <Ruler />
                 <Balance
                   token={tokens.ETH}
-                  balance={balances.ETH}
+                  balance={balances[tokens.ETH.tokenAddress]}
                   address={props.address}
                 />
                 <Ruler />
