@@ -4,6 +4,11 @@ import Ruler from './Ruler'
 import Balance from './Balance'
 import AmountBar from './AmountBar'
 import i18n from '../i18n'
+import { useNocustClient } from '../contexts/Nocust'
+
+import { useOrderbook } from '../contexts/Orderbook'
+import { useTokens } from '../contexts/Tokens'
+import { useOffchainAddressBalance } from '../contexts/Balances'
 
 const { toWei, fromWei, toBN } = require('web3-utils')
 
@@ -111,7 +116,12 @@ const TEXSwapper = (props) => {
 const TEXSwapBar = (props) => {
   const [swapMode, setSwapMode] = useState(false)
 
-  const invalidOrderbook = typeof props.orderbook === 'undefined'
+  const assetABalance = useOffchainAddressBalance(props.address, props.assetA ? props.assetA.tokenAddress : undefined)
+  const assetBBalance = useOffchainAddressBalance(props.address, props.assetB ? props.assetB.tokenAddress : undefined)
+  const ordersAToB = useOrderbook(props.assetA ? props.assetA.tokenAddress : undefined, props.assetB ? props.assetB.tokenAddress : undefined)
+  const ordersBToA = useOrderbook(props.assetB ? props.assetB.tokenAddress : undefined, props.assetA ? props.assetA.tokenAddress : undefined)
+
+  const invalidOrderbook = (ordersAToB === [] && ordersBToA === [])
 
   let display = i18n.t('loading')
 
@@ -128,10 +138,10 @@ const TEXSwapBar = (props) => {
       <TEXSwapper
         icon='fa-arrow-down'
         buttonStyle={props.buttonStyle}
-        orders={props.orderbook.sell_orders}
+        orders={ordersAToB}
         assetSellText={'f' + props.assetA.shortName}
         assetBuyText={'f' + props.assetB.shortName}
-        assetBalance={props.assetABalance}
+        assetBalance={assetABalance}
         successAction={(buyAmount, sellAmount) => {
           console.log('Buying ', buyAmount, props.assetB.shortName, ' for ', sellAmount, props.assetA.shortName)
           props.AtoBTrade(toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
@@ -148,10 +158,10 @@ const TEXSwapBar = (props) => {
         reversed
         icon='fa-arrow-up'
         buttonStyle={props.buttonStyle}
-        orders={props.orderbook.buy_orders}
+        orders={ordersBToA}
         assetSellText={'f' + props.assetB.shortName}
         assetBuyText={'f' + props.assetA.shortName}
-        assetBalance={props.assetBBalance}
+        assetBalance={assetBBalance}
         successAction={(buyAmount, sellAmount) => {
           console.log('Buying ', buyAmount, props.assetA.shortName, ' for ', sellAmount, props.assetB.shortName)
           props.BtoATrade(toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
@@ -267,75 +277,43 @@ const getOtherAmount = (orders, amount, knownQuantity) => {
   return output
 }
 
-export default class Exchange extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
-    this.getOrderBook()
-  }
+// async function syncSwaps () {
+//   console.log('Getting swaps for', this.props.address)
+//   const swaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress)
 
-  componentDidMount (props) {
-    const syncIntervalId = setInterval(this.syncSwaps.bind(this), 30000)
-    this.setState({ syncIntervalId })
-  }
+//   console.log('AtoBSwaps response', swaps)
+// }
 
-  componentWillUnmount () {
-    console.log('Stopping checking for fulfilled swaps')
-    clearInterval(this.state.syncIntervalId)
-  }
+export default (props) => {
+  const nocust = useNocustClient()
+  const tokens = useTokens()
 
-  async getOrderBook () {
-    if (typeof this.props.assetA.tokenAddress !== 'undefined' && typeof this.props.assetB.tokenAddress !== 'undefined') {
-      const orderbook = await this.props.nocust.getOrderBook(this.props.assetB.tokenAddress, this.props.assetA.tokenAddress)
-      this.setState({ orderbook })
-    }
-  }
+  const assetA = tokens[props.assetA]
+  const assetB = tokens[props.assetB]
 
-  async syncSwaps () {
-    console.log('Getting swaps for', this.props.address)
-    const swaps = await this.props.nocust.synchronizeSwapOrders(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress)
-
-    console.log('AtoBSwaps response', swaps)
-  }
-
-  async AtoBTrade (buyAmount, sellAmount) {
-    const swapResponse = await this.props.nocust.sendSwap(this.props.address, this.props.assetB.tokenAddress, this.props.assetA.tokenAddress, buyAmount, sellAmount)
-    console.log(swapResponse)
-  }
-
-  async BtoATrade (buyAmount, sellAmount) {
-    const swapResponse = await this.props.nocust.sendSwap(this.props.address, this.props.assetA.tokenAddress, this.props.assetB.tokenAddress, buyAmount, sellAmount)
-    console.log(swapResponse)
-  }
-
-  render () {
-    return (
-      <div>
-        <Balance
-          token={this.props.assetA}
-          balance={this.props.assetABalance}
-          offchain
-          selected
-        />
-        <Ruler />
-        <TEXSwapBar
-          assetA={this.props.assetA}
-          assetB={this.props.assetB}
-          assetABalance={typeof this.props.assetABalance !== 'undefined' ? this.props.assetABalance.offchainBalance : undefined}
-          assetBBalance={typeof this.props.assetBBalance !== 'undefined' ? this.props.assetBBalance.offchainBalance : undefined}
-          buttonStyle={this.props.buttonStyle}
-          orderbook={this.state.orderbook}
-          AtoBTrade={(buyAmount, sellAmount) => this.AtoBTrade(buyAmount, sellAmount)}
-          BtoATrade={(buyAmount, sellAmount) => this.BtoATrade(buyAmount, sellAmount)}
-        />
-        <Balance
-          token={this.props.assetB}
-          balance={this.props.assetBBalance}
-          offchain
-          selected
-        />
-        <Ruler />
-      </div>
-    )
-  }
+  return (
+    <div>
+      <Balance
+        token={assetA}
+        address={props.address}
+        offchain
+        selected
+      />
+      <Ruler />
+      <TEXSwapBar
+        assetA={assetA}
+        assetB={assetB}
+        buttonStyle={props.buttonStyle}
+        AtoBTrade={(buyAmount, sellAmount) => nocust.sendSwap(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress, buyAmount, sellAmount)}
+        BtoATrade={(buyAmount, sellAmount) => nocust.sendSwap(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress, buyAmount, sellAmount)}
+      />
+      <Balance
+        token={assetB}
+        address={props.address}
+        offchain
+        selected
+      />
+      <Ruler />
+    </div>
+  )
 }

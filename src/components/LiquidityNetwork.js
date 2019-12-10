@@ -24,10 +24,11 @@ import Exchange from './Exchange'
 
 import Balance from './Balance'
 
-import { isValidToken, lookupTokenAddress, useNocustClient, useTokens } from '../contexts/Nocust'
+import { useNocustClient, useEraNumber } from '../contexts/Nocust'
+import { useTokens, isValidToken, lookupTokenAddress, registerTokens } from '../contexts/Tokens'
 
 import lqdImg from '../images/liquidity.png'
-import { useAllTokenBalances, useAddressBalance } from '../contexts/Balances'
+import { useAllTokenBalances } from '../contexts/Balances'
 import MainButtons from './MainButtons'
 import { useWithdrawalFee } from '../contexts/Withdrawal'
 
@@ -37,7 +38,6 @@ const qs = require('query-string')
 const LOADERIMAGE = lqdImg
 
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
-const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
 const TOKEN = process.env.REACT_APP_TOKEN
 
 console.log('TOKEN', TOKEN)
@@ -46,9 +46,7 @@ export default (props) => {
   const nocust = useNocustClient(props.address)
   const tokens = useTokens()
   const balances = useAllTokenBalances(props.address)
-
-  useAddressBalance(props.address, tokens.ETH ? tokens.ETH.tokenAddress : undefined)
-  useAddressBalance(props.address, tokens.LQD ? tokens.LQD.tokenAddress : undefined)
+  registerTokens(props.address)
 
   const withdrawFee = useWithdrawalFee(props.gwei)
 
@@ -72,8 +70,6 @@ export default (props) => {
 
             <NavCard title={i18n.t('receive_title')} />
             <Receive
-              hubContract={HUB_CONTRACT_ADDRESS}
-              hubApiUrl={HUB_API_URL}
               ensLookup={props.ensLookup}
               buttonStyle={props.buttonStyle}
               address={props.address}
@@ -178,11 +174,8 @@ export default (props) => {
                 <Ruler />
                 <Bridge
                   address={props.address}
-                  token={tokens.ETH}
-                  balance={balances[tokens.ETH.tokenAddress]}
+                  token='ETH'
                   buttonStyle={props.buttonStyle}
-                  nocust={nocust}
-                  ethBalance={typeof balances[tokens.ETH.tokenAddress] !== 'undefined' ? balances[tokens.ETH.tokenAddress].onchainBalance : undefined}
                   gasPrice={toWei(props.gwei.toString(), 'gwei')}
                   changeAlert={props.changeAlert}
                   onSend={() => {}}
@@ -190,11 +183,8 @@ export default (props) => {
                 <Ruler />
                 <Bridge
                   address={props.address}
-                  token={tokens[TOKEN]}
-                  balance={balances[tokens[TOKEN].tokenAddress]}
+                  token={TOKEN}
                   buttonStyle={props.buttonStyle}
-                  nocust={nocust}
-                  ethBalance={typeof balances[tokens.ETH.tokenAddress] !== 'undefined' ? balances[tokens.ETH.tokenAddress].onchainBalance : undefined}
                   gasPrice={toWei(props.gwei.toString(), 'gwei')}
                   changeAlert={props.changeAlert}
                   onSend={() => {}}
@@ -226,10 +216,8 @@ export default (props) => {
               <div className='main-card card w-100' style={{ zIndex: 1 }}>
                 <NavCard title={i18n.t('exchange_title')} />
                 <Exchange
-                  assetA={tokens[assetA]}
-                  assetB={tokens[assetB]}
-                  assetABalance={balances[tokens[assetA].tokenAddress]}
-                  assetBBalance={balances[tokens[assetB].tokenAddress]}
+                  assetA={assetA}
+                  assetB={assetB}
                   address={props.address}
                   buttonStyle={props.buttonStyle}
                   nocust={nocust}
