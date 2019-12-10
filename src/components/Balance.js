@@ -3,21 +3,17 @@ import i18n from '../i18n'
 
 import { Scaler } from 'dapparatus'
 import { toBN } from 'web3-utils'
-import { getDisplayValue } from '../contexts/Balances'
+import { getDisplayValue, useAddressBalance } from '../contexts/Balances'
 
-export default ({ token, selected, balance, offchain }) => {
+export default ({ address, token, selected, offchain }) => {
   let opacity = 0.65
   if (selected) {
     opacity = 0.95
   }
 
-  var amount = '0'
-  if (balance) {
-    amount = (offchain ? balance.offchainBalance : balance.onchainBalance)
-    if (amount) {
-      amount = getDisplayValue(toBN(amount))
-    }
-  }
+  const tokenBalance = useAddressBalance(address, token ? token.tokenAddress : undefined)
+  const balance = offchain ? tokenBalance.offchainBalance : tokenBalance.onchainBalance
+  var amount = balance ? getDisplayValue(toBN(balance)) : i18n.t('loading')
 
   if (isNaN(amount) || typeof amount === 'undefined') {
     amount = 0.00

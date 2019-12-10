@@ -4,17 +4,12 @@ import React, { createContext, useContext, useReducer, useMemo, useCallback, use
 
 import { NOCUSTManager } from 'nocust-client'
 
-import ethImg from '../images/ethereum.png'
-import daiImg from '../images/dai.jpg'
-import lqdImg from '../images/liquidity.png'
-
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
 const HUB_API_URL = process.env.REACT_APP_HUB_API_URL
 
-const INITIAL_TOKENS = {
-  ETH: {},
-  DAI: {},
-  LQD: {}
+const INITIAL_HUB_INFO = {
+  hubContract: HUB_CONTRACT_ADDRESS,
+  hubApiUrl: HUB_API_URL
 }
 
 const UPDATE = 'UPDATE'
@@ -28,12 +23,12 @@ export function useNocustContext () {
 function reducer (state, { type, payload }) {
   switch (type) {
     case UPDATE: {
-      const { web3, nocust, tokens } = payload
+      const { web3, nocust, eraNumber } = payload
       return {
         ...state,
         web3,
         nocust,
-        tokens
+        eraNumber
       }
     }
     default: {
@@ -43,10 +38,10 @@ function reducer (state, { type, payload }) {
 }
 
 export default function Provider ({ web3, children }) {
-  const [state, dispatch] = useReducer(reducer, { web3: web3, tokens: INITIAL_TOKENS })
+  const [state, dispatch] = useReducer(reducer, { web3: web3, hub: INITIAL_HUB_INFO })
 
-  const update = useCallback((web3, nocust, tokens) => {
-    dispatch({ type: UPDATE, payload: { web3, nocust, tokens } })
+  const update = useCallback((web3, nocust, eraNumber) => {
+    dispatch({ type: UPDATE, payload: { web3, nocust, eraNumber } })
   }, [])
 
   return (
@@ -56,18 +51,16 @@ export default function Provider ({ web3, children }) {
   )
 }
 
-async function registerToken (nocust, address, tokenAddress) {
-  console.log('Registering token:', tokenAddress)
-  try {
-    return nocust.registerAddress(address, tokenAddress)
-  } catch (e) {
-    console.log('Error registering', e)
-  }
+export function useNocustHubInfo () {
+  const [state, { update }] = useNocustContext()
+  const { hub } = state
+
+  return hub
 }
 
 export function useNocustClient (address) {
   const [state, { update }] = useNocustContext()
-  const { web3, nocust, tokens } = state
+  const { web3, nocust, eraNumber } = state
 
   useEffect(() => {
     if (web3) {
@@ -79,26 +72,26 @@ export function useNocustClient (address) {
         contractAddress: HUB_CONTRACT_ADDRESS
       })
 
-      if (tokens) {
-        Promise.all(Object.values(tokens).map(async (token) => {
-          if (token.tokenAddress) {
-            const registered = await nocustManager.isAddressRegistered(address, token.tokenAddress)
-            if (!registered) {
-              console.log('Registering with hub')
-              return registerToken(nocustManager, address, token.tokenAddress)
-            }
-            return true
-          }
-          return undefined
-        }
-        ))
-      }
+      // if (tokens) {
+      //   Promise.all(Object.values(tokens).map(async (token) => {
+      //     if (token.tokenAddress) {
+      //       const registered = await nocustManager.isAddressRegistered(address, token.tokenAddress)
+      //       if (!registered) {
+      //         console.log('Registering with hub')
+      //         return registerToken(nocustManager, address, token.tokenAddress)
+      //       }
+      //       return true
+      //     }
+      //     return undefined
+      //   }
+      //   ))
+      // }
 
       if (!stale) {
         try {
-          update(web3, nocustManager, tokens)
+          update(web3, nocustManager, eraNumber)
         } catch (e) {
-          update(web3, null, tokens)
+          update(web3, null, eraNumber)
         }
       }
 
@@ -111,31 +104,17 @@ export function useNocustClient (address) {
   return nocust
 }
 
-function buildTokenDict (tokenList) {
-  var tokens = tokenList.reduce((accumulator, pilot) => {
-    return { ...accumulator, [pilot.shortName]: { name: pilot.name, shortName: pilot.shortName, tokenAddress: pilot.tokenAddress } }
-  }, {})
-
-  if (tokens.ETH) tokens.ETH.image = ethImg
-  if (tokens.DAI) tokens.DAI.image = daiImg
-  if (tokens.LQD) tokens.LQD.image = lqdImg
-
-  return tokens
-}
-
-export function useTokens () {
+export function useEraNumber () {
   const [state, { update }] = useNocustContext()
-  const { web3, nocust, tokens } = state
+  const { web3, nocust, eraNumber } = state
 
   useEffect(() => {
     if (web3 && nocust) {
       let stale = false
-
-      nocust.getSupportedTokens()
-        .then(tokenList => {
-          const tokens = buildTokenDict(tokenList)
+      nocust.getEraNumber()
+        .then(eraNumber => {
           if (!stale) {
-            update(web3, nocust, tokens)
+            update(web3, nocust, eraNumber)
           }
         })
         .catch(() => {
@@ -148,17 +127,7 @@ export function useTokens () {
         stale = true
       }
     }
-  }, [web3, nocust, update])
-
-  return tokens
-}
-
-export function isValidToken (tokens, tokenShortName) {
-  return Object.keys(tokens).includes(tokenShortName)
-}
-
-export function lookupTokenAddress (tokens, tokenAddress) {
-  return Object.values(tokens).find((token) => {
-    return tokenAddress === token.tokenAddress
   })
+
+  return eraNumber
 }
