@@ -1,8 +1,10 @@
 import React from 'react'
 import Ruler from './Ruler'
 import i18n from '../i18n'
+import { useMainStyle } from '../contexts/Theme'
 
-export default ({ mainStyle, address, balance, burnWallet, goBack }) => {
+export default ({ address, balance, burnWallet, goBack }) => {
+  const mainStyle = useMainStyle()
   return (
 
     <div>
