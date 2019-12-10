@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useMemo, useCallback, use
 
 import { safeAccess } from '../utils'
 import { isAddress } from 'web3-utils'
-import { useNocustClient } from './Nocust'
+import { useNocustClient, useEraNumber } from './Nocust'
 
 const UPDATE = 'UPDATE'
 
@@ -79,6 +79,7 @@ export function useWithdrawalFee (gasPrice) {
 
 export function useWithdrawalLimit (address, tokenAddress) {
   const nocust = useNocustClient()
+  const eraNumber = useEraNumber()
   const [state, { update }] = useWithdrawalContext()
   const { withdrawalFee } = state
   const { withdrawalLimit, blocksToWithdrawal } = safeAccess(state, [address, tokenAddress]) || {}
@@ -86,6 +87,7 @@ export function useWithdrawalLimit (address, tokenAddress) {
   useEffect(() => {
     if (isAddress(address) && isAddress(tokenAddress)) {
       let stale = false
+      console.log('checking withdrawal limit')
       nocust.getWithdrawalLimit(address, tokenAddress)
         .then(withdrawalLimit => {
           if (!stale) {
@@ -101,7 +103,7 @@ export function useWithdrawalLimit (address, tokenAddress) {
         stale = true
       }
     }
-  }, [address, tokenAddress, withdrawalLimit, update])
+  }, [address, tokenAddress, eraNumber, update])
 
   return withdrawalLimit
 }

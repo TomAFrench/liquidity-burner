@@ -39,7 +39,6 @@ export default (props) => {
         render={() =>
           <ReceivePage
             ensLookup={props.ensLookup}
-            buttonStyle={props.buttonStyle}
             address={props.address}
             changeAlert={props.changeAlert}
             backButton={backButton}
@@ -55,7 +54,6 @@ export default (props) => {
             </div>
             <Loader
               loaderImage={LOADERIMAGE}
-              mainStyle={props.mainStyle}
               onFinish={() => { history.replace('/') }}
             />
             {location.state && location.state.subtitle &&
@@ -85,7 +83,6 @@ export default (props) => {
               history={history}
               location={location}
               ensLookup={props.ensLookup}
-              buttonStyle={props.buttonStyle}
               address={props.address}
               changeAlert={props.changeAlert}
               backButton={backButton}
@@ -101,7 +98,6 @@ export default (props) => {
             <BridgePage
               address={props.address}
               gwei={props.gwei}
-              buttonStyle={props.buttonStyle}
               changeAlert={props.changeAlert}
               backButton={backButton}
             />
@@ -117,7 +113,6 @@ export default (props) => {
             match={match}
             address={props.address}
             backButton={backButton}
-            buttonStyle={props.buttonStyle}
           />}
       />
 
@@ -128,8 +123,6 @@ export default (props) => {
             address={props.address}
             history={history}
             match={match}
-            mainStyle={props.mainStyle}
-            buttonStyle={props.buttonStyle}
             changeAlert={props.changeAlert}
             backButton={backButton}
           />}
@@ -143,7 +136,6 @@ export default (props) => {
             address={props.address}
             gwei={props.gwei}
             changeAlert={props.changeAlert}
-            buttonStyle={props.buttonStyle}
           />}
       />
     </Switch>

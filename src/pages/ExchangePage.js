@@ -28,7 +28,6 @@ export default ({ history, match, address, buttonStyle, backButton }) => {
           assetA={assetA}
           assetB={assetB}
           address={address}
-          buttonStyle={buttonStyle}
         />
       </div>
       {backButton}

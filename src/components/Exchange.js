@@ -9,6 +9,7 @@ import { useNocustClient } from '../contexts/Nocust'
 import { useOrderbook } from '../contexts/Orderbook'
 import { useTokens } from '../contexts/Tokens'
 import { useOffchainAddressBalance } from '../contexts/Balances'
+import { useButtonStyle } from '../contexts/Theme'
 
 const { toWei, fromWei, toBN } = require('web3-utils')
 
@@ -115,6 +116,7 @@ const TEXSwapper = (props) => {
 
 const TEXSwapBar = (props) => {
   const [swapMode, setSwapMode] = useState(false)
+  const buttonStyle = useButtonStyle()
 
   const assetABalance = useOffchainAddressBalance(props.address, props.assetA ? props.assetA.tokenAddress : undefined)
   const assetBBalance = useOffchainAddressBalance(props.address, props.assetB ? props.assetB.tokenAddress : undefined)
@@ -137,7 +139,7 @@ const TEXSwapBar = (props) => {
     display = (
       <TEXSwapper
         icon='fa-arrow-down'
-        buttonStyle={props.buttonStyle}
+        buttonStyle={buttonStyle}
         orders={ordersAToB}
         assetSellText={'f' + props.assetA.shortName}
         assetBuyText={'f' + props.assetB.shortName}
@@ -157,7 +159,7 @@ const TEXSwapBar = (props) => {
       <TEXSwapper
         reversed
         icon='fa-arrow-up'
-        buttonStyle={props.buttonStyle}
+        buttonStyle={buttonStyle}
         orders={ordersBToA}
         assetSellText={'f' + props.assetB.shortName}
         assetBuyText={'f' + props.assetA.shortName}
@@ -178,7 +180,7 @@ const TEXSwapBar = (props) => {
         <div className='col-6 p-1'>
           <button
             className='btn btn-large w-100'
-            style={props.buttonStyle.primary}
+            style={buttonStyle.primary}
             onClick={() => {
               setSwapMode('BtoA')
             }}
@@ -192,7 +194,7 @@ const TEXSwapBar = (props) => {
         <div className='col-6 p-1'>
           <button
             className='btn btn-large w-100'
-            style={props.buttonStyle.primary}
+            style={buttonStyle.primary}
             onClick={() => {
               setSwapMode('AtoB')
             }}
@@ -303,7 +305,6 @@ export default (props) => {
       <TEXSwapBar
         assetA={assetA}
         assetB={assetB}
-        buttonStyle={props.buttonStyle}
         AtoBTrade={(buyAmount, sellAmount) => nocust.sendSwap(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress, buyAmount, sellAmount)}
         BtoATrade={(buyAmount, sellAmount) => nocust.sendSwap(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress, buyAmount, sellAmount)}
       />

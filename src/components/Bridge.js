@@ -11,8 +11,10 @@ import { useWithdrawalLimit } from '../contexts/Withdrawal'
 import { useTokens } from '../contexts/Tokens'
 import { useAddressBalance } from '../contexts/Balances'
 import { useNocustClient } from '../contexts/Nocust'
+import { useButtonStyle } from '../contexts/Theme'
 
 export default (props) => {
+  const buttonStyle = useButtonStyle()
   const nocust = useNocustClient()
   const history = useHistory()
   const tokens = useTokens()
@@ -38,7 +40,7 @@ export default (props) => {
       />
       <Ruler />
       <SwapBar
-        buttonStyle={props.buttonStyle}
+        buttonStyle={buttonStyle}
         changeAlert={props.changeAlert}
         text={token ? token.shortName : i18n.t('loading')}
         ethBalance={ethBalance}

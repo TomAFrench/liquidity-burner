@@ -58,12 +58,12 @@ export function useNocustHubInfo () {
   return hub
 }
 
-export function useNocustClient (address) {
+export function useNocustClient () {
   const [state, { update }] = useNocustContext()
   const { web3, nocust, eraNumber } = state
 
   useEffect(() => {
-    if (web3) {
+    if (web3 && !nocust) {
       let stale = false
 
       const nocustManager = new NOCUSTManager({
@@ -86,7 +86,7 @@ export function useNocustClient (address) {
         stale = true
       }
     }
-  }, [web3, address, update])
+  })
 
   return nocust
 }
@@ -98,6 +98,7 @@ export function useEraNumber () {
   useEffect(() => {
     if (web3 && nocust) {
       let stale = false
+      console.log('Checking Era')
       nocust.getEraNumber()
         .then(neweraNumber => {
           if (!stale && (eraNumber === undefined || eraNumber + 4 < neweraNumber)) {

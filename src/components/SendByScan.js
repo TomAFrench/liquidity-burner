@@ -5,6 +5,7 @@ import FileReaderInput from 'react-file-reader-input'
 import RNMessageChannel from 'react-native-webview-messaging'
 import qrimage from '../qrcode.png'
 import i18n from '../i18n'
+import { ThemeContext } from '../contexts/Theme'
 
 const qs = require('query-string')
 
@@ -30,6 +31,8 @@ function base64ToBitmap (base64) {
 
 let interval
 class SendByScan extends Component {
+  static contextType = ThemeContext
+
   constructor (props) {
     super(props)
     let defaultToLegacyMode = false
@@ -171,14 +174,14 @@ class SendByScan extends Component {
     let loaderDisplay = ''
     if (this.state.isLoading) {
       const shadowAmount = 100
-      const shadowColor = this.props.mainStyle.mainColor
+      const shadowColor = this.context.mainStyle.mainColor
       loaderDisplay = (
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: '100%' }}>
             <img src={this.props.loaderImage} style={{ maxWidth: '25%' }} />
           </div>
           <div style={{ width: '80%', height: 1, backgroundColor: '#444444', marginLeft: '10%' }}>
-            <div style={{ width: this.state.percent + '%', height: 1, backgroundColor: this.props.mainStyle.mainColorAlt, boxShadow: '0 0 ' + shadowAmount / 40 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 30 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 20 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 10 + 'px #ffffff, 0 0 ' + shadowAmount / 5 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 3 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 1 + 'px ' + shadowColor + '' }} />
+            <div style={{ width: this.state.percent + '%', height: 1, backgroundColor: this.context.mainStyle.mainColorAlt, boxShadow: '0 0 ' + shadowAmount / 40 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 30 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 20 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 10 + 'px #ffffff, 0 0 ' + shadowAmount / 5 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 3 + 'px ' + shadowColor + ', 0 0 ' + shadowAmount / 1 + 'px ' + shadowColor + '' }} />
           </div>
         </div>
       )
@@ -231,7 +234,7 @@ class SendByScan extends Component {
                 <div>{i18n.t('send_by_scan.capture')}</div>
                 <div className='main-card card w-100' style={{ backgroundColor: '#000000' }}>
                   <div className='content ops row' style={{ paddingLeft: '12%', paddingRight: '12%', paddingTop: 10 }}>
-                    <button className='btn btn-large w-100' style={{ backgroundColor: this.props.mainStyle.mainColor }}>
+                    <button className='btn btn-large w-100' style={{ backgroundColor: this.context.mainStyle.mainColor }}>
                       <i className='fas fa-camera' /> {i18n.t('send_by_scan.take_photo')}
                     </button>
                   </div>

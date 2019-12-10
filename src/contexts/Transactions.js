@@ -54,6 +54,7 @@ export function useTokenTransactions (address, tokenAddress) {
   useEffect(() => {
     if (isAddress(address) && isAddress(tokenAddress)) {
       let stale = false
+      console.log('checking transactions')
       nocust.getTransactionsForAddress(address, tokenAddress)
         .then(transactions => {
           if (transactions.length) {
