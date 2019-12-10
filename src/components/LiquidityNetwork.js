@@ -8,52 +8,22 @@ import {
 // import cookie from 'react-cookies'
 
 import { Scaler } from 'dapparatus'
-import Ruler from './Ruler'
-import i18n from '../i18n'
 
 import NavCard from './NavCard'
 import Bottom from './Bottom'
 import Loader from './Loader'
 
-import Receive from './Receive'
-import Request from './Request'
-import SendToAddress from './SendToAddress'
-import Transactions from './Transactions'
-import Bridge from './Bridge'
-import Exchange from './Exchange'
-
-import Balance from './Balance'
-
-import { useNocustClient, useEraNumber } from '../contexts/Nocust'
-import { useTokens, isValidToken, lookupTokenAddress, registerTokens } from '../contexts/Tokens'
-
 import lqdImg from '../images/liquidity.png'
-import { useAllTokenBalances } from '../contexts/Balances'
-import MainButtons from './MainButtons'
-import { useWithdrawalFee } from '../contexts/Withdrawal'
-
-const { toWei, fromWei } = require('web3-utils')
-const qs = require('query-string')
+import SendPage from '../pages/SendPage'
+import ExchangePage from '../pages/ExchangePage'
+import BridgePage from '../pages/BridgePage'
+import MainPage from '../pages/MainPage'
+import RequestPage from '../pages/RequestPage'
+import ReceivePage from '../pages/ReceivePage'
 
 const LOADERIMAGE = lqdImg
 
-const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
-const TOKEN = process.env.REACT_APP_TOKEN
-
-console.log('TOKEN', TOKEN)
-
 export default (props) => {
-  const nocust = useNocustClient(props.address)
-  const tokens = useTokens()
-  const balances = useAllTokenBalances(props.address)
-  registerTokens(props.address)
-
-  const withdrawFee = useWithdrawalFee(props.gwei)
-
-  if (!nocust || !tokens) return null
-
-  const netId = 4
-
   const backButton = (
     <Link to={props.match.url}>
       <Bottom
@@ -64,21 +34,17 @@ export default (props) => {
 
   return (
     <Switch>
-      <Route path={`${props.match.url}/receive`}>
-        <div>
-          <div className='main-card card w-100' style={{ zIndex: 1 }}>
-
-            <NavCard title={i18n.t('receive_title')} />
-            <Receive
-              ensLookup={props.ensLookup}
-              buttonStyle={props.buttonStyle}
-              address={props.address}
-              changeAlert={props.changeAlert}
-            />
-          </div>
-          {backButton}
-        </div>
-      </Route>
+      <Route
+        path={`${props.match.url}/receive`}
+        render={() =>
+          <ReceivePage
+            ensLookup={props.ensLookup}
+            buttonStyle={props.buttonStyle}
+            address={props.address}
+            changeAlert={props.changeAlert}
+            backButton={backButton}
+          />}
+      />
 
       <Route
         path={`${props.match.url}/sending`}
@@ -114,47 +80,16 @@ export default (props) => {
       <Route
         path={`${props.match.url}/send`}
         render={({ history, location }) => {
-          const query = qs.parse(location.search)
-
-          // First look up token shortname.
-          // May have been given the token's address so perform lookup if that fails
-          // Finally default to main token.
-          const token = tokens[query.token] || lookupTokenAddress(query.token) || tokens[TOKEN]
-          const tokenBalance = typeof token !== 'undefined' ? balances[token.tokenAddress] : undefined
-          const tokenAmount = typeof query.amount === 'string' ? fromWei(query.amount, 'ether') : undefined
           return (
-            <div>
-              <div className='send-to-address card w-100' style={{ zIndex: 1 }}>
-
-                <NavCard title={i18n.t('send_to_address_title')} />
-                <Balance
-                  token={token}
-                  balance={tokenBalance}
-                  offchain
-                  selected
-                  address={props.address}
-                />
-                <Ruler />
-                <SendToAddress
-                  token={token}
-                  sendTransaction={(tx) => nocust.sendTransaction(tx)}
-                  convertToDollar={(dollar) => { return dollar }}
-                  toAddress={typeof location.state !== 'undefined' ? location.state.toAddress : undefined}
-                  amount={tokenAmount}
-                  ensLookup={props.ensLookup}
-                  buttonStyle={props.buttonStyle}
-                  offchainBalance={tokenBalance && tokenBalance.offchainBalance}
-                  address={props.address}
-                  changeAlert={props.changeAlert}
-                  onSend={async (txhash) => {
-                    history.push(`${props.match.url}/sending`)
-                    const tx = await nocust.getTransaction(await txhash)
-                    console.log(tx)
-                  }}
-                />
-              </div>
-              {backButton}
-            </div>
+            <SendPage
+              history={history}
+              location={location}
+              ensLookup={props.ensLookup}
+              buttonStyle={props.buttonStyle}
+              address={props.address}
+              changeAlert={props.changeAlert}
+              backButton={backButton}
+            />
           )
         }}
       />
@@ -163,170 +98,54 @@ export default (props) => {
         path={`${props.match.url}/bridge`}
         render={() => {
           return (
-            <div>
-              <div className='main-card card w-100' style={{ zIndex: 1 }}>
-                <NavCard title={i18n.t('bridge.title')} />
-                <div style={{ textAlign: 'center', width: '100%', fontSize: 16, marginTop: 10 }}>
-                  <Scaler config={{ startZoomAt: 400, origin: '50% 50%', adjustedZoom: 1 }}>
-                    Withdrawal Fee: {typeof withdrawFee !== 'undefined' ? fromWei(withdrawFee.toString(), 'ether').toString() : 0} ETH
-                  </Scaler>
-                </div>
-                <Ruler />
-                <Bridge
-                  address={props.address}
-                  token='ETH'
-                  buttonStyle={props.buttonStyle}
-                  gasPrice={toWei(props.gwei.toString(), 'gwei')}
-                  changeAlert={props.changeAlert}
-                  onSend={() => {}}
-                />
-                <Ruler />
-                <Bridge
-                  address={props.address}
-                  token={TOKEN}
-                  buttonStyle={props.buttonStyle}
-                  gasPrice={toWei(props.gwei.toString(), 'gwei')}
-                  changeAlert={props.changeAlert}
-                  onSend={() => {}}
-                />
-              </div>
-              {backButton}
-            </div>
+            <BridgePage
+              address={props.address}
+              gwei={props.gwei}
+              buttonStyle={props.buttonStyle}
+              changeAlert={props.changeAlert}
+              backButton={backButton}
+            />
           )
         }}
       />
 
       <Route
         path={`${props.match.url}/exchange/:assetA/:assetB`}
-        render={({ history, match }) => {
-          // check if tokens are valid
-          const assetA = match.params.assetA
-          const assetB = match.params.assetB
-
-          // redirect to main page if invalid
-          if (!isValidToken(tokens, assetA) || !isValidToken(tokens, assetB)) {
-            return (
-              <Redirect to={props.match.url} />
-            )
-          }
-
-          console.log('valid exchange pair', assetA, '-', assetB)
-          return (
-            <div>
-              <div className='main-card card w-100' style={{ zIndex: 1 }}>
-                <NavCard title={i18n.t('exchange_title')} />
-                <Exchange
-                  assetA={assetA}
-                  assetB={assetB}
-                  address={props.address}
-                  buttonStyle={props.buttonStyle}
-                  nocust={nocust}
-                />
-              </div>
-              {backButton}
-            </div>
-          )
-        }}
+        render={({ history, match }) =>
+          <ExchangePage
+            history={history}
+            match={match}
+            address={props.address}
+            backButton={backButton}
+            buttonStyle={props.buttonStyle}
+          />}
       />
 
       <Route
         path={`${props.match.url}/request/:token`}
-        render={({ history, match }) => {
-          const token = match.params.token
-
-          return (
-            <div>
-              <div className='main-card card w-100' style={{ zIndex: 1 }}>
-                <NavCard title={i18n.t('request_funds')} />
-                <Balance
-                  token={tokens[token]}
-                  balance={balances[token]}
-                  offchain
-                  selected
-                  address={props.address}
-                />
-                <Ruler />
-                <Request
-                  mainStyle={props.mainStyle}
-                  buttonStyle={props.buttonStyle}
-                  token={tokens[token]}
-                  address={props.address}
-                  hubAddress={HUB_CONTRACT_ADDRESS}
-                  networkId={netId}
-                  changeAlert={props.changeAlert}
-                />
-              </div>
-              {backButton}
-            </div>
-          )
-        }}
+        render={({ history, match }) =>
+          <RequestPage
+            address={props.address}
+            history={history}
+            match={match}
+            mainStyle={props.mainStyle}
+            buttonStyle={props.buttonStyle}
+            changeAlert={props.changeAlert}
+            backButton={backButton}
+          />}
       />
 
-      <Route path={`${props.match.url}`}>
-        <div>
-          <div className='send-to-address card w-100' style={{ zIndex: 1 }}>
-            <div className='form-group w-100'>
-
-              <div style={{ width: '100%', textAlign: 'center' }}>
-                <Link to={{ pathname: `${props.match.url}/send`, search: '?token=' + TOKEN }}>
-                  <Balance
-                    token={tokens[TOKEN]}
-                    balance={balances[tokens[TOKEN].tokenAddress]}
-                    offchain
-                    selected
-                    address={props.address}
-                  />
-                </Link>
-                <Ruler />
-                <Balance
-                  token={tokens[TOKEN]}
-                  balance={balances[tokens[TOKEN].tokenAddress]}
-                  address={props.address}
-                />
-                <Ruler />
-                <Link to={{ pathname: `${props.match.url}/send`, search: '?token=ETH' }}>
-                  <Balance
-                    token={tokens.ETH}
-                    balance={balances[tokens.ETH.tokenAddress]}
-                    offchain
-                    selected
-                    address={props.address}
-                  />
-                </Link>
-                <Ruler />
-                <Balance
-                  token={tokens.ETH}
-                  balance={balances[tokens.ETH.tokenAddress]}
-                  address={props.address}
-                />
-                <Ruler />
-
-                <MainButtons
-                  buttonStyle={props.buttonStyle}
-                  url={props.match.url}
-                  nocust={nocust}
-                  tokenAddress={tokens[TOKEN].tokenAddress}
-                  gwei={props.gwei}
-                  token={TOKEN}
-                />
-
-              </div>
-              <Transactions
-                changeAlert={props.changeAlert}
-                address={props.address}
-                token={tokens[TOKEN]}
-              />
-            </div>
-          </div>
-          <Link to='/advanced'>
-            <Bottom
-              icon='wrench'
-              text={i18n.t('advance_title')}
-              action={() => {}}
-            />
-          </Link>
-        </div>
-      </Route>
+      <Route
+        path={`${props.match.url}`}
+        render={({ match }) =>
+          <MainPage
+            match={match}
+            address={props.address}
+            gwei={props.gwei}
+            changeAlert={props.changeAlert}
+            buttonStyle={props.buttonStyle}
+          />}
+      />
     </Switch>
   )
 }
