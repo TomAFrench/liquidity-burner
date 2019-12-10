@@ -5,6 +5,7 @@ import { Scaler } from 'dapparatus'
 import i18next from 'i18next'
 
 import { useBlocksToWithdrawal } from '../contexts/Withdrawal'
+import { useNocustClient } from '../contexts/Nocust'
 
 const { toWei } = require('web3-utils')
 
@@ -16,6 +17,7 @@ async function confirmWithdrawal (nocust, address, gwei, tokenAddress) {
 }
 
 export default (props) => {
+  const nocust = useNocustClient()
   const blocksToWithdrawal = useBlocksToWithdrawal(props.address, props.tokenAddress)
 
   const withdrawalInProgess = (typeof blocksToWithdrawal !== 'undefined' && blocksToWithdrawal !== -1)
@@ -24,7 +26,7 @@ export default (props) => {
   if (withdrawalInProgess) {
     withdrawalButton = (
       <div className='content ops row'>
-        <div className='col-12 p-1' onClick={() => { if (blocksToWithdrawal === 0) confirmWithdrawal(props.nocust, props.tokenAddress, props.gwei, props.tokenAddress) }}>
+        <div className='col-12 p-1' onClick={() => { if (blocksToWithdrawal === 0) confirmWithdrawal(nocust, props.tokenAddress, props.gwei, props.tokenAddress) }}>
           <button className={`btn btn-large w-100 ${blocksToWithdrawal === 0 ? '' : 'disabled'}`} style={props.buttonStyle.primary}>
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
               <i className={`fas ${blocksToWithdrawal === 0 ? 'fa-check' : 'fa-clock'}`} /> {blocksToWithdrawal === 0 ? i18next.t('liquidity.withdraw.confirm') : blocksToWithdrawal + ' blocks until confirmation'}

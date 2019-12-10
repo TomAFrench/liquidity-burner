@@ -52,7 +52,7 @@ export default function Provider ({ web3, children }) {
 }
 
 export function useNocustHubInfo () {
-  const [state, { update }] = useNocustContext()
+  const [state] = useNocustContext()
   const { hub } = state
 
   return hub
@@ -72,20 +72,7 @@ export function useNocustClient (address) {
         contractAddress: HUB_CONTRACT_ADDRESS
       })
 
-      // if (tokens) {
-      //   Promise.all(Object.values(tokens).map(async (token) => {
-      //     if (token.tokenAddress) {
-      //       const registered = await nocustManager.isAddressRegistered(address, token.tokenAddress)
-      //       if (!registered) {
-      //         console.log('Registering with hub')
-      //         return registerToken(nocustManager, address, token.tokenAddress)
-      //       }
-      //       return true
-      //     }
-      //     return undefined
-      //   }
-      //   ))
-      // }
+      console.log('new nocust-client')
 
       if (!stale) {
         try {
@@ -99,7 +86,7 @@ export function useNocustClient (address) {
         stale = true
       }
     }
-  }, [web3, update])
+  }, [web3, address, update])
 
   return nocust
 }
@@ -112,13 +99,15 @@ export function useEraNumber () {
     if (web3 && nocust) {
       let stale = false
       nocust.getEraNumber()
-        .then(eraNumber => {
-          if (!stale) {
-            update(web3, nocust, eraNumber)
+        .then(neweraNumber => {
+          if (!stale && (eraNumber === undefined || eraNumber + 4 < neweraNumber)) {
+            console.log('Era:', neweraNumber)
+            update(web3, nocust, neweraNumber)
           }
         })
         .catch(() => {
           if (!stale) {
+            console.log('setting eraNumber to null')
             update(web3, nocust, null)
           }
         })

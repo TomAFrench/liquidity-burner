@@ -124,3 +124,10 @@ export function lookupTokenAddress (tokens, tokenAddress) {
     return tokenAddress === token.tokenAddress
   })
 }
+
+export function lookupTokenName (tokenName) {
+  const tokens = useTokens()
+  return Object.values(tokens).find((token) => {
+    return tokenName === token.shortName
+  })
+}
