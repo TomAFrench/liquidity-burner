@@ -1,11 +1,13 @@
 import React from 'react'
 import { useHistory, useLocation, Link } from 'react-router-dom'
 import { Blockie } from 'dapparatus'
+import { useMainStyle } from '../contexts/Theme'
 // import burnerloader from '../burnerloader.gif';
 
-export default ({ network, total, ens, title, titleImage, mainStyle, balance, address }) => {
+export default ({ network, total, ens, title, balance, address }) => {
   const history = useHistory()
   const location = useLocation()
+  const mainStyle = useMainStyle()
 
   let name = ens
   if (!name) {

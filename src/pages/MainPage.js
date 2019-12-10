@@ -65,7 +65,6 @@ export default (props) => {
             <Ruler />
 
             <MainButtons
-              buttonStyle={props.buttonStyle}
               url={props.match.url}
               tokenAddress={token.tokenAddress}
               gwei={props.gwei}

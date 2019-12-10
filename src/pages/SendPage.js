@@ -12,9 +12,11 @@ import { lookupTokenAddress, useTokens } from '../contexts/Tokens'
 
 import { isAddress, fromWei } from 'web3-utils'
 import { useNocustClient } from '../contexts/Nocust'
+import { useButtonStyle } from '../contexts/Theme'
 const qs = require('query-string')
 
 export default (props) => {
+  const buttonStyle = useButtonStyle()
   const nocust = useNocustClient()
   const tokens = useTokens()
 
@@ -53,7 +55,7 @@ export default (props) => {
           toAddress={toAddress}
           amount={tokenAmount}
           ensLookup={props.ensLookup}
-          buttonStyle={props.buttonStyle}
+          buttonStyle={buttonStyle}
           offchainBalance={tokenBalance}
           address={props.address}
           changeAlert={props.changeAlert}

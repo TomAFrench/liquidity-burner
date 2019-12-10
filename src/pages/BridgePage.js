@@ -13,7 +13,7 @@ const { toWei, fromWei } = require('web3-utils')
 
 const TOKEN = process.env.REACT_APP_TOKEN
 
-export default ({ address, gwei, buttonStyle, changeAlert, backButton }) => {
+export default ({ address, gwei, changeAlert, backButton }) => {
   const withdrawFee = useWithdrawalFee(gwei)
 
   return (
@@ -29,7 +29,6 @@ export default ({ address, gwei, buttonStyle, changeAlert, backButton }) => {
         <Bridge
           address={address}
           token='ETH'
-          buttonStyle={buttonStyle}
           gasPrice={toWei(gwei.toString(), 'gwei')}
           changeAlert={changeAlert}
           onSend={() => {}}
@@ -38,7 +37,6 @@ export default ({ address, gwei, buttonStyle, changeAlert, backButton }) => {
         <Bridge
           address={address}
           token={TOKEN}
-          buttonStyle={buttonStyle}
           gasPrice={toWei(gwei.toString(), 'gwei')}
           changeAlert={changeAlert}
           onSend={() => {}}

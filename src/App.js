@@ -16,7 +16,7 @@ import i18n from './i18n'
 import './App.scss'
 import Header from './components/Header'
 import NavCard from './components/NavCard'
-import Advanced from './components/Advanced'
+import Advanced from './pages/AdvancedPage'
 import Footer from './components/Footer'
 import Loader from './components/Loader'
 import burnerlogo from './images/liquidity.png'
@@ -29,6 +29,7 @@ import core from './core'
 import LiquidityNetwork from './components/LiquidityNetwork'
 import SendByScan from './components/SendByScan'
 
+import { ThemeContext } from './contexts/Theme'
 import NocustContext from './contexts/Nocust'
 import TokensContext from './contexts/Tokens'
 import BalanceContext from './contexts/Balances'
@@ -41,73 +42,23 @@ const MAINNET_CHAIN_ID = '1'
 const WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
 const LOADERIMAGE = burnerlogo
 
-const mainStyle = {
-  width: '100%',
-  height: '100%',
-  backgroundImage: 'linear-gradient(#292929, #191919)',
-  backgroundColor: '#191919',
-  hotColor: '#F69E4D',
-  mainColorAlt: '#6a528e',
-  mainColor: '#183b6c'
-}
-
-const title = i18n.t('app_name')
-const titleImage = (
-  <span style={{ paddingRight: 20, paddingLeft: 16 }}><i className='fas fa-fire' /></span>
-)
-
 const innerStyle = {
   maxWidth: 740,
   margin: '0 auto',
   textAlign: 'left'
 }
 
-const buttonStyle = {
-  primary: {
-    backgroundImage: 'linear-gradient(' + mainStyle.mainColorAlt + ',' + mainStyle.mainColor + ')',
-    backgroundColor: mainStyle.mainColor,
-    color: '#FFFFFF',
-    whiteSpace: 'nowrap',
-    cursor: 'pointer'
-  },
-  secondary: {
-    border: '2px solid ' + mainStyle.mainColor,
-    color: mainStyle.mainColor,
-    whiteSpace: 'nowrap',
-    cursor: 'pointer'
-  }
-}
-
-const backgroundStyle = {
-  WEB3: {
-    image: 'linear-gradient(#234063, #305582)',
-    color: '#305582'
-  },
-  METAMASK: {
-    image: 'linear-gradient(#553319, #ca6e28)',
-    color: '#ca6e28'
-  },
-  INCOGNITO: {
-    image: 'linear-gradient(#862727, #671c1c)',
-    color: '#671c1c'
-  }
-}
-
 let intervalLong
 
 class App extends Component {
+  static contextType = ThemeContext
   constructor (props) {
-    console.log('[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[' + title + ']]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]')
-
     super(props)
     this.state = {
       web3: false,
       account: false,
       gwei: 1.1,
       alert: null,
-      loadingTitle: 'loading...',
-      title: title,
-      extraHeadroom: 0,
       ethprice: 0.00,
       hasUpdateOnce: false
     }
@@ -125,17 +76,18 @@ class App extends Component {
 
   detectContext () {
     console.log('DETECTING CONTEXT....')
+    const [{ update }] = this.context
     // snagged from https://stackoverflow.com/questions/52759238/private-incognito-mode-detection-for-ios-12-safari
     incogDetect(async (result) => {
       if (result) {
         console.log('INCOG')
-        this.setState({ context: 'INCOGNITO' })
+        update('INCOGNITO')
       } else if (typeof web3 !== 'undefined') {
         try {
           if (window.web3 && window.web3.currentProvider && window.web3.currentProvider.isMetaMask === true && window.web3.eth && typeof window.web3.eth.getAccounts === 'function' && isArrayAndHasEntries(await window.web3.eth.getAccounts())) {
-            this.setState({ context: 'METAMASK' })
+            update('METAMASK')
           } else if (this.state.account && !this.state.metaAccount) {
-            this.setState({ context: 'WEB3' })
+            update('WEB3')
           }
         } catch (e) {
           console.log('CONTEXT ERROR', e)
@@ -145,13 +97,8 @@ class App extends Component {
   }
 
   componentDidMount () {
-    document.body.style.backgroundColor = mainStyle.backgroundColor
-
-    // Wyre.configure();
-
     this.detectContext()
 
-    console.log("document.getElementsByClassName('className').style", document.getElementsByClassName('.btn').style)
     window.addEventListener('resize', this.updateDimensions.bind(this))
 
     intervalLong = setInterval(this.longPoll.bind(this), 45000)
@@ -254,11 +201,13 @@ class App extends Component {
   };
 
   render () {
+    const [state] = this.context
+    const { backgroundStyle, currentBackground } = state
     const { web3, account, metaAccount, burnMetaAccount, alert, context } = this.state
 
-    if (document.getElementById('main') && context) {
-      document.getElementById('main').style.backgroundImage = backgroundStyle[context].image
-      document.body.style.backgroundColor = backgroundStyle[context].color
+    if (document.getElementById('main')) {
+      document.getElementById('main').style.backgroundImage = backgroundStyle[currentBackground].image
+      document.body.style.backgroundColor = backgroundStyle[currentBackground].color
     }
 
     let web3Setup = ''
@@ -282,13 +231,6 @@ class App extends Component {
       )
     }
 
-    let extraHead = ''
-    if (this.state.extraHeadroom) {
-      extraHead = (
-        <div style={{ marginTop: this.state.extraHeadroom }} />
-      )
-    }
-
     let header = (
       <div style={{ height: 50 }} />
     )
@@ -300,8 +242,6 @@ class App extends Component {
             network={this.state.network}
             ens={this.state.ens}
             title={this.state.title}
-            titleImage={titleImage}
-            mainStyle={mainStyle}
             address={this.state.account}
           />
         </div>
@@ -311,9 +251,8 @@ class App extends Component {
     return (
       <Router>
         <I18nextProvider i18n={i18n}>
-          <div id='main' style={mainStyle}>
+          <div id='main' style={this.context.mainStyle}>
             <div style={innerStyle}>
-              {extraHead}
               {web3Setup}
               <div>
                 {header}
@@ -333,7 +272,6 @@ class App extends Component {
                                       <div className='main-card card w-100' style={{ zIndex: 1 }}>
                                         <NavCard title={i18n.t('advance_title')} />
                                         <Advanced
-                                          buttonStyle={buttonStyle}
                                           address={account}
                                           history={history}
                                           privateKey={metaAccount.privateKey}
@@ -354,7 +292,6 @@ class App extends Component {
                                   path='/scanner'
                                   render={({ history, location }) => (
                                     <SendByScan
-                                      mainStyle={mainStyle}
                                       onError={(error) => {
                                         this.changeAlert('danger', error)
                                       }}
@@ -372,7 +309,6 @@ class App extends Component {
 
                                         <NavCard title='Burn Private Key' goBack={history.goBack} />
                                         <BurnWallet
-                                          mainStyle={mainStyle}
                                           address={account}
                                           goBack={history.goBack}
                                           burnWallet={() => {
@@ -402,7 +338,6 @@ class App extends Component {
                                         address={toChecksumAddress(account)}
 
                                         network={this.state.network}
-                                        block={this.state.block}
 
                                         ensLookup={this.ensLookup.bind(this)}
 
@@ -411,8 +346,6 @@ class App extends Component {
                                         setGwei={this.setGwei}
                                         gwei={this.state.gwei}
 
-                                        mainStyle={mainStyle}
-                                        buttonStyle={buttonStyle}
                                         changeAlert={this.changeAlert}
                                       />
                                     )
@@ -428,7 +361,7 @@ class App extends Component {
 
                 {!web3 &&
                   <div>
-                    <Loader loaderImage={LOADERIMAGE} mainStyle={mainStyle} />
+                    <Loader loaderImage={LOADERIMAGE} />
                   </div>}
 
                 {alert && <Footer alert={alert} changeAlert={this.changeAlert} />}
@@ -475,7 +408,7 @@ class App extends Component {
               />
 
               <div id='context' style={{ position: 'absolute', right: 5, top: -15, opacity: 0.2, zIndex: 100, fontSize: 60, color: '#FFFFFF' }}>
-                {this.state.context}
+                {currentBackground !== 'DEFAULT' && currentBackground}
               </div>
 
             </div>

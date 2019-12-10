@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect } from 'react'
 
-import { useNocustClient } from './Nocust'
+import { useNocustClient, useEraNumber } from './Nocust'
 
 import ethImg from '../images/ethereum.png'
 import daiImg from '../images/dai.jpg'
@@ -63,6 +63,7 @@ function buildTokenDict (tokenList) {
 
 export function useTokens () {
   const nocust = useNocustClient()
+  const eraNumber = useEraNumber()
   const [state, { update }] = useTokensContext()
   const { tokens } = state
 
@@ -87,7 +88,7 @@ export function useTokens () {
         stale = true
       }
     }
-  }, [nocust])
+  }, [eraNumber])
 
   return tokens
 }
