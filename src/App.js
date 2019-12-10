@@ -59,8 +59,7 @@ class App extends Component {
       account: false,
       gwei: 1.1,
       alert: null,
-      ethprice: 0.00,
-      hasUpdateOnce: false
+      ethprice: 0.00
     }
     this.alertTimeout = null
   }
@@ -203,7 +202,7 @@ class App extends Component {
   render () {
     const [state] = this.context
     const { backgroundStyle, currentBackground } = state
-    const { web3, account, metaAccount, burnMetaAccount, alert, context } = this.state
+    const { web3, account, metaAccount, burnMetaAccount, alert } = this.state
 
     if (document.getElementById('main')) {
       document.getElementById('main').style.backgroundImage = backgroundStyle[currentBackground].image
