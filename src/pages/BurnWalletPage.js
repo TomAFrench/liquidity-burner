@@ -1,5 +1,5 @@
 import React from 'react'
-import Ruler from './Ruler'
+import Ruler from '../components/Ruler'
 import i18n from '../i18n'
 import { useMainStyle } from '../contexts/Theme'
 
