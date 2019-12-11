@@ -67,95 +67,102 @@ const ContextProviders = ({ web3, children }) => {
 
 const Interface = (props) => {
   return (
-    <ContextProviders web3={props.web3}>
-      <Switch>
-        <Route
-          path='/advanced'
-          render={({ history }) => (
-            <div>
-              <div className='main-card card w-100' style={{ zIndex: 1 }}>
-                <NavCard title={i18n.t('advance_title')} />
-                <Advanced
-                  address={props.address}
-                  history={history}
-                  privateKey={props.privateKey}
-                  changeAlert={props.changeAlert}
-                  setPossibleNewPrivateKey={props.setPossibleNewPrivateKey}
-                />
+    <>
+      <div>
+        <Header
+          network={props.network}
+          ens={props.ens}
+          address={props.address}
+        />
+      </div>
+      <ContextProviders web3={props.web3}>
+        <Switch>
+          <Route
+            path='/advanced'
+            render={({ history }) => (
+              <div>
+                <div className='main-card card w-100' style={{ zIndex: 1 }}>
+                  <NavCard title={i18n.t('advance_title')} />
+                  <Advanced
+                    address={props.address}
+                    history={history}
+                    privateKey={props.privateKey}
+                    changeAlert={props.changeAlert}
+                    setPossibleNewPrivateKey={props.setPossibleNewPrivateKey}
+                  />
+                </div>
+                <Link to='/'>
+                  <Bottom
+                    action={() => {}}
+                  />
+                </Link>
               </div>
-              <Link to='/'>
+            )}
+          />
+
+          <Route
+            path='/scanner'
+            render={({ history, location }) => (
+              <SendByScan
+                onError={(error) => {
+                  this.changeAlert('danger', error)
+                }}
+                search={location.search}
+                goBack={history.goBack}
+              />
+            )}
+          />
+
+          <Route
+            path='/burn'
+            render={({ history }) => (
+              <div>
+                <div className='main-card card w-100' style={{ zIndex: 1 }}>
+
+                  <NavCard title='Burn Private Key' goBack={history.goBack} />
+                  <BurnWallet
+                    address={props.address}
+                    goBack={history.goBack}
+                    burnWallet={() => {
+                      props.burnMetaAccount()
+                      history.push('/')
+                    }}
+                  />
+                </div>
                 <Bottom
-                  action={() => {}}
-                />
-              </Link>
-            </div>
-          )}
-        />
-
-        <Route
-          path='/scanner'
-          render={({ history, location }) => (
-            <SendByScan
-              onError={(error) => {
-                this.changeAlert('danger', error)
-              }}
-              search={location.search}
-              goBack={history.goBack}
-            />
-          )}
-        />
-
-        <Route
-          path='/burn'
-          render={({ history }) => (
-            <div>
-              <div className='main-card card w-100' style={{ zIndex: 1 }}>
-
-                <NavCard title='Burn Private Key' goBack={history.goBack} />
-                <BurnWallet
-                  address={props.address}
-                  goBack={history.goBack}
-                  burnWallet={() => {
-                    props.burnMetaAccount()
-                    history.push('/')
-                  }}
+                  text={i18n.t('cancel')}
+                  action={history.goBack}
                 />
               </div>
-              <Bottom
-                text={i18n.t('cancel')}
-                action={history.goBack}
-              />
-            </div>
-          )}
-        />
+            )}
+          />
 
-        <Redirect exact from='/' to='/liquidity' />
-        <Route
-          path='/liquidity'
-          render={({ match }) => {
-            return (
-              <LiquidityNetwork
-                match={match}
-                web3={props.web3}
-                privateKey={props.privateKey}
+          <Redirect exact from='/' to='/liquidity' />
+          <Route
+            path='/liquidity'
+            render={({ match }) => {
+              return (
+                <LiquidityNetwork
+                  match={match}
+                  web3={props.web3}
+                  privateKey={props.privateKey}
 
-                address={toChecksumAddress(props.address)}
+                  address={toChecksumAddress(props.address)}
 
-                network={props.network}
+                  network={props.network}
 
-                ensLookup={ensLookup}
+                  ensLookup={ensLookup}
 
-                ethprice={props.ethprice}
+                  gwei={props.gwei}
 
-                gwei={props.gwei}
-
-                changeAlert={props.changeAlert}
-              />
-            )
-          }}
-        />
-      </Switch>
-    </ContextProviders>
+                  changeAlert={props.changeAlert}
+                />
+              )
+            }}
+          />
+        </Switch>
+      </ContextProviders>
+    </>
   )
 }
 
@@ -303,31 +310,13 @@ class App extends Component {
       document.body.style.backgroundColor = backgroundStyle[currentBackground].color
     }
 
-    let header = (
-      <div style={{ height: 50 }} />
-    )
-
-    if (web3) {
-      header = (
-        <div>
-          <Header
-            network={this.state.network}
-            ens={this.state.ens}
-            address={this.state.account}
-          />
-        </div>
-      )
-    }
-
     return (
       <Router>
         <I18nextProvider i18n={i18n}>
           <div id='main' style={this.context.mainStyle}>
             <div style={innerStyle}>
               <div>
-                {header}
-
-                {web3 &&
+                {web3 ? (
                   <Interface
                     web3={web3}
                     address={account}
@@ -338,12 +327,13 @@ class App extends Component {
                     ethprice={this.state.ethprice}
                     gwei={this.state.gwei}
                     changeAlert={this.changeAlert.bind(this)}
-                  />}
-
-                {!web3 &&
-                  <div>
-                    <Loader loaderImage={LOADERIMAGE} />
-                  </div>}
+                  />
+                )
+                  : (
+                    <div>
+                      <Loader loaderImage={LOADERIMAGE} />
+                    </div>
+                  )}
 
                 {alert && <Footer alert={alert} changeAlert={this.changeAlert} />}
               </div>
