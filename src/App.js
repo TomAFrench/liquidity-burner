@@ -314,7 +314,6 @@ class App extends Component {
           <Header
             network={this.state.network}
             ens={this.state.ens}
-            title={this.state.title}
             address={this.state.account}
           />
         </div>

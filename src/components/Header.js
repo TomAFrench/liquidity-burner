@@ -4,7 +4,7 @@ import { Blockie } from 'dapparatus'
 import { useMainStyle } from '../contexts/Theme'
 // import burnerloader from '../burnerloader.gif';
 
-export default ({ network, total, ens, title, balance, address }) => {
+export default ({ network, total, ens, balance, address }) => {
   const history = useHistory()
   const location = useLocation()
   const mainStyle = useMainStyle()
