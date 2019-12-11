@@ -22,7 +22,7 @@ export default ({ address, gwei, changeAlert, backButton }) => {
         <NavCard title={i18n.t('bridge.title')} />
         <div style={{ textAlign: 'center', width: '100%', fontSize: 16, marginTop: 10 }}>
           <Scaler config={{ startZoomAt: 400, origin: '50% 50%', adjustedZoom: 1 }}>
-      Withdrawal Fee: {typeof withdrawFee !== 'undefined' ? fromWei(withdrawFee.toString(), 'ether').toString() : 0} ETH
+            Withdrawal Fee: {typeof withdrawFee !== 'undefined' ? fromWei(withdrawFee.toString(), 'ether').toString() : 0} ETH
           </Scaler>
         </div>
         <Ruler />
