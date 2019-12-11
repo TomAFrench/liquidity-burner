@@ -101,7 +101,7 @@ export function useEraNumber () {
       console.log('Checking Era')
       nocust.getEraNumber()
         .then(neweraNumber => {
-          if (!stale && (eraNumber === undefined || eraNumber + 4 < neweraNumber)) {
+          if (!stale && (eraNumber === undefined || eraNumber < neweraNumber)) {
             console.log('Era:', neweraNumber)
             update(web3, nocust, neweraNumber)
           }
