@@ -210,8 +210,6 @@ class App extends Component {
 
     intervalLong = setInterval(this.longPoll.bind(this), 45000)
     setTimeout(this.longPoll.bind(this), 150)
-
-    this.connectToENS()
   }
 
   componentWillUnmount () {
@@ -271,21 +269,16 @@ class App extends Component {
     }
   };
 
-  connectToENS () {
-    const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth
-    const ensContract = new Contract(require('./contracts/ENS.abi.js'), require('./contracts/ENS.address.js'))
-    this.setState({ ensContract })
-  }
-
   async ensLookup (name) {
     const hash = namehash.hash(name)
     console.log('namehash', name, hash)
 
-    const resolver = await this.state.ensContract.methods.resolver(hash).call()
+    const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth
+    const ensContract = new Contract(require('./contracts/ENS.abi.js'), require('./contracts/ENS.address.js'))
+    const resolver = await ensContract.methods.resolver(hash).call()
     if (resolver === '0x0000000000000000000000000000000000000000') return '0x0000000000000000000000000000000000000000'
     console.log('resolver address', resolver)
 
-    const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth
     const ensResolver = new Contract(require('./contracts/ENSResolver.abi.js'), resolver)
     console.log('ensResolver:', ensResolver)
 
