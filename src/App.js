@@ -50,107 +50,115 @@ const innerStyle = {
 
 let intervalLong
 
-const Interface = (props) => {
+const ContextProviders = ({ web3, children }) => {
   return (
-    <NocustContext web3={props.web3}>
+    <NocustContext web3={web3}>
       <TokensContext>
         <BalanceContext>
           <WithdrawalContext>
             <TransactionContext>
               <OrderbookContext>
-                <Switch>
-                  <Route
-                    path='/advanced'
-                    render={({ history }) => (
-                      <div>
-                        <div className='main-card card w-100' style={{ zIndex: 1 }}>
-                          <NavCard title={i18n.t('advance_title')} />
-                          <Advanced
-                            address={props}
-                            history={history}
-                            privateKey={props.privateKey}
-                            changeAlert={props.changeAlert}
-                            setPossibleNewPrivateKey={props.setPossibleNewPrivateKey}
-                          />
-                        </div>
-                        <Link to='/'>
-                          <Bottom
-                            action={() => {}}
-                          />
-                        </Link>
-                      </div>
-                    )}
-                  />
-
-                  <Route
-                    path='/scanner'
-                    render={({ history, location }) => (
-                      <SendByScan
-                        onError={(error) => {
-                          this.changeAlert('danger', error)
-                        }}
-                        search={location.search}
-                        goBack={history.goBack}
-                      />
-                    )}
-                  />
-
-                  <Route
-                    path='/burn'
-                    render={({ history }) => (
-                      <div>
-                        <div className='main-card card w-100' style={{ zIndex: 1 }}>
-
-                          <NavCard title='Burn Private Key' goBack={history.goBack} />
-                          <BurnWallet
-                            address={props.address}
-                            goBack={history.goBack}
-                            burnWallet={() => {
-                              props.burnMetaAccount()
-                              history.push('/')
-                            }}
-                          />
-                        </div>
-                        <Bottom
-                          text={i18n.t('cancel')}
-                          action={history.goBack}
-                        />
-                      </div>
-                    )}
-                  />
-
-                  <Redirect exact from='/' to='/liquidity' />
-                  <Route
-                    path='/liquidity'
-                    render={({ match }) => {
-                      return (
-                        <LiquidityNetwork
-                          match={match}
-                          web3={props.web3}
-                          privateKey={props.privateKey}
-
-                          address={toChecksumAddress(props.address)}
-
-                          network={props.network}
-
-                          ensLookup={props.ensLookup}
-
-                          ethprice={props.ethprice}
-
-                          gwei={props.gwei}
-
-                          changeAlert={props.changeAlert}
-                        />
-                      )
-                    }}
-                  />
-                </Switch>
+                {children}
               </OrderbookContext>
             </TransactionContext>
           </WithdrawalContext>
         </BalanceContext>
       </TokensContext>
     </NocustContext>
+  )
+}
+
+const Interface = (props) => {
+  return (
+    <ContextProviders web={props.web3}>
+      <Switch>
+        <Route
+          path='/advanced'
+          render={({ history }) => (
+            <div>
+              <div className='main-card card w-100' style={{ zIndex: 1 }}>
+                <NavCard title={i18n.t('advance_title')} />
+                <Advanced
+                  address={props}
+                  history={history}
+                  privateKey={props.privateKey}
+                  changeAlert={props.changeAlert}
+                  setPossibleNewPrivateKey={props.setPossibleNewPrivateKey}
+                />
+              </div>
+              <Link to='/'>
+                <Bottom
+                  action={() => {}}
+                />
+              </Link>
+            </div>
+          )}
+        />
+
+        <Route
+          path='/scanner'
+          render={({ history, location }) => (
+            <SendByScan
+              onError={(error) => {
+                this.changeAlert('danger', error)
+              }}
+              search={location.search}
+              goBack={history.goBack}
+            />
+          )}
+        />
+
+        <Route
+          path='/burn'
+          render={({ history }) => (
+            <div>
+              <div className='main-card card w-100' style={{ zIndex: 1 }}>
+
+                <NavCard title='Burn Private Key' goBack={history.goBack} />
+                <BurnWallet
+                  address={props.address}
+                  goBack={history.goBack}
+                  burnWallet={() => {
+                    props.burnMetaAccount()
+                    history.push('/')
+                  }}
+                />
+              </div>
+              <Bottom
+                text={i18n.t('cancel')}
+                action={history.goBack}
+              />
+            </div>
+          )}
+        />
+
+        <Redirect exact from='/' to='/liquidity' />
+        <Route
+          path='/liquidity'
+          render={({ match }) => {
+            return (
+              <LiquidityNetwork
+                match={match}
+                web3={props.web3}
+                privateKey={props.privateKey}
+
+                address={toChecksumAddress(props.address)}
+
+                network={props.network}
+
+                ensLookup={props.ensLookup}
+
+                ethprice={props.ethprice}
+
+                gwei={props.gwei}
+
+                changeAlert={props.changeAlert}
+              />
+            )
+          }}
+        />
+      </Switch>
+    </ContextProviders>
   )
 }
 
