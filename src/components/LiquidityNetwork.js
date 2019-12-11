@@ -14,12 +14,15 @@ import Bottom from './Bottom'
 import Loader from './Loader'
 
 import lqdImg from '../images/liquidity.png'
-import SendPage from '../pages/SendPage'
-import ExchangePage from '../pages/ExchangePage'
-import BridgePage from '../pages/BridgePage'
-import MainPage from '../pages/MainPage'
-import RequestPage from '../pages/RequestPage'
-import ReceivePage from '../pages/ReceivePage'
+
+import {
+  SendPage,
+  ExchangePage,
+  BridgePage,
+  MainPage,
+  RequestPage,
+  ReceivePage
+} from '../pages'
 
 const LOADERIMAGE = lqdImg
 
