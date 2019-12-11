@@ -15,11 +15,10 @@ import i18n from './i18n'
 import './App.scss'
 import Header from './components/Header'
 import NavCard from './components/NavCard'
-import Advanced from './pages/AdvancedPage'
+import { AdvancedPage, BurnWalletPage } from './pages'
 import Footer from './components/Footer'
 import Loader from './components/Loader'
 import burnerlogo from './images/liquidity.png'
-import BurnWallet from './pages/BurnWalletPage'
 import Bottom from './components/Bottom'
 import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
@@ -79,7 +78,7 @@ const Interface = (props) => {
               <div>
                 <div className='main-card card w-100' style={{ zIndex: 1 }}>
                   <NavCard title={i18n.t('advance_title')} />
-                  <Advanced
+                  <AdvancedPage
                     address={props.address}
                     history={history}
                     privateKey={props.privateKey}
@@ -116,7 +115,7 @@ const Interface = (props) => {
                 <div className='main-card card w-100' style={{ zIndex: 1 }}>
 
                   <NavCard title='Burn Private Key' goBack={history.goBack} />
-                  <BurnWallet
+                  <BurnWalletPage
                     address={props.address}
                     goBack={history.goBack}
                     burnWallet={() => {
