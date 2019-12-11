@@ -60,7 +60,7 @@ class KeyManager extends React.Component {
             POLLINTERVAL: 5000 // responsible for slow load times
           }}
           // used to pass a private key into Dapparatus
-          // newPrivateKey={this.props.newPrivateKey}
+          newPrivateKey={this.props.newPrivateKey}
           fallbackWeb3Provider={WEB3_PROVIDER}
           onUpdate={async (state) => {
             console.log('Dapparatus update', state)
