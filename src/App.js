@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   BrowserRouter as Router,
   Switch,
@@ -6,10 +6,9 @@ import {
   Link,
   Redirect
 } from 'react-router-dom'
-import { Dapparatus, Gas } from 'dapparatus'
+import { Gas } from 'dapparatus'
 import Web3 from 'web3'
 import { toChecksumAddress } from 'web3-utils'
-import axios from 'axios'
 import { I18nextProvider } from 'react-i18next'
 
 import i18n from './i18n'
@@ -28,7 +27,7 @@ import incogDetect from './services/incogDetect.js'
 import LiquidityNetwork from './components/LiquidityNetwork'
 import SendByScan from './components/SendByScan'
 
-import { ThemeContext } from './contexts/Theme'
+import { useThemeContext } from './contexts/Theme'
 import NocustContext from './contexts/Nocust'
 import TokensContext from './contexts/Tokens'
 import BalanceContext from './contexts/Balances'
@@ -36,7 +35,6 @@ import WithdrawalContext from './contexts/Withdrawal'
 import TransactionContext from './contexts/Transactions'
 import OrderbookContext from './contexts/Orderbook'
 
-const WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
 const LOADERIMAGE = burnerlogo
 
 const innerStyle = {
@@ -44,8 +42,6 @@ const innerStyle = {
   margin: '0 auto',
   textAlign: 'left'
 }
-
-let intervalLong
 
 const ContextProviders = ({ web3, children }) => {
   return (
@@ -183,191 +179,111 @@ async function ensLookup (name) {
   return ensResolver.methods.addr(hash).call()
 }
 
-class App extends Component {
-  static contextType = ThemeContext
-  constructor (props) {
-    super(props)
-    this.state = {
-      web3: false,
-      account: false,
-      gwei: 1.1,
-      alert: null
-    }
-    this.alertTimeout = null
-  }
+let alertTimeout
 
-  updateDimensions () {
-    // force it to rerender when the window is resized to make sure qr fits etc
-    this.forceUpdate()
-  }
-
-  detectContext () {
-    console.log('DETECTING CONTEXT....')
-    const [{ update }] = this.context
-    // snagged from https://stackoverflow.com/questions/52759238/private-incognito-mode-detection-for-ios-12-safari
-    incogDetect(async (result) => {
-      if (result) {
-        console.log('INCOG')
-        update('INCOGNITO')
-      } else if (typeof web3 !== 'undefined') {
-        try {
-          if (window.web3 && window.web3.currentProvider && window.web3.currentProvider.isMetaMask === true && window.web3.eth && typeof window.web3.eth.getAccounts === 'function' && isArrayAndHasEntries(await window.web3.eth.getAccounts())) {
-            update('METAMASK')
-          } else if (this.state.account && !this.state.metaAccount) {
-            update('WEB3')
-          }
-        } catch (e) {
-          console.log('CONTEXT ERROR', e)
+function detectContext (address, update) {
+  console.log('DETECTING CONTEXT....')
+  // snagged from https://stackoverflow.com/questions/52759238/private-incognito-mode-detection-for-ios-12-safari
+  incogDetect(async (result) => {
+    if (result) {
+      console.log('INCOG')
+      update('INCOGNITO')
+    } else if (typeof web3 !== 'undefined') {
+      try {
+        if (window.web3 && window.web3.currentProvider && window.web3.currentProvider.isMetaMask === true && window.web3.eth && typeof window.web3.eth.getAccounts === 'function' && isArrayAndHasEntries(await window.web3.eth.getAccounts())) {
+          update('METAMASK')
+        } else if (address) { // && !this.state.metaAccount) {
+          update('WEB3')
         }
+      } catch (e) {
+        console.log('CONTEXT ERROR', e)
       }
-    })
-  }
-
-  componentDidMount () {
-    this.detectContext()
-
-    window.addEventListener('resize', this.updateDimensions.bind(this))
-  }
-
-  componentWillUnmount () {
-    clearInterval(intervalLong)
-    window.removeEventListener('resize', this.updateDimensions.bind(this))
-  }
-
-  setPossibleNewPrivateKey (value) {
-    this.setState({ possibleNewPrivateKey: value }, () => {
-      this.dealWithPossibleNewPrivateKey()
-    })
-  }
-
-  async dealWithPossibleNewPrivateKey () {
-    // this happens as page load and you need to wait until
-    if (this.state) {
-      if (this.state.metaAccount && this.state.metaAccount.privateKey.replace('0x', '') === this.state.possibleNewPrivateKey.replace('0x', '')) {
-        this.setState({ possibleNewPrivateKey: false })
-        this.changeAlert({
-          type: 'warning',
-          message: 'Imported identical private key.'
-        })
-      } else {
-        console.log('Checking on pk import...')
-        console.log('this.state.metaAccount', this.state.metaAccount)
-
-        this.setState({
-          possibleNewPrivateKey: false,
-          newPrivateKey: this.state.possibleNewPrivateKey
-        })
-      }
-    } else {
-      setTimeout(this.dealWithPossibleNewPrivateKey.bind(this), 500)
     }
-  }
+  })
+}
 
-  componentDidUpdate (prevProps, prevState) {
-    const { network, web3 } = this.state
-    if (web3 && network !== prevState.network) {
-      console.log('WEB3 DETECTED BUT NOT RIGHT NETWORK', web3, network, prevState.network)
-      // this.changeAlert({
-      //  type: 'danger',
-      //  message: 'Wrong Network. Please use Custom RPC endpoint: https://dai.poa.network or turn off MetaMask.'
-      // }, false)
-    }
-  };
+const App = (props) => {
+  const [state, { update }] = useThemeContext()
+  const { mainStyle, backgroundStyle, currentBackground } = state
 
-  changeAlert = (alert, hide = true) => {
-    clearTimeout(this.alertTimeout)
-    this.setState({ alert })
+  useEffect(() => {
+    detectContext(address, update)
+  }, [])
+
+  // useEffect(() => {
+  //   const { network, web3 } = props
+  //   if (web3 && network !== prevProps.network) {
+  //     console.log('WEB3 DETECTED BUT NOT RIGHT NETWORK', web3, network, prevProps.network)
+  //   // this.changeAlert({
+  //   //  type: 'danger',
+  //   //  message: 'Wrong Network. Please use Custom RPC endpoint: https://dai.poa.network or turn off MetaMask.'
+  //   // }, false)
+  //   }
+  // })
+
+  const [alert, setAlert] = useState()
+
+  const changeAlert = (alert, hide = true) => {
+    clearTimeout(alertTimeout)
+    setAlert(alert)
     if (alert && hide) {
-      this.alertTimeout = setTimeout(() => {
-        this.setState({ alert: null })
+      alertTimeout = setTimeout(() => {
+        setAlert(null)
       }, 2000)
     }
-  };
+  }
 
-  render () {
-    const [state] = this.context
-    const { backgroundStyle, currentBackground } = state
-    const { web3, account, metaAccount, burnMetaAccount, alert } = this.state
+  const [gwei, setGwei] = useState()
 
-    if (document.getElementById('main')) {
-      document.getElementById('main').style.backgroundImage = backgroundStyle[currentBackground].image
-      document.body.style.backgroundColor = backgroundStyle[currentBackground].color
-    }
+  const { web3, network, address, burnMetaAccount, privateKey, setPossibleNewPrivateKey } = props
 
-    return (
-      <Router>
-        <I18nextProvider i18n={i18n}>
-          <div id='main' style={this.context.mainStyle}>
-            <div style={innerStyle}>
-              <div>
-                {web3 ? (
-                  <Interface
-                    web3={web3}
-                    address={account}
-                    privateKey={metaAccount.privateKey}
-                    burnMetaAccount={burnMetaAccount}
-                    setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
-                    network={this.state.network}
-                    gwei={this.state.gwei}
-                    changeAlert={this.changeAlert.bind(this)}
-                  />
-                )
-                  : (
-                    <div>
-                      <Loader loaderImage={LOADERIMAGE} />
-                    </div>
-                  )}
+  if (document.getElementById('main')) {
+    document.getElementById('main').style.backgroundImage = backgroundStyle[currentBackground].image
+    document.body.style.backgroundColor = backgroundStyle[currentBackground].color
+  }
 
-                {alert && <Footer alert={alert} changeAlert={this.changeAlert} />}
-              </div>
+  return (
+    <Router>
+      <I18nextProvider i18n={i18n}>
+        <div id='main' style={mainStyle}>
+          <div style={innerStyle}>
+            <div>
+              {web3 ? (
+                <Interface
+                  web3={web3}
+                  address={address}
+                  privateKey={privateKey}
+                  burnMetaAccount={burnMetaAccount}
+                  setPossibleNewPrivateKey={setPossibleNewPrivateKey}
+                  network={network}
+                  gwei={gwei}
+                  changeAlert={changeAlert}
+                />
+              )
+                : (
+                  <div>
+                    <Loader loaderImage={LOADERIMAGE} />
+                  </div>
+                )}
 
-              <Dapparatus
-                config={{
-                  DEBUG: false,
-                  hide: true,
-                  requiredNetwork: ['Unknown', 'Rinkeby'],
-                  metatxAccountGenerator: false,
-                  POLLINTERVAL: 5000 // responsible for slow load times
-                }}
-                // used to pass a private key into Dapparatus
-                newPrivateKey={this.state.newPrivateKey}
-                fallbackWeb3Provider={WEB3_PROVIDER}
-                onUpdate={async (state) => {
-                  console.log('Dapparatus update', state)
-
-                  if (state.web3Provider) {
-                    state.web3 = new Web3(state.web3Provider)
-                    if (state.metaAccount) {
-                      state.web3.eth.accounts.wallet.add(state.metaAccount.privateKey)
-                    }
-
-                    this.setState(state, () => {
-                      // console.log("state set:",this.state)
-                      if (this.state.possibleNewPrivateKey) {
-                        this.dealWithPossibleNewPrivateKey()
-                      }
-                    })
-                  }
-                }}
-              />
-              <Gas
-                network={this.state.network}
-                onUpdate={(state) => {
-                  console.log('Gas price update:', state)
-                  this.setState({ gwei: (state.gwei + 0.001).toFixed(5) })
-                }}
-              />
-
-              <div id='context' style={{ position: 'absolute', right: 5, top: -15, opacity: 0.2, zIndex: 100, fontSize: 60, color: '#FFFFFF' }}>
-                {currentBackground !== 'DEFAULT' && currentBackground}
-              </div>
-
+              {alert && <Footer alert={alert} changeAlert={changeAlert} />}
+            </div>
+            <div id='context' style={{ position: 'absolute', right: 5, top: -15, opacity: 0.2, zIndex: 100, fontSize: 60, color: '#FFFFFF' }}>
+              {currentBackground !== 'DEFAULT' && currentBackground}
             </div>
           </div>
-        </I18nextProvider>
-      </Router>
-    )
-  }
+        </div>
+        <Gas
+          network={network}
+          onUpdate={(state) => {
+            console.log('Gas price update:', state)
+            setGwei((state.gwei + 0.001).toFixed(5))
+          }}
+        />
+
+      </I18nextProvider>
+    </Router>
+  )
 }
 
 function isArrayAndHasEntries (array) {
