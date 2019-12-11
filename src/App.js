@@ -191,8 +191,7 @@ class App extends Component {
       web3: false,
       account: false,
       gwei: 1.1,
-      alert: null,
-      ethprice: 0.00
+      alert: null
     }
     this.alertTimeout = null
   }
@@ -228,26 +227,11 @@ class App extends Component {
     this.detectContext()
 
     window.addEventListener('resize', this.updateDimensions.bind(this))
-
-    intervalLong = setInterval(this.longPoll.bind(this), 45000)
-    setTimeout(this.longPoll.bind(this), 150)
   }
 
   componentWillUnmount () {
     clearInterval(intervalLong)
     window.removeEventListener('resize', this.updateDimensions.bind(this))
-  }
-
-  longPoll () {
-    axios.get('https://api.coinmarketcap.com/v2/ticker/1027/')
-      .then((response) => {
-        try {
-          const ethprice = response.data.data.quotes.USD.price
-          this.setState({ ethprice })
-        } catch (e) {
-          console.error(e)
-        }
-      })
   }
 
   setPossibleNewPrivateKey (value) {
@@ -324,7 +308,6 @@ class App extends Component {
                     burnMetaAccount={burnMetaAccount}
                     setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
                     network={this.state.network}
-                    ethprice={this.state.ethprice}
                     gwei={this.state.gwei}
                     changeAlert={this.changeAlert.bind(this)}
                   />
