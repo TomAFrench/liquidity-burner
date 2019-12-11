@@ -67,7 +67,7 @@ const ContextProviders = ({ web3, children }) => {
 
 const Interface = (props) => {
   return (
-    <ContextProviders web={props.web3}>
+    <ContextProviders web3={props.web3}>
       <Switch>
         <Route
           path='/advanced'
@@ -76,7 +76,7 @@ const Interface = (props) => {
               <div className='main-card card w-100' style={{ zIndex: 1 }}>
                 <NavCard title={i18n.t('advance_title')} />
                 <Advanced
-                  address={props}
+                  address={props.address}
                   history={history}
                   privateKey={props.privateKey}
                   changeAlert={props.changeAlert}
@@ -329,7 +329,7 @@ class App extends Component {
 
                 {web3 &&
                   <Interface
-                    web3={this.state.web3}
+                    web3={web3}
                     address={account}
                     privateKey={metaAccount.privateKey}
                     burnMetaAccount={burnMetaAccount}
@@ -338,7 +338,6 @@ class App extends Component {
                     ethprice={this.state.ethprice}
                     gwei={this.state.gwei}
                     changeAlert={this.changeAlert.bind(this)}
-
                   />}
 
                 {!web3 &&
