@@ -60,7 +60,7 @@ export default (props) => {
           address={props.address}
           changeAlert={props.changeAlert}
           onSend={async (txhash) => {
-            props.history.push(`${props.match.url}/sending`)
+            props.history.push(`${props.url}/sending`)
             const tx = await nocust.getTransaction(await txhash)
             console.log(tx)
           }}

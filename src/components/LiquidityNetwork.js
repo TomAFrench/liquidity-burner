@@ -85,6 +85,7 @@ export default (props) => {
             <SendPage
               history={history}
               location={location}
+              url={props.match.url}
               ensLookup={props.ensLookup}
               address={props.address}
               changeAlert={props.changeAlert}
@@ -135,7 +136,7 @@ export default (props) => {
         path={`${props.match.url}`}
         render={({ match }) =>
           <MainPage
-            match={match}
+            url={match.url}
             address={props.address}
             gwei={props.gwei}
             changeAlert={props.changeAlert}

@@ -153,7 +153,7 @@ const Interface = (props) => {
 
                   ensLookup={ensLookup}
 
-                  gwei={props.gwei}
+                  gwei={props.gwei || 1.001}
 
                   changeAlert={props.changeAlert}
                 />
