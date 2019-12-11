@@ -6,7 +6,7 @@ import {
   Link,
   Redirect
 } from 'react-router-dom'
-import { ContractLoader, Dapparatus, Gas } from 'dapparatus'
+import { Dapparatus, Gas } from 'dapparatus'
 import Web3 from 'web3'
 import { toChecksumAddress } from 'web3-utils'
 import axios from 'axios'
@@ -209,27 +209,6 @@ class App extends Component {
       document.body.style.backgroundColor = backgroundStyle[currentBackground].color
     }
 
-    let web3Setup = ''
-    if (web3) {
-      web3Setup = (
-        <ContractLoader
-          key='ContractLoader'
-          config={{ DEBUG: true }}
-          web3={web3}
-          require={path => {
-            return require(`${__dirname}/${path}`)
-          }}
-          onReady={(contracts, customLoader) => {
-            console.log('contracts loaded', contracts)
-            this.setState({ contracts: contracts, customLoader: customLoader }, async () => {
-              console.log('Contracts Are Ready:', contracts)
-            })
-            this.detectContext()
-          }}
-        />
-      )
-    }
-
     let header = (
       <div style={{ height: 50 }} />
     )
@@ -252,7 +231,6 @@ class App extends Component {
         <I18nextProvider i18n={i18n}>
           <div id='main' style={this.context.mainStyle}>
             <div style={innerStyle}>
-              {web3Setup}
               <div>
                 {header}
 
