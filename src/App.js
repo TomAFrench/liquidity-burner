@@ -24,7 +24,6 @@ import BurnWallet from './pages/BurnWalletPage'
 import Bottom from './components/Bottom'
 import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
-import core from './core'
 
 import LiquidityNetwork from './components/LiquidityNetwork'
 import SendByScan from './components/SendByScan'
@@ -36,8 +35,6 @@ import BalanceContext from './contexts/Balances'
 import WithdrawalContext from './contexts/Withdrawal'
 import TransactionContext from './contexts/Transactions'
 import OrderbookContext from './contexts/Orderbook'
-
-const MAINNET_CHAIN_ID = '1'
 
 const WEB3_PROVIDER = process.env.REACT_APP_WEB3_PROVIDER
 const LOADERIMAGE = burnerlogo
@@ -146,7 +143,7 @@ const Interface = (props) => {
 
                 network={props.network}
 
-                ensLookup={props.ensLookup}
+                ensLookup={ensLookup}
 
                 ethprice={props.ethprice}
 
@@ -160,6 +157,23 @@ const Interface = (props) => {
       </Switch>
     </ContextProviders>
   )
+}
+
+async function ensLookup (name) {
+  const hash = namehash.hash(name)
+  console.log('namehash', name, hash)
+
+  const { Contract } = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MAINNET_WEB3_PROVIDER)).eth
+
+  const ensContract = new Contract(require('./contracts/ENS.abi.js'), require('./contracts/ENS.address.js'))
+  const resolver = await ensContract.methods.resolver(hash).call()
+  if (resolver === '0x0000000000000000000000000000000000000000') return '0x0000000000000000000000000000000000000000'
+  console.log('resolver address', resolver)
+
+  const ensResolver = new Contract(require('./contracts/ENSResolver.abi.js'), resolver)
+  console.log('ensResolver:', ensResolver)
+
+  return ensResolver.methods.addr(hash).call()
 }
 
 class App extends Component {
@@ -269,22 +283,6 @@ class App extends Component {
     }
   };
 
-  async ensLookup (name) {
-    const hash = namehash.hash(name)
-    console.log('namehash', name, hash)
-
-    const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth
-    const ensContract = new Contract(require('./contracts/ENS.abi.js'), require('./contracts/ENS.address.js'))
-    const resolver = await ensContract.methods.resolver(hash).call()
-    if (resolver === '0x0000000000000000000000000000000000000000') return '0x0000000000000000000000000000000000000000'
-    console.log('resolver address', resolver)
-
-    const ensResolver = new Contract(require('./contracts/ENSResolver.abi.js'), resolver)
-    console.log('ensResolver:', ensResolver)
-
-    return ensResolver.methods.addr(hash).call()
-  }
-
   changeAlert = (alert, hide = true) => {
     clearTimeout(this.alertTimeout)
     this.setState({ alert })
@@ -336,7 +334,6 @@ class App extends Component {
                     privateKey={metaAccount.privateKey}
                     burnMetaAccount={burnMetaAccount}
                     setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
-                    ensLookup={this.ensLookup.bind(this)}
                     network={this.state.network}
                     ethprice={this.state.ethprice}
                     gwei={this.state.gwei}
