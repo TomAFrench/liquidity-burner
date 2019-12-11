@@ -27,12 +27,14 @@ import LiquidityNetwork from './components/LiquidityNetwork'
 import SendByScan from './components/SendByScan'
 
 import { useThemeContext } from './contexts/Theme'
-import NocustContext from './contexts/Nocust'
-import TokensContext from './contexts/Tokens'
-import BalanceContext from './contexts/Balances'
-import WithdrawalContext from './contexts/Withdrawal'
-import TransactionContext from './contexts/Transactions'
-import OrderbookContext from './contexts/Orderbook'
+import {
+  NocustContext,
+  TokensContext,
+  BalanceContext,
+  WithdrawalContext,
+  TransactionContext,
+  OrderbookContext
+} from './contexts'
 
 const LOADERIMAGE = burnerlogo
 
