@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   BrowserRouter as Router,
   Switch,
@@ -61,12 +61,15 @@ const ContextProviders = ({ web3, children }) => {
 }
 
 const Interface = (props) => {
+  const [ensName, setEnsName] = useState('')
+  useMemo(() => reverseEnsLookup(props.address).then(name => setEnsName(name)), [props.address])
+
   return (
     <>
       <div>
         <Header
           network={props.network}
-          ens={props.ens}
+          ens={ensName}
           address={props.address}
         />
       </div>
@@ -176,6 +179,20 @@ async function ensLookup (name) {
   console.log('ensResolver:', ensResolver)
 
   return ensResolver.methods.addr(hash).call()
+}
+
+async function reverseEnsLookup (address) {
+  const hash = namehash.hash(address.toLowerCase().substr(2) + '.addr.reverse')
+
+  const { Contract } = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MAINNET_WEB3_PROVIDER)).eth
+
+  const ensContract = new Contract(require('./contracts/ENS.abi.js'), require('./contracts/ENS.address.js'))
+  const resolver = await ensContract.methods.resolver(hash).call()
+  if (resolver === '0x0000000000000000000000000000000000000000') return null
+
+  const ensResolver = new Contract(require('./contracts/ENSResolver.abi.js'), resolver)
+
+  return ensResolver.methods.name(hash).call()
 }
 
 let alertTimeout
