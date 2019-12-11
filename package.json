@@ -1,6 +1,6 @@
 {
-  "name": "burner-wallet",
-  "version": "0.1.0",
+  "name": "liquidity-burner-wallet",
+  "version": "0.1.2",
   "private": true,
   "dependencies": {
     "@burner-wallet/assets": "0.0.4",
