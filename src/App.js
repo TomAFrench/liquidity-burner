@@ -399,10 +399,7 @@ class App extends Component {
                 network={this.state.network}
                 onUpdate={(state) => {
                   console.log('Gas price update:', state)
-                  this.setState(state, () => {
-                    this.state.gwei = (this.state.gwei + 0.1).toFixed(5)
-                    console.log('GWEI set:', this.state)
-                  })
+                  this.setState({ gwei: (state.gwei + 0.001).toFixed(5) })
                 }}
               />
 
