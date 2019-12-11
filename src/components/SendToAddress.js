@@ -197,7 +197,7 @@ export default class SendToAddress extends React.Component {
               unit={this.props.token ? 'f' + this.props.token.shortName : i18n.t('loading')}
               value={this.state.amount}
               updateValue={amount => this.updateState('amount', amount)}
-              maxValue={typeof this.props.offchainBalance !== 'undefined' && fromWei(this.props.offchainBalance.toString(), 'ether')}
+              maxValue={typeof this.props.offchainBalance !== 'undefined' ? fromWei(this.props.offchainBalance.toString(), 'ether') : undefined}
               minValue='0'
             />
           </div>
