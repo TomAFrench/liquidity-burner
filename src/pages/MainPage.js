@@ -31,7 +31,7 @@ export default (props) => {
         <div className='form-group w-100'>
 
           <div style={{ width: '100%', textAlign: 'center' }}>
-            <Link to={{ pathname: `${props.match.url}/send`, search: '?token=' + TOKEN }}>
+            <Link to={{ pathname: `${props.url}/send`, search: '?token=' + TOKEN }}>
               <Balance
                 token={token}
                 balance={tokenBalance}
@@ -47,7 +47,7 @@ export default (props) => {
               address={props.address}
             />
             <Ruler />
-            <Link to={{ pathname: `${props.match.url}/send`, search: '?token=ETH' }}>
+            <Link to={{ pathname: `${props.url}/send`, search: '?token=ETH' }}>
               <Balance
                 token={eth}
                 balance={ethBalance}
@@ -65,7 +65,7 @@ export default (props) => {
             <Ruler />
 
             <MainButtons
-              url={props.match.url}
+              url={props.url}
               tokenAddress={token.tokenAddress}
               gwei={props.gwei}
               token={TOKEN}
