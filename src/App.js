@@ -69,10 +69,6 @@ class App extends Component {
     this.forceUpdate()
   }
 
-  saveKey (update) {
-    this.setState(update)
-  }
-
   detectContext () {
     console.log('DETECTING CONTEXT....')
     const [{ update }] = this.context
@@ -154,7 +150,7 @@ class App extends Component {
 
   componentDidUpdate (prevProps, prevState) {
     const { network, web3 } = this.state
-    if (web3 && network !== prevState.network /* && !this.checkNetwork() */) {
+    if (web3 && network !== prevState.network) {
       console.log('WEB3 DETECTED BUT NOT RIGHT NETWORK', web3, network, prevState.network)
       // this.changeAlert({
       //  type: 'danger',
@@ -162,11 +158,6 @@ class App extends Component {
       // }, false)
     }
   };
-
-  checkNetwork () {
-    const { network } = this.state
-    return network === 'Rinkeby' || network === 'Unknown'
-  }
 
   connectToENS () {
     const { Contract } = core.getWeb3(MAINNET_CHAIN_ID).eth
