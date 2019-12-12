@@ -41,14 +41,6 @@ const TEXSwapper = (props) => {
 
   const [maxInput, maxOutput] = getMaxOutputs(props.orders, props.assetBalance)
 
-  const cancelButton = (
-    <span style={{ padding: 10, whiteSpace: 'nowrap' }}>
-      <a href='#' style={{ color: '#000000' }} onClick={() => props.cancelAction()}>
-        <i className='fas fa-times' /> {i18n.t('cancel')}
-      </a>
-    </span>
-  )
-
   const buyAmountBar = (
     <AmountBar
       buttonStyle={props.buttonStyle}
@@ -98,7 +90,9 @@ const TEXSwapper = (props) => {
 
       <div className='col-2 p-1' style={colStyle}>
         <Scaler config={{ startZoomAt: 650, origin: '0% 85%' }}>
-          {cancelButton}
+          <button className='btn btn-large w-100' style={props.buttonStyle.secondary} onClick={() => props.cancelAction()}>
+            <i className='fas fa-times' /> {i18n.t('cancel')}
+          </button>
         </Scaler>
       </div>
       <div className='col-3 p-1'>

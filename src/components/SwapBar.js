@@ -23,14 +23,6 @@ const Swapper = (props) => {
     // Do nothing
   }
 
-  const cancelButton = (
-    <span style={{ padding: 10, whiteSpace: 'nowrap' }}>
-      <a href='#' style={{ color: '#000000' }} onClick={() => props.cancelAction()}>
-        <i className='fas fa-times' /> {i18n.t('cancel')}
-      </a>
-    </span>
-  )
-
   return (
     <div className='content ops row'>
 
@@ -48,8 +40,10 @@ const Swapper = (props) => {
         />
       </div>
       <div className='col-2 p-1' style={colStyle}>
-        <Scaler config={{ startZoomAt: 650, origin: '0% 85%' }}>
-          {cancelButton}
+        <Scaler config={{ startZoomAt: 650, origin: '15% 50%' }}>
+          <button className='btn btn-large w-100' style={props.buttonStyle.secondary} onClick={() => props.cancelAction()}>
+            <i className='fas fa-times' /> {i18n.t('cancel')}
+          </button>
         </Scaler>
       </div>
       <div className='col-3 p-1'>
@@ -111,9 +105,9 @@ export default class SwapBar extends React.Component {
           <div className='content ops row' style={{ textAlign: 'center' }}>
             <div className='col-12 p-1'>
               Error: You must have ETH to withdraw {this.props.text}.
-              <a href='#' onClick={() => { this.setState({ swapMode: false }) }} style={{ marginLeft: 40, color: '#666666' }}>
+              <button className='btn btn-large' style={{ ...this.props.buttonStyle.secondary, marginLeft: 40 }} onClick={() => { this.setState({ swapMode: false }) }}>
                 <i className='fas fa-times' /> dismiss
-              </a>
+              </button>
             </div>
           </div>
         )
