@@ -1,6 +1,14 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
+const preventSpaces = (event) => {
+  const keyPressed = event.key
+
+  if (/\s/g.test(keyPressed)) {
+    event.preventDefault()
+  }
+}
+
 const AddressBar = (props) => {
   const location = useLocation()
 
@@ -9,7 +17,8 @@ const AddressBar = (props) => {
       <input
         type='text' className='form-control' placeholder='0x...' value={props.toAddress}
         ref={(input) => { if (typeof props.addressInput === 'function') { props.addressInput(input) } }}
-        onChange={event => props.setToAddress(event.target.value)}
+        onKeyPress={preventSpaces}
+        onChange={event => { props.setToAddress(event.target.value.replace(/\s/g, '')) }}
       />
       {props.openScanner &&
         <div className='input-group-append'>
