@@ -3,10 +3,13 @@ import React, { createContext, useContext, useReducer, useMemo, useCallback, use
 import { safeAccess } from '../utils'
 import { isAddress, fromWei } from 'web3-utils'
 import { useNocustClient, useEraNumber } from './Nocust'
+import { toBigNumber } from 'nocust-client'
 
 const UPDATE = 'UPDATE'
 const UPDATE_ONCHAIN = 'UPDATE_ONCHAIN'
 const UPDATE_OFFCHAIN = 'UPDATE_OFFCHAIN'
+
+const ZERO_BALANCE = { offchainBalance: toBigNumber('0'), onchainBalance: toBigNumber('0') }
 
 const BalanceContext = createContext()
 
@@ -85,7 +88,7 @@ export function useOffchainAddressBalance (address, tokenAddress) {
   const eraNumber = useEraNumber()
 
   const [state, { updateOffchain }] = useBalanceContext()
-  const { offchainBalance } = safeAccess(state, [address, tokenAddress]) || {}
+  const { offchainBalance } = safeAccess(state, [address, tokenAddress]) || ZERO_BALANCE
 
   useEffect(() => {
     if (
@@ -119,7 +122,7 @@ export function useOnchainAddressBalance (address, tokenAddress) {
   const eraNumber = useEraNumber()
 
   const [state, { updateOnchain }] = useBalanceContext()
-  const { onchainBalance } = safeAccess(state, [address, tokenAddress]) || {}
+  const { onchainBalance } = safeAccess(state, [address, tokenAddress]) || ZERO_BALANCE
 
   useEffect(() => {
     if (
