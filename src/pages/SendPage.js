@@ -8,7 +8,7 @@ import SendToAddress from '../components/SendToAddress'
 import Balance from '../components/Balance'
 
 import { useOffchainAddressBalance } from '../contexts/Balances'
-import { lookupTokenAddress, useTokens } from '../contexts/Tokens'
+import { lookupTokenAddress } from '../contexts/Tokens'
 
 import { isAddress, fromWei } from 'web3-utils'
 import { useNocustClient } from '../contexts/Nocust'
@@ -18,18 +18,17 @@ const qs = require('query-string')
 export default (props) => {
   const buttonStyle = useButtonStyle()
   const nocust = useNocustClient()
-  const tokens = useTokens()
 
   const query = qs.parse(props.location.search)
 
   // First look up token address.
   // May have been given the token's shortname so perform lookup if that fails
   // Finally default to main token.
-  let token
+  let token = props.tokens.ETH
   if (isAddress(query.token)) {
-    token = lookupTokenAddress(query.token)
+    token = lookupTokenAddress(props.tokens, query.token)
   } else {
-    token = tokens[query.token]
+    token = props.tokens[query.token]
   }
 
   const tokenBalance = useOffchainAddressBalance(props.address, token.tokenAddress)

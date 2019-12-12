@@ -14,6 +14,7 @@ import Bottom from './Bottom'
 import Loader from './Loader'
 
 import lqdImg from '../images/liquidity.png'
+import { useTokens } from '../contexts/Tokens'
 
 import {
   SendPage,
@@ -27,6 +28,8 @@ import {
 const LOADERIMAGE = lqdImg
 
 export default (props) => {
+  const tokens = useTokens()
+
   const backButton = (
     <Link to={props.match.url}>
       <Bottom
@@ -86,6 +89,7 @@ export default (props) => {
               history={history}
               location={location}
               url={props.match.url}
+              tokens={tokens}
               ensLookup={props.ensLookup}
               address={props.address}
               changeAlert={props.changeAlert}
@@ -115,6 +119,7 @@ export default (props) => {
           <ExchangePage
             history={history}
             match={match}
+            tokens={tokens}
             address={props.address}
             backButton={backButton}
           />}
@@ -138,6 +143,7 @@ export default (props) => {
           <MainPage
             url={match.url}
             address={props.address}
+            tokens={tokens}
             gwei={props.gwei}
             changeAlert={props.changeAlert}
           />}

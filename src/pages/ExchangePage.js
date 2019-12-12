@@ -4,13 +4,12 @@ import i18n from '../i18n'
 
 import NavCard from '../components/NavCard'
 import Exchange from '../components/Exchange'
-import { isValidToken, useTokens } from '../contexts/Tokens'
+import { isValidToken } from '../contexts/Tokens'
 
-export default ({ history, match, address, buttonStyle, backButton }) => {
+export default ({ history, match, address, tokens, buttonStyle, backButton }) => {
   // check if tokens are valid
   const assetA = match.params.assetA
   const assetB = match.params.assetB
-  const tokens = useTokens()
 
   // redirect to main page if invalid
   if (!isValidToken(tokens, assetA) || !isValidToken(tokens, assetB)) {
