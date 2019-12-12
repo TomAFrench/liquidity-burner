@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Scaler } from 'dapparatus'
 import Ruler from './Ruler'
 import Balance from './Balance'
@@ -118,12 +118,22 @@ const TEXSwapBar = (props) => {
   const [swapMode, setSwapMode] = useState(false)
   const buttonStyle = useButtonStyle()
 
+  const nocust = useNocustClient()
+
   const assetABalance = useOffchainAddressBalance(props.address, props.assetA ? props.assetA.tokenAddress : undefined)
   const assetBBalance = useOffchainAddressBalance(props.address, props.assetB ? props.assetB.tokenAddress : undefined)
-  const ordersAToB = useOrderbook(props.assetA ? props.assetA.tokenAddress : undefined, props.assetB ? props.assetB.tokenAddress : undefined)
-  const ordersBToA = useOrderbook(props.assetB ? props.assetB.tokenAddress : undefined, props.assetA ? props.assetA.tokenAddress : undefined)
+  const ordersAToB = useOrderbook(props.assetB ? props.assetB.tokenAddress : undefined, props.assetA ? props.assetA.tokenAddress : undefined)
+  const ordersBToA = useOrderbook(props.assetA ? props.assetA.tokenAddress : undefined, props.assetB ? props.assetB.tokenAddress : undefined)
 
   const invalidOrderbook = (ordersAToB === [] && ordersBToA === [])
+
+  useEffect(() => {
+    return () => {
+      console.log('syncing orders', props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
+      nocust.synchronizeSwapOrders(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
+      // nocust.synchronizeSwapOrders(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress)
+    }
+  }, [])
 
   let display = i18n.t('loading')
 
@@ -146,7 +156,7 @@ const TEXSwapBar = (props) => {
         assetBalance={assetABalance}
         successAction={(buyAmount, sellAmount) => {
           console.log('Buying ', buyAmount, props.assetB.shortName, ' for ', sellAmount, props.assetA.shortName)
-          props.AtoBTrade(toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
+          nocust.sendSwap(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress, toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
           setSwapMode(false)
         }}
         cancelAction={() => {
@@ -166,7 +176,8 @@ const TEXSwapBar = (props) => {
         assetBalance={assetBBalance}
         successAction={(buyAmount, sellAmount) => {
           console.log('Buying ', buyAmount, props.assetA.shortName, ' for ', sellAmount, props.assetB.shortName)
-          props.BtoATrade(toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
+          nocust.sendSwap(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress, toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
+
           setSwapMode(false)
         }}
         cancelAction={() => {
@@ -287,7 +298,6 @@ const getOtherAmount = (orders, amount, knownQuantity) => {
 // }
 
 export default (props) => {
-  const nocust = useNocustClient()
   const tokens = useTokens()
 
   const assetA = tokens[props.assetA]
@@ -303,10 +313,9 @@ export default (props) => {
       />
       <Ruler />
       <TEXSwapBar
+        address={props.address}
         assetA={assetA}
         assetB={assetB}
-        AtoBTrade={(buyAmount, sellAmount) => nocust.sendSwap(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress, buyAmount, sellAmount)}
-        BtoATrade={(buyAmount, sellAmount) => nocust.sendSwap(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress, buyAmount, sellAmount)}
       />
       <Balance
         token={assetB}

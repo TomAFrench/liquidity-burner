@@ -15,12 +15,16 @@ export function useOrderbookContext () {
 function reducer (state, { type, payload }) {
   switch (type) {
     case UPDATE: {
-      const { buyTokenAddress, sellTokenAddress, orders } = payload
+      const { buyTokenAddress, sellTokenAddress, orderbook } = payload
       return {
         ...state,
         [buyTokenAddress]: {
           ...(safeAccess(state, [buyTokenAddress]) || {}),
-          [sellTokenAddress]: orders
+          [sellTokenAddress]: orderbook.buy_orders
+        },
+        [sellTokenAddress]: {
+          ...(safeAccess(state, [sellTokenAddress]) || {}),
+          [buyTokenAddress]: orderbook.sell_orders
         }
       }
     }
@@ -33,8 +37,8 @@ function reducer (state, { type, payload }) {
 export default function Provider ({ web3, children }) {
   const [state, dispatch] = useReducer(reducer, {})
 
-  const update = useCallback((buyTokenAddress, sellTokenAddress, orders) => {
-    dispatch({ type: UPDATE, payload: { buyTokenAddress, sellTokenAddress, orders } })
+  const update = useCallback((buyTokenAddress, sellTokenAddress, orderbook) => {
+    dispatch({ type: UPDATE, payload: { buyTokenAddress, sellTokenAddress, orderbook } })
   }, [])
 
   return (
@@ -52,24 +56,14 @@ export function useOrderbook (buyTokenAddress, sellTokenAddress) {
 
   useEffect(() => {
     if (nocust && buyTokenAddress && sellTokenAddress) {
-      let stale = false
-
       nocust.getOrderBook(buyTokenAddress, sellTokenAddress)
         .then(orders => {
           console.log('orders', orders)
-          if (!stale) {
-            update(buyTokenAddress, sellTokenAddress, orders)
-          }
+          update(buyTokenAddress, sellTokenAddress, orders)
         })
         .catch(() => {
-          if (!stale) {
-            update(buyTokenAddress, sellTokenAddress, null)
-          }
+          update(buyTokenAddress, sellTokenAddress, {})
         })
-
-      return () => {
-        stale = true
-      }
     }
   }, [eraNumber, buyTokenAddress, sellTokenAddress, update])
 
