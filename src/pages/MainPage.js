@@ -11,7 +11,7 @@ import Transactions from '../components/Transactions'
 
 import Balance from '../components/Balance'
 
-import { useTokens, registerTokens } from '../contexts/Tokens'
+import { registerTokens } from '../contexts/Tokens'
 import { safeAccess } from '../utils'
 import { useAddressBalance } from '../contexts/Balances'
 import MainButtons from '../components/MainButtons'
