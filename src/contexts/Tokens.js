@@ -99,8 +99,12 @@ export function registerTokens (address) {
 
   useEffect(() => {
     Object.values(tokens).map(async token => {
-      if (nocust && !await nocust.isAddressRegistered(address, token.tokenAddress)) {
-        return registerToken(nocust, address, token.tokenAddress)
+      if (nocust) {
+        const addressRegistered = await nocust.isAddressRegistered(address, token.tokenAddress)
+        // explicitly test for false-ness as endpoint returns undefined for true
+        if (addressRegistered === false) {
+          return registerToken(nocust, address, token.tokenAddress)
+        }
       }
       return null
     })
