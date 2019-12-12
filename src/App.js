@@ -105,7 +105,7 @@ const Interface = (props) => {
             render={({ history, location }) => (
               <SendByScan
                 onError={(error) => {
-                  this.changeAlert('danger', error)
+                  props.changeAlert('danger', error)
                 }}
                 search={location.search}
                 goBack={history.goBack}
