@@ -4,7 +4,9 @@ import { safeAccess } from '../utils'
 import { isAddress } from 'web3-utils'
 import { useNocustClient, useEraNumber } from './Nocust'
 
-const UPDATE = 'UPDATE'
+const UPDATE_LIMIT = 'UPDATE_LIMIT'
+const UPDATE_FEE = 'UPDATE_FEE'
+const UPDATE_BLOCKS = 'UPDATE_BlOCKS'
 
 const WithdrawalContext = createContext()
 
@@ -14,15 +16,34 @@ function useWithdrawalContext () {
 
 function reducer (state, { type, payload }) {
   switch (type) {
-    case UPDATE: {
-      const { address, tokenAddress, withdrawalLimit, blocksToWithdrawal, withdrawalFee } = payload
+    case UPDATE_FEE: {
+      const { withdrawalFee } = payload
       return {
         ...state,
-        withdrawalFee,
+        withdrawalFee
+      }
+    }
+    case UPDATE_LIMIT: {
+      const { address, tokenAddress, withdrawalLimit } = payload
+      return {
+        ...state,
         [address]: {
           ...(safeAccess(state, [address]) || {}),
           [tokenAddress]: {
-            withdrawalLimit,
+            ...(safeAccess(state, [address, tokenAddress]) || {}),
+            withdrawalLimit
+          }
+        }
+      }
+    }
+    case UPDATE_BLOCKS: {
+      const { address, tokenAddress, blocksToWithdrawal } = payload
+      return {
+        ...state,
+        [address]: {
+          ...(safeAccess(state, [address]) || {}),
+          [tokenAddress]: {
+            ...(safeAccess(state, [address, tokenAddress]) || {}),
             blocksToWithdrawal
           }
         }
@@ -37,12 +58,20 @@ function reducer (state, { type, payload }) {
 export default function Provider ({ children }) {
   const [state, dispatch] = useReducer(reducer, {})
 
-  const update = useCallback((address, tokenAddress, withdrawalLimit, blocksToWithdrawal, withdrawalFee) => {
-    dispatch({ type: UPDATE, payload: { address, tokenAddress, withdrawalLimit, blocksToWithdrawal, withdrawalFee } })
+  const updateLimit = useCallback((address, tokenAddress, withdrawalLimit) => {
+    dispatch({ type: UPDATE_LIMIT, payload: { address, tokenAddress, withdrawalLimit } })
+  }, [])
+
+  const updateFee = useCallback((withdrawalFee) => {
+    dispatch({ type: UPDATE_FEE, payload: { withdrawalFee } })
+  }, [])
+
+  const updateBlocks = useCallback((address, tokenAddress, blocksToWithdrawal) => {
+    dispatch({ type: UPDATE_BLOCKS, payload: { address, tokenAddress, blocksToWithdrawal } })
   }, [])
 
   return (
-    <WithdrawalContext.Provider value={useMemo(() => [state, { update }], [state, update])}>
+    <WithdrawalContext.Provider value={useMemo(() => [state, { updateLimit, updateFee, updateBlocks }], [state, updateLimit, updateFee, updateBlocks])}>
       {children}
     </WithdrawalContext.Provider>
   )
@@ -50,29 +79,20 @@ export default function Provider ({ children }) {
 
 export function useWithdrawalFee (gasPrice) {
   const nocust = useNocustClient()
-  const [state, { update }] = useWithdrawalContext()
+  const [state, { updateFee }] = useWithdrawalContext()
   const { withdrawalFee } = state
-  // const { withdrawalLimit, blocksToWithdrawal } = safeAccess(state, []) || {}
 
   useEffect(() => {
     if (nocust) {
-      let stale = false
       nocust.getWithdrawalFee(gasPrice)
         .then(withdrawalFee => {
-          if (!stale) {
-            update(null, null, null, null, withdrawalFee)
-          }
+          updateFee(withdrawalFee)
         })
         .catch(() => {
-          if (!stale) {
-            update(null, null, null, null, null)
-          }
+          updateFee(null)
         })
-      return () => {
-        stale = true
-      }
     }
-  }, [gasPrice, update])
+  }, [gasPrice, updateFee])
 
   return withdrawalFee
 }
@@ -80,59 +100,42 @@ export function useWithdrawalFee (gasPrice) {
 export function useWithdrawalLimit (address, tokenAddress) {
   const nocust = useNocustClient()
   const eraNumber = useEraNumber()
-  const [state, { update }] = useWithdrawalContext()
-  const { withdrawalFee } = state
-  const { withdrawalLimit, blocksToWithdrawal } = safeAccess(state, [address, tokenAddress]) || {}
+  const [state, { updateLimit }] = useWithdrawalContext()
+  const { withdrawalLimit } = safeAccess(state, [address, tokenAddress]) || {}
 
   useEffect(() => {
     if (isAddress(address) && isAddress(tokenAddress)) {
-      let stale = false
       console.log('checking withdrawal limit')
       nocust.getWithdrawalLimit(address, tokenAddress)
         .then(withdrawalLimit => {
-          if (!stale) {
-            update(address, tokenAddress, withdrawalLimit, blocksToWithdrawal, withdrawalFee)
-          }
+          updateLimit(address, tokenAddress, withdrawalLimit)
         })
         .catch(() => {
-          if (!stale) {
-            update(address, tokenAddress, null, blocksToWithdrawal, withdrawalFee)
-          }
-        })
-      return () => {
-        stale = true
-      }
+          updateLimit(address, tokenAddress, null)
+        }
+        )
     }
-  }, [address, tokenAddress, eraNumber, update])
+  }, [address, tokenAddress, eraNumber, updateLimit])
 
   return withdrawalLimit
 }
 
 export function useBlocksToWithdrawal (address, tokenAddress) {
   const nocust = useNocustClient()
-  const [state, { update }] = useWithdrawalContext()
-  const { withdrawalFee } = state
-  const { withdrawalLimit, blocksToWithdrawal } = safeAccess(state, [address, tokenAddress]) || {}
+  const [state, { updateBlocks }] = useWithdrawalContext()
+  const { blocksToWithdrawal } = safeAccess(state, [address, tokenAddress]) || {}
 
   useEffect(() => {
     if (isAddress(address) && isAddress(tokenAddress)) {
-      let stale = false
       nocust.getBlocksToWithdrawalConfirmation(address, undefined, tokenAddress)
         .then(blocksToWithdrawal => {
-          if (!stale) {
-            update(address, tokenAddress, withdrawalLimit, blocksToWithdrawal, withdrawalFee)
-          }
+          updateBlocks(address, tokenAddress, blocksToWithdrawal)
         })
         .catch(() => {
-          if (!stale) {
-            update(address, tokenAddress, withdrawalLimit, null, withdrawalFee)
-          }
+          updateBlocks(address, tokenAddress, null)
         })
-      return () => {
-        stale = true
-      }
     }
-  }, [address, tokenAddress, blocksToWithdrawal, update])
+  }, [address, tokenAddress, blocksToWithdrawal, updateBlocks])
 
   return blocksToWithdrawal
 }

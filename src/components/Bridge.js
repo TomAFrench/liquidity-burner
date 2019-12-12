@@ -9,7 +9,7 @@ import SwapBar from './SwapBar'
 
 import { useWithdrawalLimit } from '../contexts/Withdrawal'
 import { useTokens } from '../contexts/Tokens'
-import { useAddressBalance } from '../contexts/Balances'
+import { useAddressBalance, useOnchainAddressBalance } from '../contexts/Balances'
 import { useNocustClient } from '../contexts/Nocust'
 import { useButtonStyle } from '../contexts/Theme'
 
@@ -20,9 +20,9 @@ export default (props) => {
   const tokens = useTokens()
   const token = tokens[props.token]
   const balance = useAddressBalance(props.address, token.tokenAddress)
-  const ethBalance = useAddressBalance(props.address, tokens.ETH.tokenAddress)
+  const ethBalance = useOnchainAddressBalance(props.address, tokens.ETH.tokenAddress)
 
-  const withdrawLimit = useWithdrawalLimit(props.address, props.token.tokenAddress)
+  const withdrawLimit = useWithdrawalLimit(props.address, token.tokenAddress)
 
   const gasLimit = '300000'
 
