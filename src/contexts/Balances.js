@@ -96,23 +96,16 @@ export function useOffchainAddressBalance (address, tokenAddress) {
       isAddress(tokenAddress) &&
       nocust
     ) {
-      let stale = false
+      console.log('Getting offchain balance')
       nocust.getNOCUSTBalance(address, tokenAddress)
         .then(offchainBalance => {
-          if (!stale) {
-            updateOffchain(address, tokenAddress, offchainBalance)
-          }
+          updateOffchain(address, tokenAddress, offchainBalance)
         })
         .catch(() => {
-          if (!stale) {
-            updateOffchain(address, tokenAddress, null)
-          }
+          updateOffchain(address, tokenAddress, ZERO_BALANCE)
         })
-      return () => {
-        stale = true
-      }
     }
-  }, [address, tokenAddress, eraNumber])
+  }, [nocust, address, tokenAddress, eraNumber])
 
   return offchainBalance
 }
@@ -130,21 +123,14 @@ export function useOnchainAddressBalance (address, tokenAddress) {
       isAddress(tokenAddress) &&
       nocust
     ) {
-      let stale = false
+      console.log('Getting onchain balance')
       nocust.getOnChainBalance(address, tokenAddress)
         .then(onchainBalance => {
-          if (!stale) {
-            updateOnchain(address, tokenAddress, onchainBalance)
-          }
+          updateOnchain(address, tokenAddress, onchainBalance)
         })
         .catch(() => {
-          if (!stale) {
-            updateOnchain(address, tokenAddress, null)
-          }
+          updateOnchain(address, tokenAddress, null)
         })
-      return () => {
-        stale = true
-      }
     }
   }, [address, tokenAddress, eraNumber])
 
