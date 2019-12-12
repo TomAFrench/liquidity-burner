@@ -10,6 +10,7 @@ import Balance from '../components/Balance'
 import { useOffchainAddressBalance } from '../contexts/Balances'
 import { lookupTokenAddress } from '../contexts/Tokens'
 
+import { safeAccess } from '../utils'
 import { isAddress, fromWei } from 'web3-utils'
 import { useNocustClient } from '../contexts/Nocust'
 import { useButtonStyle } from '../contexts/Theme'
@@ -28,7 +29,7 @@ export default (props) => {
   if (isAddress(query.token)) {
     token = lookupTokenAddress(props.tokens, query.token)
   } else {
-    token = props.tokens[query.token]
+    token = safeAccess(props.tokens, [query.token]) || props.tokens[process.env.REACT_APP_TOKEN]
   }
 
   const tokenBalance = useOffchainAddressBalance(props.address, token.tokenAddress)
