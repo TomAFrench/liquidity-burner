@@ -54,6 +54,7 @@ services:
   burner:
     image: tomfrench/liquidityburner:latest
     environment:
+      MAINNET_WEB3_PROVIDER: 'https://mainnet.infura.io/v3/[[APIKEY]]' // Required for ENS resolution
       WEB3_PROVIDER: 'https://mainnet.infura.io/v3/[[APIKEY]]'
       HUB_CONTRACT_ADDRESS: '0x83aFD697144408C344ce2271Ce16F33A74b3d98b'
       HUB_API_URL: 'https://public.liquidity.network/'
