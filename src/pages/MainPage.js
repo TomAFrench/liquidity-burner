@@ -12,6 +12,7 @@ import Transactions from '../components/Transactions'
 import Balance from '../components/Balance'
 
 import { useTokens, registerTokens } from '../contexts/Tokens'
+import { safeAccess } from '../utils'
 import { useAddressBalance } from '../contexts/Balances'
 import MainButtons from '../components/MainButtons'
 
@@ -20,11 +21,12 @@ const TOKEN = process.env.REACT_APP_TOKEN
 export default (props) => {
   const tokens = useTokens()
 
-  registerTokens(props.address)
   const eth = tokens.ETH
   const token = tokens[TOKEN]
-  const ethBalance = useAddressBalance(props.address, eth.tokenAddress)
-  const tokenBalance = useAddressBalance(props.address, token.tokenAddress)
+  const ethBalance = useAddressBalance(props.address, safeAccess(eth, ['tokenAddress']))
+  const tokenBalance = useAddressBalance(props.address, safeAccess(token, ['tokenAddress']))
+
+  registerTokens(props.address)
   return (
     <div>
       <div className='send-to-address card w-100' style={{ zIndex: 1 }}>
