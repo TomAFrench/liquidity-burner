@@ -43,7 +43,7 @@ const Swapper = (props) => {
           unit={props.text}
           value={amount}
           updateValue={amount => setAmount(amount)}
-          maxValue={typeof props.maxValue !== 'undefined' && fromWei(props.maxValue.toString(10), 'ether')}
+          maxValue={typeof props.maxValue !== 'undefined' ? fromWei(props.maxValue.toString(10), 'ether') : undefined}
           minValue='0'
         />
       </div>
