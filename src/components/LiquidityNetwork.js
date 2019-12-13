@@ -44,7 +44,6 @@ export default (props) => {
         path={`${props.match.url}/receive`}
         render={() =>
           <ReceivePage
-            ensLookup={props.ensLookup}
             address={props.address}
             changeAlert={props.changeAlert}
             backButton={backButton}
@@ -90,7 +89,6 @@ export default (props) => {
               location={location}
               url={props.match.url}
               tokens={tokens}
-              ensLookup={props.ensLookup}
               address={props.address}
               changeAlert={props.changeAlert}
               backButton={backButton}

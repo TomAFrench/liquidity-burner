@@ -6,163 +6,117 @@ import { scroller } from 'react-scroll'
 import i18n from '../i18n'
 import AddressBar from './AddressBar'
 import AmountBar from './AmountBar'
+import { ensLookup, reverseEnsLookup } from '../utils/ens'
 
-const { toWei, fromWei, toBN } = require('web3-utils')
+const { toWei, fromWei, toBN, isAddress } = require('web3-utils')
+
+function scrollToBottom () {
+  console.log('scrolling to bottom')
+  scroller.scrollTo('theVeryBottom', {
+    duration: 500,
+    delay: 30,
+    smooth: 'easeInOutCubic'
+  })
+}
+
+function clearCookies () {
+  cookie.remove('sendStartAmount', { path: '/' })
+  cookie.remove('sendToAddress', { path: '/' })
+}
+
+async function canSend (toAddress, amount, balance) {
+  if (typeof amount !== 'string' || amount === '') return false
+  const amountWei = toBN(toWei(amount, 'ether'))
+  return (isAddress(toAddress) &&
+          amountWei.gte(toBN('0')) &&
+          toBN(balance).gte(amountWei))
+}
+
+function attemptSend (address, token, offchainBalance, sendTransaction, toAddress, amount) {
+  if (canSend(toAddress, amount, offchainBalance)) {
+    const transaction = {
+      to: toAddress,
+      from: address,
+      amount: toBN(toWei(amount, 'ether')).toString(),
+      tokenAddress: token.tokenAddress
+    }
+
+    try {
+      console.log(transaction)
+      const txhash = sendTransaction(transaction)
+      return { type: 'success', message: txhash }
+    } catch (e) {
+      return { type: 'error', message: 'Transaction Failed' }
+    }
+  } else if (toBN(offchainBalance.toString(10)).lt(toBN(toWei(amount, 'ether')))) {
+    return { type: 'warning', message: 'Not enough funds' }
+  } else {
+    return { type: 'warning', message: i18n.t('send_to_address.error') }
+  }
+}
 
 export default class SendToAddress extends React.Component {
   constructor (props) {
     super(props)
 
-    let startAmount = props.amount
-    if (!startAmount) {
-      startAmount = cookie.load('sendToStartAmount')
-    } else {
-      cookie.save('sendToStartAmount', startAmount, { path: '/', maxAge: 60 })
+    this.state = {
+      amount: props.amount || cookie.load('sendStartAmount'),
+      toAddress: props.toAddress || cookie.load('sendToAddress'),
+      ensName: ''
     }
 
-    let toAddress = props.toAddress
-    if (!toAddress) {
-      toAddress = cookie.load('sendToAddress')
-    } else {
-      cookie.save('sendToAddress', toAddress, { path: '/', maxAge: 60 })
-    }
-
-    const initialState = {
-      amount: startAmount,
-      toAddress: toAddress,
-      fromEns: '',
-      canSend: false
-    }
-
-    this.state = initialState
-
-    if (this.state.toAddress && this.state.toAddress.indexOf('.eth') >= 0) {
-      this.ensLookup(toAddress)
-    }
+    this.updateENSOrAddress(this.state.toAddress)
+    this.attemptSend = (toAddress, amount) => attemptSend(this.props.address, this.props.token, this.props.offchainBalance, this.props.sendTransaction, toAddress, amount)
   }
 
-  updateState = async (key, value) => {
-    if (key === 'amount') {
-      cookie.save('sendToStartAmount', value, { path: '/', maxAge: 60 })
-    } else if (key === 'toAddress') {
-      cookie.save('sendToAddress', value, { path: '/', maxAge: 60 })
-    }
-    this.setState({ [key]: value }, () => {
-      this.setState({ canSend: this.canSend() }, () => {
-        if (key !== 'message') {
-          this.bounceToAmountIfReady()
-        }
-      })
-    })
-    if (key === 'toAddress') {
-      this.setState({ fromEns: '' })
-      if (value.indexOf('.eth') >= 0) {
-        this.ensLookup(value)
+  async updateENSOrAddress (value) {
+    if (!(typeof value === 'string' || value instanceof String)) {
+      // Something's way off. Start again.
+      this.setState({ toAddress: '' })
+    } else if (value.indexOf('.eth') >= 0) {
+      // Input is an ens domain
+      console.log('Attempting to look up ', value)
+      const addr = await ensLookup(value)
+
+      console.log('Resolved:', addr)
+      if (addr !== '0x0000000000000000000000000000000000000000') {
+        this.setState({ toAddress: addr, ensName: value }, () => {
+          this.amountInput.focus()
+          cookie.save('sendToAddress', value, { path: '/', maxAge: 60 })
+        })
       }
-    }
-  };
+    } else if (isAddress(value)) {
+      cookie.save('sendToAddress', value, { path: '/', maxAge: 60 })
 
-  async ensLookup (name) {
-    console.log('Attempting to look up ', name)
-    const addr = await this.props.ensLookup(name)
-
-    console.log('Resolved:', addr)
-    if (addr !== '0x0000000000000000000000000000000000000000') {
-      this.setState({ toAddress: addr, fromEns: name }, () => {
-        this.bounceToAmountIfReady()
+      const ensName = await reverseEnsLookup(value)
+      this.setState({ toAddress: value, ensName }, () => {
+        this.amountInput.focus()
+        cookie.save('sendToAddress', value, { path: '/', maxAge: 60 })
       })
-    }
-  }
-
-  bounceToAmountIfReady () {
-    if (this.state.toAddress && this.state.toAddress.length === 42) {
-      this.amountInput.focus()
+    } else {
+      // Input is incomplete
+      this.setState({ toAddress: value }, () => {
+        cookie.save('sendToAddress', value, { path: '/', maxAge: 60 })
+      })
     }
   }
 
   componentDidMount () {
-    this.setState({ canSend: this.canSend() })
+    const { amount, toAddress } = this.state
     setTimeout(() => {
-      if (!this.state.toAddress && this.addressInput) {
+      if (!isAddress(toAddress) && this.addressInput) {
         this.addressInput.focus()
-      } else if (!this.state.amount && this.amountInput) {
+      } else if (!amount && this.amountInput) {
         this.amountInput.focus()
-      } else if (this.messageInput) {
-        this.messageInput.focus()
-        setTimeout(() => {
-          this.scrollToBottom()
-        }, 30)
+        scrollToBottom()
       }
     }, 350)
   }
 
-  canSend () {
-    return (this.state.toAddress && this.state.toAddress.length === 42 && this.state.amount >= 0)
-  }
-
-  scrollToBottom () {
-    console.log('scrolling to bottom')
-    scroller.scrollTo('theVeryBottom', {
-      duration: 500,
-      delay: 30,
-      smooth: 'easeInOutCubic'
-    })
-  }
-
-  handleSend = async () => {
-    const { toAddress, amount } = this.state
-
-    if (this.state.canSend) {
-      if (!this.state.amount) {
-        return false
-      }
-      const amountWei = toBN(toWei(this.state.amount, 'ether'))
-
-      console.log('this.props.balance', this.props.offchainBalance, 'amountWei', amountWei.toString())
-
-      if (typeof this.props.offchainBalance === 'undefined') {
-        this.props.changeAlert({ type: 'warning', message: "Can't read balance" })
-      } else if (toBN(this.props.offchainBalance).lt(amountWei)) {
-        console.log('Not enough funds', this.props.offchainBalance.toString())
-        this.props.changeAlert({ type: 'warning', message: 'Not enough funds' })
-      } else {
-        let value = 0
-        console.log('amount', amount)
-        if (amount) {
-          value = amount
-        }
-
-        cookie.remove('sendToStartAmount', { path: '/' })
-        cookie.remove('sendToStartMessage', { path: '/' })
-        cookie.remove('sendToAddress', { path: '/' })
-
-        const transaction = {
-          to: toAddress,
-          from: this.props.address,
-          amount: toWei(value, 'ether').toString(),
-          tokenAddress: this.props.token.tokenAddress
-        }
-
-        console.log(transaction)
-
-        try {
-          const txhash = this.props.sendTransaction(transaction)
-          // console.log("transaction response", response)
-          if (typeof this.props.onSend === 'function') {
-            this.props.onSend(txhash)
-          }
-        } catch (e) {
-          console.error(e)
-          this.props.changeAlert({ type: 'error', message: 'Transaction Failed' })
-        }
-      }
-    } else {
-      this.props.changeAlert({ type: 'warning', message: i18n.t('send_to_address.error') })
-    }
-  };
-
   render () {
-    const { canSend, toAddress } = this.state
+    const { amount, toAddress, ensName } = this.state
+    const { buttonStyle, offchainBalance, token } = this.props
+    const canSendTransaction = canSend(toAddress, amount, offchainBalance)
 
     return (
       <div>
@@ -171,17 +125,17 @@ export default class SendToAddress extends React.Component {
             <div className='form-group w-100'>
               <label htmlFor='amount_input'>{i18n.t('send_to_address.to_address')}</label>
               <AddressBar
-                buttonStyle={this.props.buttonStyle}
-                toAddress={this.state.toAddress}
-                setToAddress={(toAddress) => { this.updateState('toAddress', toAddress) }}
+                buttonStyle={buttonStyle}
+                toAddress={toAddress}
+                setToAddress={(toAddress) => { this.updateENSOrAddress(toAddress) }}
                 openScanner
                 addressInput={(input) => { this.addressInput = input }}
               />
             </div>
-            <div>  {this.state.toAddress && this.state.toAddress.length === 42 &&
+            <div>  {isAddress(toAddress) &&
               <CopyToClipboard text={toAddress.toLowerCase()}>
-                <div style={{ cursor: 'pointer' }} onClick={() => this.props.changeAlert({ type: 'success', message: toAddress.toLowerCase() + ' copied to clipboard' })}>
-                  <div style={{ opacity: 0.33 }}>{this.state.fromEns}</div>
+                <div style={{ cursor: 'pointer' }} onClick={() => this.props.changeAlert({ type: 'success', message: toAddress + ' copied to clipboard' })}>
+                  <div style={{ opacity: 0.75 }}>{ensName}</div>
                   <Blockies seed={toAddress.toLowerCase()} scale={10} />
                 </div>
               </CopyToClipboard>}
@@ -189,18 +143,32 @@ export default class SendToAddress extends React.Component {
             <label htmlFor='amount_input'>{i18n.t('send_to_address.send_amount')}</label>
             <AmountBar
               ref={(input) => { this.amountInput = input }}
-              buttonStyle={this.props.buttonStyle}
-              unit={this.props.token ? 'f' + this.props.token.shortName : i18n.t('loading')}
-              value={this.state.amount}
-              updateValue={amount => this.updateState('amount', amount)}
-              maxValue={typeof this.props.offchainBalance !== 'undefined' ? fromWei(this.props.offchainBalance.toString(), 'ether') : undefined}
+              buttonStyle={buttonStyle}
+              unit={token ? 'f' + token.shortName : i18n.t('loading')}
+              value={amount}
+              updateValue={amount => {
+                cookie.save('sendStartAmount', amount, { path: '/', maxAge: 60 })
+                this.setState({ amount })
+              }}
+              maxValue={typeof offchainBalance !== 'undefined' ? fromWei(offchainBalance.toString(), 'ether') : undefined}
               minValue='0'
             />
           </div>
         </div>
         <button
-          name='theVeryBottom' className={`btn btn-lg w-100 ${canSend ? '' : 'disabled'}`} style={this.props.buttonStyle.primary}
-          onClick={this.handleSend}
+          name='theVeryBottom'
+          className={`btn btn-lg w-100 ${canSendTransaction ? '' : 'disabled'}`}
+          style={buttonStyle.primary}
+          onClick={() => {
+            const { type, message } = this.attemptSend(toAddress, amount)
+            console.log(type, message)
+            if (type === 'success') {
+              clearCookies()
+              this.props.onSend(message)
+            } else {
+              this.props.changeAlert({ type, message })
+            }
+          }}
         >
             Send
         </button>
