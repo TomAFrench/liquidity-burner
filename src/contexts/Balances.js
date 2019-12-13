@@ -153,20 +153,24 @@ export function useAddressBalance (address, tokenAddress) {
   const nocust = useNocustClient()
   const eraNumber = useEraNumber()
   const [state, { update }] = useBalanceContext()
-  const tokenBalance = safeAccess(state, [address, tokenAddress]) || {}
+  const tokenBalance = safeAccess(state, [address, tokenAddress]) || ZERO_BALANCE
 
-  const getData = async () => {
+  useEffect(() => {
+    console.log('getting balances for', tokenAddress)
     if (!!nocust && !!address && !!tokenAddress) {
-      console.log('getting balances for', tokenAddress)
-      const onchainBalance = await nocust.getOnChainBalance(address, tokenAddress)
-      const offchainBalance = await nocust.getNOCUSTBalance(address, tokenAddress)
-      console.log('Balance', tokenAddress, { onchainBalance: onchainBalance.toString(10), offchainBalance: offchainBalance.toString(10) })
-
-      update(address, tokenAddress, { onchainBalance, offchainBalance })
+      Promise.all([
+        nocust.getOnChainBalance(address, tokenAddress),
+        nocust.getNOCUSTBalance(address, tokenAddress)])
+        .then(([onchainBalance, offchainBalance]) => {
+          console.log('Balance', tokenAddress, { onchainBalance: onchainBalance.toString(10), offchainBalance: offchainBalance.toString(10) })
+          update(address, tokenAddress, { onchainBalance, offchainBalance })
+        })
+        .catch(err => {
+          console.error(err)
+          update(address, tokenAddress, ZERO_BALANCE)
+        })
     }
-  }
-
-  useMemo(getData, [address, tokenAddress, eraNumber])
+  }, [address, tokenAddress, eraNumber])
 
   return tokenBalance
 }
