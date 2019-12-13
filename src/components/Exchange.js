@@ -11,6 +11,7 @@ import { useTokens } from '../contexts/Tokens'
 import { useOffchainAddressBalance } from '../contexts/Balances'
 import { useButtonStyle } from '../contexts/Theme'
 
+import useWindowDimensions from '../hooks/useWindowDimensions'
 import { getAmountIn, getAmountOut, getMaxOutputs } from '../utils/exchange'
 
 const { toWei, fromWei } = require('web3-utils')
@@ -38,8 +39,9 @@ const flexColStyle = {
 const TEXSwapper = (props) => {
   const [buyAmount, setBuyAmount] = useState('')
   const [sellAmount, setSellAmount] = useState('')
-
   const [maxInput, maxOutput] = getMaxOutputs(props.orders, props.assetBalance)
+
+  const { width } = useWindowDimensions()
 
   const buyAmountBar = (
     <AmountBar
@@ -89,11 +91,9 @@ const TEXSwapper = (props) => {
       </div>
 
       <div className='col-2 p-1' style={colStyle}>
-        <Scaler config={{ startZoomAt: 650, origin: '0% 85%' }}>
-          <button className='btn btn-large w-100' style={props.buttonStyle.secondary} onClick={() => props.cancelAction()}>
-            <i className='fas fa-times' /> {i18n.t('cancel')}
-          </button>
-        </Scaler>
+        <button className='btn btn-large w-100' style={props.buttonStyle.secondary} onClick={() => props.cancelAction()}>
+          <i className='fas fa-times' /> {(width > 700) && i18n.t('cancel')}
+        </button>
       </div>
       <div className='col-3 p-1'>
         <button
@@ -101,9 +101,7 @@ const TEXSwapper = (props) => {
             props.successAction(buyAmount, sellAmount)
           }}
         >
-          <Scaler config={{ startZoomAt: 600, origin: '10% 50%' }}>
-            <i className={`fas ${props.icon}`} /> Send
-          </Scaler>
+          <i className={`fas ${props.icon}`} /> Send
         </button>
       </div>
     </div>
@@ -125,8 +123,10 @@ const TEXSwapBar = (props) => {
 
   useEffect(() => {
     return () => {
-      console.log('syncing orders', props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
-      nocust.synchronizeSwapOrders(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
+      if (nocust) {
+        console.log('syncing orders', props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
+        nocust.synchronizeSwapOrders(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
+      }
     }
   }, [])
 

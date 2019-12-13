@@ -6,6 +6,7 @@ import i18n from '../i18n'
 import 'react-input-range/lib/css/index.css'
 
 import AmountBar from './AmountBar'
+import useWindowDimensions from '../hooks/useWindowDimensions'
 const { toWei, fromWei, toBN } = require('web3-utils')
 
 const colStyle = {
@@ -15,6 +16,7 @@ const colStyle = {
 
 const Swapper = (props) => {
   const [amount, setAmount] = useState('')
+  const { width } = useWindowDimensions()
 
   let canSwap = false
   try {
@@ -40,11 +42,9 @@ const Swapper = (props) => {
         />
       </div>
       <div className='col-2 p-1' style={colStyle}>
-        <Scaler config={{ startZoomAt: 650, origin: '15% 50%' }}>
-          <button className='btn btn-large w-100' style={props.buttonStyle.secondary} onClick={() => props.cancelAction()}>
-            <i className='fas fa-times' /> {i18n.t('cancel')}
-          </button>
-        </Scaler>
+        <button className='btn btn-large w-100' style={props.buttonStyle.secondary} onClick={() => props.cancelAction()}>
+          <i className='fas fa-times' /> {(width > 700) && i18n.t('cancel')}
+        </button>
       </div>
       <div className='col-3 p-1'>
         <button
