@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useMemo, useCallback, use
 
 import { safeAccess } from '../utils'
 import { isAddress } from 'web3-utils'
-import { useNocustClient } from './Nocust'
+import { useNocustClient, useEraNumber } from './Nocust'
 
 const UPDATE = 'UPDATE'
 
@@ -20,9 +20,8 @@ function reducer (state, { type, payload }) {
         ...state,
         [address]: {
           ...(safeAccess(state, [address]) || {}),
-          [tokenAddress]: {
-            transactions
-          }
+          [tokenAddress]: transactions
+
         }
       }
     }
@@ -48,32 +47,25 @@ export default function Provider ({ children }) {
 
 export function useTokenTransactions (address, tokenAddress) {
   const nocust = useNocustClient()
+  const eraNumber = useEraNumber()
   const [state, { update }] = useTransactionContext()
-  const { transactions } = safeAccess(state, [address, tokenAddress]) || {}
+  const transactions = safeAccess(state, [address, tokenAddress]) || []
 
   useEffect(() => {
     if (isAddress(address) && isAddress(tokenAddress)) {
-      let stale = false
       console.log('checking transactions')
       nocust.getTransactionsForAddress(address, tokenAddress)
         .then(transactions => {
           if (transactions.length) {
             transactions = transactions.reverse()
           }
-          if (!stale) {
-            update(address, tokenAddress, transactions)
-          }
+          update(address, tokenAddress, transactions)
         })
         .catch(() => {
-          if (!stale) {
-            update(address, tokenAddress, null)
-          }
+          update(address, tokenAddress, [])
         })
-      return () => {
-        stale = true
-      }
     }
-  }, [address, tokenAddress, update])
+  }, [address, tokenAddress, eraNumber])
 
   return transactions
 }
