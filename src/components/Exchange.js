@@ -127,7 +127,6 @@ const TEXSwapBar = (props) => {
     return () => {
       console.log('syncing orders', props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
       nocust.synchronizeSwapOrders(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress)
-      // nocust.synchronizeSwapOrders(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress)
     }
   }, [])
 
