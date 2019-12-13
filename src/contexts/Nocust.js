@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect } from 'react'
 
-// import { safeAccess } from '../utils'
-
 import { NOCUSTManager } from 'nocust-client'
 
 const HUB_CONTRACT_ADDRESS = process.env.REACT_APP_HUB_CONTRACT_ADDRESS
@@ -141,15 +139,14 @@ export function useNocustClient () {
 
   useEffect(() => {
     if (web3 && !nocust) {
-      const nocustManager = new NOCUSTManager({
-        rpcApi: web3,
-        operatorApiUrl: HUB_API_URL,
-        contractAddress: HUB_CONTRACT_ADDRESS
-      })
-
-      console.log('new nocust-client')
-
       try {
+        const nocustManager = new NOCUSTManager({
+          rpcApi: web3,
+          operatorApiUrl: HUB_API_URL,
+          contractAddress: HUB_CONTRACT_ADDRESS
+        })
+
+        console.log('new nocust-client')
         updateNocust(nocustManager)
       } catch (e) {
         updateNocust(null)
