@@ -151,9 +151,11 @@ const TEXSwapBar = (props) => {
         assetBuyText={'f' + props.assetB.shortName}
         assetBalance={assetABalance}
         successAction={(buyAmount, sellAmount) => {
-          console.log('Buying ', buyAmount, props.assetB.shortName, ' for ', sellAmount, props.assetA.shortName)
-          nocust.sendSwap(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress, toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
-          setSwapMode(false)
+          if (buyAmount !== '' && sellAmount !== '') {
+            console.log('Buying ', buyAmount, props.assetB.shortName, ' for ', sellAmount, props.assetA.shortName)
+            nocust.sendSwap(props.address, props.assetB.tokenAddress, props.assetA.tokenAddress, toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
+            setSwapMode(false)
+          }
         }}
         cancelAction={() => {
           setSwapMode(false)
@@ -171,10 +173,11 @@ const TEXSwapBar = (props) => {
         assetBuyText={'f' + props.assetA.shortName}
         assetBalance={assetBBalance}
         successAction={(buyAmount, sellAmount) => {
-          console.log('Buying ', buyAmount, props.assetA.shortName, ' for ', sellAmount, props.assetB.shortName)
-          nocust.sendSwap(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress, toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
-
-          setSwapMode(false)
+          if (buyAmount !== '' && sellAmount !== '') {
+            console.log('Buying ', buyAmount, props.assetA.shortName, ' for ', sellAmount, props.assetB.shortName)
+            nocust.sendSwap(props.address, props.assetA.tokenAddress, props.assetB.tokenAddress, toWei(buyAmount, 'ether'), toWei(sellAmount, 'ether'))
+            setSwapMode(false)
+          }
         }}
         cancelAction={() => {
           setSwapMode(false)
