@@ -12,7 +12,8 @@ const INITIAL_HUB_INFO = {
   hubApiUrl: HUB_API_URL
 }
 
-const UPDATE = 'UPDATE'
+const UPDATE_ERA = 'UPDATE_ERA'
+const UPDATE_NOCUST = 'UPDATE_NOCUST'
 
 export const NocustContext = createContext()
 
@@ -22,12 +23,17 @@ export function useNocustContext () {
 
 function reducer (state, { type, payload }) {
   switch (type) {
-    case UPDATE: {
-      const { web3, nocust, eraNumber } = payload
+    case UPDATE_NOCUST: {
+      const { nocust } = payload
       return {
         ...state,
-        web3,
-        nocust,
+        nocust
+      }
+    }
+    case UPDATE_ERA: {
+      const { eraNumber } = payload
+      return {
+        ...state,
         eraNumber
       }
     }
@@ -40,12 +46,40 @@ function reducer (state, { type, payload }) {
 export default function Provider ({ web3, children }) {
   const [state, dispatch] = useReducer(reducer, { web3: web3, hub: INITIAL_HUB_INFO })
 
-  const update = useCallback((web3, nocust, eraNumber) => {
-    dispatch({ type: UPDATE, payload: { web3, nocust, eraNumber } })
+  const updateNocust = useCallback((nocust) => {
+    dispatch({ type: UPDATE_NOCUST, payload: { nocust } })
   }, [])
 
+  const updateEra = useCallback((eraNumber) => {
+    dispatch({ type: UPDATE_ERA, payload: { eraNumber } })
+  }, [])
+
+  // Poll the hub to keep track of the Era number
+  // Can then use it as a clock to avoid excessive requests to hub
+  useEffect(() => {
+    const test = () => {
+      const { nocust } = state
+      if (nocust) {
+        console.log('Checking Era')
+        nocust.getEraNumber()
+          .then(eraNumber => {
+            console.log('Era:', eraNumber)
+            updateEra(eraNumber)
+          })
+          .catch(() => {
+            console.log('setting eraNumber to null')
+            updateEra(null)
+          })
+      }
+    }
+
+    test()
+    const intervalId = setInterval(test, 10000)
+    return () => { clearInterval(intervalId) }
+  }, [state.nocust])
+
   return (
-    <NocustContext.Provider value={useMemo(() => [state, { update }], [state, update])}>
+    <NocustContext.Provider value={useMemo(() => [state, { updateNocust, updateEra }], [state, updateNocust, updateEra])}>
       {children}
     </NocustContext.Provider>
   )
@@ -59,13 +93,11 @@ export function useNocustHubInfo () {
 }
 
 export function useNocustClient () {
-  const [state, { update }] = useNocustContext()
-  const { web3, nocust, eraNumber } = state
+  const [state, { updateNocust }] = useNocustContext()
+  const { web3, nocust } = state
 
   useEffect(() => {
     if (web3 && !nocust) {
-      let stale = false
-
       const nocustManager = new NOCUSTManager({
         rpcApi: web3,
         operatorApiUrl: HUB_API_URL,
@@ -74,16 +106,10 @@ export function useNocustClient () {
 
       console.log('new nocust-client')
 
-      if (!stale) {
-        try {
-          update(web3, nocustManager, eraNumber)
-        } catch (e) {
-          update(web3, null, eraNumber)
-        }
-      }
-
-      return () => {
-        stale = true
+      try {
+        updateNocust(nocustManager)
+      } catch (e) {
+        updateNocust(null)
       }
     }
   })
@@ -92,32 +118,8 @@ export function useNocustClient () {
 }
 
 export function useEraNumber () {
-  const [state, { update }] = useNocustContext()
-  const { web3, nocust, eraNumber } = state
-
-  useEffect(() => {
-    if (web3 && nocust) {
-      let stale = false
-      console.log('Checking Era')
-      nocust.getEraNumber()
-        .then(neweraNumber => {
-          if (!stale && (eraNumber === undefined || eraNumber < neweraNumber)) {
-            console.log('Era:', neweraNumber)
-            update(web3, nocust, neweraNumber)
-          }
-        })
-        .catch(() => {
-          if (!stale) {
-            console.log('setting eraNumber to null')
-            update(web3, nocust, null)
-          }
-        })
-
-      return () => {
-        stale = true
-      }
-    }
-  })
+  const [state] = useNocustContext()
+  const { eraNumber } = state
 
   return eraNumber
 }
