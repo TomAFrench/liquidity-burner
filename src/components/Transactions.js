@@ -85,9 +85,7 @@ export default ({ max, address, changeAlert, token }) => {
   const txns = []
   let count = 0
   if (!max) max = 9999
-  /* eslint-disable no-unused-vars */
-  for (const r in transactions) {
-    /* eslint-enable no-unused-vars */
+  for (const r in transactions) { // eslint-disable-line no-unused-vars
     if (count++ < max) {
       txns.push(<hr key={'ruler' + transactions[r].tx_id} style={{ color: '#DFDFDF', marginTop: 0, marginBottom: 7 }} />)
       txns.push(<TransactionEntry key={transactions[r].tx_id} tx={transactions[r]} changeAlert={changeAlert} token={token} />)
