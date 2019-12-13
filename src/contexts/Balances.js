@@ -102,10 +102,10 @@ export function useOffchainAddressBalance (address, tokenAddress) {
           updateOffchain(address, tokenAddress, offchainBalance)
         })
         .catch(() => {
-          updateOffchain(address, tokenAddress, ZERO_BALANCE)
+          updateOffchain(address, tokenAddress, ZERO_BALANCE.offchainBalance)
         })
     }
-  }, [nocust, address, tokenAddress, eraNumber])
+  }, [address, tokenAddress, eraNumber])
 
   return offchainBalance
 }
@@ -129,7 +129,7 @@ export function useOnchainAddressBalance (address, tokenAddress) {
           updateOnchain(address, tokenAddress, onchainBalance)
         })
         .catch(() => {
-          updateOnchain(address, tokenAddress, null)
+          updateOnchain(address, tokenAddress, ZERO_BALANCE.onchainBalance)
         })
     }
   }, [address, tokenAddress, eraNumber])
@@ -160,12 +160,13 @@ export function useAddressBalance (address, tokenAddress) {
       console.log('getting balances for', tokenAddress)
       const onchainBalance = await nocust.getOnChainBalance(address, tokenAddress)
       const offchainBalance = await nocust.getNOCUSTBalance(address, tokenAddress)
+      console.log('Balance', tokenAddress, { onchainBalance: onchainBalance.toString(10), offchainBalance: offchainBalance.toString(10) })
 
       update(address, tokenAddress, { onchainBalance, offchainBalance })
     }
   }
 
-  useMemo(getData, [eraNumber])
+  useMemo(getData, [address, tokenAddress, eraNumber])
 
   return tokenBalance
 }
