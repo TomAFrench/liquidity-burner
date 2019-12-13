@@ -46,7 +46,7 @@ async function attemptSend (address, token, offchainBalance, sendTransaction, to
       const txId = await sendTransaction(transaction)
       return { type: 'success', message: txId }
     } catch (e) {
-      return { type: 'error', message: 'Transaction Failed' }
+      return { type: 'danger', message: 'Transaction Failed - Is this account registered with the hub?' }
     }
   } else if (toBN(offchainBalance.toString(10)).lt(toBN(toWei(amount, 'ether')))) {
     return { type: 'warning', message: 'Not enough funds' }
