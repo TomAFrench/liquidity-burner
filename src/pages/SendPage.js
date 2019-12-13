@@ -51,7 +51,6 @@ export default (props) => {
         <SendToAddress
           token={token}
           sendTransaction={(tx) => nocust.sendTransaction(tx)}
-          convertToDollar={(dollar) => { return dollar }}
           toAddress={toAddress}
           amount={tokenAmount}
           ensLookup={props.ensLookup}

@@ -110,11 +110,7 @@ export default class SendToAddress extends React.Component {
   }
 
   handleSend = async () => {
-    let { toAddress, amount } = this.state
-    const { convertToDollar } = this.props
-
-    amount = convertToDollar(amount)
-    console.log('CONVERTED TO DOLLAR AMOUNT', amount)
+    const { toAddress, amount } = this.state
 
     if (this.state.canSend) {
       if (!this.state.amount) {

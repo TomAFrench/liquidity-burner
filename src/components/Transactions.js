@@ -20,7 +20,7 @@ const cleanTime = (s) => {
 const TransactionEntry = ({ tx, changeAlert, token }) => {
   const blockAge = (Date.now() - tx.timestamp) / 1000
 
-  const dollarView = (
+  const transactionAmount = (
     <span>
       <span style={{ opacity: 0.33 }}>-</span>{fromWei(tx.amount.toString(), 'ether')} f{token.shortName}<span style={{ opacity: 0.33 }}>-></span>
     </span>
@@ -63,7 +63,7 @@ const TransactionEntry = ({ tx, changeAlert, token }) => {
       </div>
       <div className='col-3 p-1' style={{ textAlign: 'center', whiteSpace: 'nowrap', letterSpacing: -1 }}>
         <Scaler config={{ startZoomAt: 600, origin: '25% 50%', adjustedZoom: 1 }}>
-          {dollarView}
+          {transactionAmount}
         </Scaler>
       </div>
       <div className='col-3 p-1' style={{ textAlign: 'center', whiteSpace: 'nowrap', letterSpacing: -1 }}>
