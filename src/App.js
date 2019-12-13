@@ -15,7 +15,7 @@ import i18n from './i18n'
 import './App.scss'
 import Header from './components/Header'
 import NavCard from './components/NavCard'
-import { AdvancedPage, BurnWalletPage } from './pages'
+import { AdvancedPage, BurnWalletPage, ScannerPage } from './pages'
 import Footer from './components/Footer'
 import Loader from './components/Loader'
 import burnerlogo from './images/liquidity.png'
@@ -24,7 +24,6 @@ import namehash from 'eth-ens-namehash'
 import incogDetect from './services/incogDetect.js'
 
 import LiquidityNetwork from './components/LiquidityNetwork'
-import SendByScan from './components/SendByScan'
 
 import { useThemeContext } from './contexts/Theme'
 import {
@@ -103,7 +102,7 @@ const Interface = (props) => {
           <Route
             path='/scanner'
             render={({ history, location }) => (
-              <SendByScan
+              <ScannerPage
                 onError={(error) => {
                   props.changeAlert('danger', error)
                 }}
