@@ -16,7 +16,7 @@ export default ({ address, history, match, changeAlert, backButton }) => {
 
   return (
     <div>
-      <div className='main-card card w-100' style={{ zIndex: 1 }}>
+      <div className='send-to-address card w-100' style={{ zIndex: 1 }}>
         <NavCard title={i18n.t('request_funds')} />
         <Balance
           token={token}

@@ -72,20 +72,21 @@ export default (props) => {
               />
             </div>
           </div>
-          <button
-            style={buttonStyle.primary} className={`btn btn-lg w-100 ${canRequest ? '' : 'disabled'}`}
-            onClick={() => {
-              if (canRequest) {
-                setRequested(true)
-              } else {
-                props.changeAlert({ type: 'warning', message: 'Please enter a valid amount' })
-              }
-            }}
-          >
-            {i18n.t('request_funds.button')}
-          </button>
         </div>
-
+        <button
+          name='theVeryBottom'
+          style={buttonStyle.primary}
+          className={`btn btn-lg w-100 ${canRequest ? '' : 'disabled'}`}
+          onClick={() => {
+            if (canRequest) {
+              setRequested(true)
+            } else {
+              props.changeAlert({ type: 'warning', message: 'Please enter a valid amount' })
+            }
+          }}
+        >
+          {i18n.t('request_funds.button')}
+        </button>
       </div>
     )
   }
