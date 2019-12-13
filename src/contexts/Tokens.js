@@ -69,24 +69,14 @@ export function useTokens () {
 
   useEffect(() => {
     if (nocust) {
-      let stale = false
-
       nocust.getSupportedTokens()
         .then(tokenList => {
-          if (!stale) {
-            const tokens = buildTokenDict(tokenList)
-            update(tokens)
-          }
+          const tokens = buildTokenDict(tokenList)
+          update(tokens)
         })
         .catch(() => {
-          if (!stale) {
-            update({})
-          }
+          update({})
         })
-
-      return () => {
-        stale = true
-      }
     }
   }, [eraNumber])
 
