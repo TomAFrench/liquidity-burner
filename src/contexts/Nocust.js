@@ -14,6 +14,8 @@ const INITIAL_HUB_INFO = {
 
 const UPDATE_ERA = 'UPDATE_ERA'
 const UPDATE_NOCUST = 'UPDATE_NOCUST'
+const UPDATE_RECOVERY = 'UPDATE_RECOVERY'
+const UPDATE_SLA = 'UPDATE_SLA'
 
 export const NocustContext = createContext()
 
@@ -37,6 +39,20 @@ function reducer (state, { type, payload }) {
         eraNumber
       }
     }
+    case UPDATE_RECOVERY: {
+      const { isRecovery } = payload
+      return {
+        ...state,
+        isRecovery
+      }
+    }
+    case UPDATE_SLA: {
+      const { slaDetail } = payload
+      return {
+        ...state,
+        slaDetail
+      }
+    }
     default: {
       throw Error(`Unexpected action type in NocustContext reducer: '${type}'.`)
     }
@@ -52,6 +68,14 @@ export default function Provider ({ web3, children }) {
 
   const updateEra = useCallback((eraNumber) => {
     dispatch({ type: UPDATE_ERA, payload: { eraNumber } })
+  }, [])
+
+  const updateIsRecovery = useCallback((isRecovery) => {
+    dispatch({ type: UPDATE_RECOVERY, payload: { isRecovery } })
+  }, [])
+
+  const updateSlaDetail = useCallback((isRecovery) => {
+    dispatch({ type: UPDATE_SLA, payload: { isRecovery } })
   }, [])
 
   // Poll the hub to keep track of the Era number
@@ -79,7 +103,7 @@ export default function Provider ({ web3, children }) {
   }, [state.nocust])
 
   return (
-    <NocustContext.Provider value={useMemo(() => [state, { updateNocust, updateEra }], [state, updateNocust, updateEra])}>
+    <NocustContext.Provider value={useMemo(() => [state, { updateNocust, updateEra, updateIsRecovery, updateSlaDetail }], [state, updateNocust, updateEra, updateIsRecovery, updateSlaDetail])}>
       {children}
     </NocustContext.Provider>
   )
@@ -90,6 +114,25 @@ export function useNocustHubInfo () {
   const { hub } = state
 
   return hub
+}
+
+export function getBlocksPerEon () {
+  const [state, { updateBlocksPerEon }] = useNocustContext()
+  const { nocust, blocksPerEon } = state
+
+  useEffect(async () => {
+    if (nocust) {
+      try {
+        const blocksPerEon = await nocust.getBlocksPerEon()
+        updateBlocksPerEon(blocksPerEon)
+      } catch (e) {
+        updateBlocksPerEon(null)
+      }
+    }
+  }, [nocust])
+  console.log(state)
+
+  return blocksPerEon
 }
 
 export function useNocustClient () {
@@ -117,9 +160,45 @@ export function useNocustClient () {
   return nocust
 }
 
+export function useIsRecovery () {
+  const [state, { updateIsRecovery }] = useNocustContext()
+  const { nocust, isRecovery } = state
+
+  useEffect(async () => {
+    if (nocust) {
+      try {
+        const isRecovery = await nocust.isRecovery()
+        updateIsRecovery(isRecovery)
+      } catch (e) {
+        updateIsRecovery(false)
+      }
+    }
+  })
+
+  return isRecovery
+}
+
 export function useEraNumber () {
   const [state] = useNocustContext()
   const { eraNumber } = state
 
   return eraNumber
+}
+
+export function useSlaDetail () {
+  const [state, { updateSlaDetail }] = useNocustContext()
+  const { nocust, slaDetail } = state
+
+  useEffect(async () => {
+    if (nocust) {
+      try {
+        const slaDetail = await nocust.getSLADetail()
+        updateSlaDetail(slaDetail)
+      } catch (e) {
+        updateSlaDetail({})
+      }
+    }
+  })
+
+  return slaDetail
 }
