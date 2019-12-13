@@ -24,7 +24,7 @@ function clearCookies () {
   cookie.remove('sendToAddress', { path: '/' })
 }
 
-async function canSend (toAddress, amount, balance) {
+function canSend (toAddress, amount, balance) {
   if (typeof amount !== 'string' || amount === '') return false
   const amountWei = toBN(toWei(amount, 'ether'))
   return (isAddress(toAddress) &&
@@ -32,7 +32,7 @@ async function canSend (toAddress, amount, balance) {
           toBN(balance).gte(amountWei))
 }
 
-function attemptSend (address, token, offchainBalance, sendTransaction, toAddress, amount) {
+async function attemptSend (address, token, offchainBalance, sendTransaction, toAddress, amount) {
   if (canSend(toAddress, amount, offchainBalance)) {
     const transaction = {
       to: toAddress,
@@ -43,8 +43,8 @@ function attemptSend (address, token, offchainBalance, sendTransaction, toAddres
 
     try {
       console.log(transaction)
-      const txhash = sendTransaction(transaction)
-      return { type: 'success', message: txhash }
+      const txId = await sendTransaction(transaction)
+      return { type: 'success', message: txId }
     } catch (e) {
       return { type: 'error', message: 'Transaction Failed' }
     }
@@ -159,8 +159,8 @@ export default class SendToAddress extends React.Component {
           name='theVeryBottom'
           className={`btn btn-lg w-100 ${canSendTransaction ? '' : 'disabled'}`}
           style={buttonStyle.primary}
-          onClick={() => {
-            const { type, message } = this.attemptSend(toAddress, amount)
+          onClick={async () => {
+            const { type, message } = await this.attemptSend(toAddress, amount)
             console.log(type, message)
             if (type === 'success') {
               clearCookies()
