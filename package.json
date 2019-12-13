@@ -2,6 +2,7 @@
   "name": "liquidity-burner-wallet",
   "version": "0.1.2",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "axios": "^0.18.0",
     "bfj": "6.1.1",
