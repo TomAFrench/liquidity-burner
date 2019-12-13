@@ -97,7 +97,7 @@ export class LegacyReader extends Component {
         <div style={{ position: 'absolute', zIndex: 11, top: 0, left: 0, width: '100%', height: '100%', color: '#FFFFFF', cursor: 'pointer' }}>
           <div style={{ textAlign: 'center', paddingTop: '15%' }}>
             <div style={{ marginBottom: 20 }}><i className='fas fa-camera' /></div>
-            <img src={qrimage} style={{ position: 'absolute', left: '36%', top: '25%', padding: 4, border: '1px solid #888888', opacity: 0.25, maxWidth: '30%', maxHight: '30%' }} />
+            <img src={qrimage} alt='QRcode' style={{ position: 'absolute', left: '36%', top: '25%', padding: 4, border: '1px solid #888888', opacity: 0.25, maxWidth: '30%', maxHight: '30%' }} />
           </div>
           <div style={{ textAlign: 'center', paddingTop: '35%' }}>
 
