@@ -92,7 +92,7 @@ export function useWithdrawalFee (gasPrice) {
           updateFee(null)
         })
     }
-  }, [gasPrice, updateFee])
+  }, [gasPrice])
 
   return withdrawalFee
 }
@@ -115,13 +115,14 @@ export function useWithdrawalLimit (address, tokenAddress) {
         }
         )
     }
-  }, [address, tokenAddress, eraNumber, updateLimit])
+  }, [address, tokenAddress, eraNumber])
 
   return withdrawalLimit
 }
 
 export function useBlocksToWithdrawal (address, tokenAddress) {
   const nocust = useNocustClient()
+  const eraNumber = useEraNumber()
   const [state, { updateBlocks }] = useWithdrawalContext()
   const { blocksToWithdrawal } = safeAccess(state, [address, tokenAddress]) || {}
 
@@ -132,10 +133,10 @@ export function useBlocksToWithdrawal (address, tokenAddress) {
           updateBlocks(address, tokenAddress, blocksToWithdrawal)
         })
         .catch(() => {
-          updateBlocks(address, tokenAddress, null)
+          updateBlocks(address, tokenAddress, undefined)
         })
     }
-  }, [address, tokenAddress, blocksToWithdrawal, updateBlocks])
+  }, [address, tokenAddress, blocksToWithdrawal, eraNumber])
 
   return blocksToWithdrawal
 }
