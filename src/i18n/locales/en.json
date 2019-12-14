@@ -18,6 +18,7 @@
     "amount": "Amount",
     "send": "Send",
     "withdraw": "Withdraw",
+    "confirm_withdraw": "Confirm Withdrawal",
     "request_funds_title": "Request funds",
     "request": "Request",
     "main_card": {
