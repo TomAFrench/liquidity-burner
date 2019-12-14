@@ -6,6 +6,7 @@ import i18n from '../i18n'
 import NavCard from '../components/NavCard'
 import SendToAddress from '../components/SendToAddress'
 import Balance from '../components/Balance'
+import Transactions from '../components/Transactions'
 
 import { useOffchainAddressBalance } from '../contexts/Balances'
 import { lookupTokenAddress } from '../contexts/Tokens'
@@ -63,6 +64,12 @@ export default (props) => {
             const tx = await nocust.getTransaction(await txhash)
             console.log(tx)
           }}
+        />
+        <Transactions
+          changeAlert={props.changeAlert}
+          address={props.address}
+          token={token}
+          max={5}
         />
       </div>
       {props.backButton}
