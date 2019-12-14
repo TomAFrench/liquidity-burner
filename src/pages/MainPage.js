@@ -66,6 +66,7 @@ export default (props) => {
 
             <MainButtons
               url={props.url}
+              address={props.address}
               tokenAddress={token.tokenAddress}
               gwei={props.gwei}
               token={TOKEN}
