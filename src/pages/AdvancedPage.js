@@ -97,7 +97,7 @@ const AccountCreator = ({ history, buttonStyle, changeAlert, setPossibleNewPriva
     <div className='content ops row'>
       <div className={inputPrivateSize}>
         <input
-          type={privateKeyHidden ? 'password' : 'text'} autoCorrect='off' autoCapitalize='none' className='form-control' placeholder='private key' value={newPrivateKey} onChange={event => setNewPrivatekey(event.target.value)}
+          type={privateKeyHidden ? 'password' : 'text'} autoCorrect='off' autoCapitalize='none' className='form-control' placeholder='private key' value={newPrivateKey || ''} onChange={event => setNewPrivatekey(event.target.value)}
         />
       </div>
       {inputPrivateEyeButton}
@@ -144,7 +144,7 @@ const AccountCreator = ({ history, buttonStyle, changeAlert, setPossibleNewPriva
     <div className='content ops row' style={{ paddingTop: 10 }}>
       <div className={inputSeedSize}>
         <input
-          type={seedPhraseHidden ? 'password' : 'text'} autoCorrect='off' autoCapitalize='none' className='form-control' placeholder='seed phrase' value={newSeedPhrase}
+          type={seedPhraseHidden ? 'password' : 'text'} autoCorrect='off' autoCapitalize='none' className='form-control' placeholder='seed phrase' value={newSeedPhrase || ''}
           onChange={event => setNewSeedPhrase(event.target.value)}
         />
       </div>
