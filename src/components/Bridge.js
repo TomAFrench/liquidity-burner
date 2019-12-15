@@ -24,7 +24,7 @@ export default (props) => {
 
   const withdrawLimit = useWithdrawalLimit(props.address, token.tokenAddress)
 
-  const gasLimit = '300000'
+  const gasLimit = '400000'
 
   if (!balance || !balance.onchainBalance || !balance.offchainBalance) {
     return null
@@ -49,9 +49,9 @@ export default (props) => {
         withdrawLimit={withdrawLimit}
         deposit={async (amount) => {
           try {
-            await nocust.approveAndDeposit(props.address, amount, props.gasPrice, gasLimit, token.tokenAddress)
+            const txHash = await nocust.approveAndDeposit(props.address, amount, props.gasPrice, gasLimit, token.tokenAddress)
             history.push('/liquidity/sending', { title: 'Sending ' + token.shortName + ' into the Liquidity Network...', subtitle: 'Tokens can take between 5-10 minutes to appear on the hub' })
-            props.onSend()
+            props.onSend(txHash)
           } catch (e) {
             console.log(e)
             props.changeAlert({ type: 'warning', message: 'Transaction Failed' })
@@ -59,9 +59,9 @@ export default (props) => {
         }}
         requestWithdraw={async (amount) => {
           try {
-            await nocust.withdrawalRequest(props.address, amount, props.gasPrice, gasLimit, token.tokenAddress)
+            const txHash = await nocust.withdrawalRequest(props.address, amount, props.gasPrice, gasLimit, token.tokenAddress)
             history.push('/liquidity/sending', { title: 'Requesting to withdraw ' + token.shortName + ' from the Liquidity Network...', subtitle: 'Withdrawals can take up to 72 hours to become available to confirm onchain' })
-            props.onSend()
+            props.onSend(txHash)
           } catch (e) {
             console.log(e)
             props.changeAlert({ type: 'warning', message: 'Transaction Failed' })
