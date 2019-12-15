@@ -3,6 +3,7 @@ import React, { createContext, useContext, useReducer, useMemo, useCallback, use
 import { safeAccess } from '../utils'
 import { isAddress } from 'web3-utils'
 import { useNocustClient, useEraNumber } from './Nocust'
+import { useTokens } from './Tokens'
 
 const UPDATE_LIMIT = 'UPDATE_LIMIT'
 const UPDATE_FEE = 'UPDATE_FEE'
@@ -136,7 +137,51 @@ export function useBlocksToWithdrawal (address, tokenAddress) {
           updateBlocks(address, tokenAddress, undefined)
         })
     }
-  }, [address, tokenAddress, blocksToWithdrawal, eraNumber])
+  }, [address, tokenAddress, eraNumber])
 
   return blocksToWithdrawal
+}
+
+export function useAllBlocksToWithdrawal (address) {
+  const nocust = useNocustClient()
+  const eraNumber = useEraNumber()
+  const tokens = useTokens()
+  const [state, { updateBlocks }] = useWithdrawalContext()
+  const withdrawalObject = safeAccess(state, [address]) || {}
+
+  useEffect(() => {
+    if (nocust && isAddress(address)) {
+      Promise.all(Object.values(tokens).map(async ({ tokenAddress }) => {
+        return { tokenAddress: tokenAddress, blocksToWithdrawal: await nocust.getBlocksToWithdrawalConfirmation(address, undefined, tokenAddress) }
+      }))
+        .then(tokenList => {
+          tokenList.forEach(({ tokenAddress, blocksToWithdrawal }) => {
+            if (tokenAddress !== undefined) {
+              updateBlocks(address, tokenAddress, blocksToWithdrawal)
+            }
+          })
+        })
+        .catch(() => {
+          console.log("I'm in a bother")
+        })
+    }
+  }, [address, eraNumber])
+
+  return Object.entries(withdrawalObject).reduce((accumulator, [tokenAddress, { blocksToWithdrawal }]) => {
+    accumulator[tokenAddress] = blocksToWithdrawal
+    return accumulator
+  }, {})
+}
+
+export function getNextAvailableConfirmation (address) {
+  const withdrawalObject = useAllBlocksToWithdrawal(address)
+
+  const [tokenAddress, blocksToWithdrawal] = Object.entries(withdrawalObject)
+    .filter(([, blocksToWithdrawal]) => blocksToWithdrawal >= 0) // blocksToWithdrawal = -1 means no withdrawal in progress
+    .reduce((min, trial) => {
+      if (min.length === 0) return trial
+      return trial[1] < min[1] ? trial : min
+    }, [])
+
+  return { tokenAddress, blocksToWithdrawal }
 }

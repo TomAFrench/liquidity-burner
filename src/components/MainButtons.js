@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Scaler } from 'dapparatus'
 import i18next from 'i18next'
 
-import { useBlocksToWithdrawal } from '../contexts/Withdrawal'
+import { getNextAvailableConfirmation } from '../contexts/Withdrawal'
 import { useNocustClient } from '../contexts/Nocust'
 import { useButtonStyle } from '../contexts/Theme'
 
@@ -20,7 +20,9 @@ async function confirmWithdrawal (nocust, address, gwei, tokenAddress) {
 export default (props) => {
   const nocust = useNocustClient()
   const buttonStyle = useButtonStyle()
-  const blocksToWithdrawal = useBlocksToWithdrawal(props.address, props.tokenAddress)
+  const { tokenAddress, blocksToWithdrawal } = getNextAvailableConfirmation(props.address)
+  console.log('NEXT CONFIRMATION', tokenAddress, blocksToWithdrawal)
+  const timeToWithdrawal = humanizeDuration(BLOCK_TIME * blocksToWithdrawal, { largest: 2, units: ['h', 'm', 's'] })
 
   const withdrawalInProgess = (typeof blocksToWithdrawal !== 'undefined' && blocksToWithdrawal !== -1)
 
@@ -28,7 +30,7 @@ export default (props) => {
   if (withdrawalInProgess) {
     withdrawalButton = (
       <div className='content ops row'>
-        <div className='col-12 p-1' onClick={() => { if (blocksToWithdrawal === 0) confirmWithdrawal(nocust, props.address, props.gwei, props.tokenAddress) }}>
+        <div className='col-12 p-1' onClick={() => { if (blocksToWithdrawal === 0) confirmWithdrawal(nocust, props.address, props.gwei, tokenAddress) }}>
           <button className={`btn btn-large w-100 ${blocksToWithdrawal === 0 ? '' : 'disabled'}`} style={buttonStyle.primary}>
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
               <i className={`fas ${blocksToWithdrawal === 0 ? 'fa-check' : 'fa-clock'}`} /> {blocksToWithdrawal === 0 ? i18next.t('confirm_withdraw') : blocksToWithdrawal + ' blocks until confirmation'}
