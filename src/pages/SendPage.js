@@ -41,7 +41,7 @@ export default (props) => {
     <div>
       <div className='send-to-address card w-100' style={{ zIndex: 1 }}>
 
-        <NavCard title={i18n.t('send_to_address_title')} />
+        <NavCard title={i18n.t('send_to_address.title') + ' f' + token.shortName} />
         <Balance
           token={token}
           offchain

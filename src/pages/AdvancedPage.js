@@ -29,7 +29,7 @@ const PrivateKeyViewer = ({ privateKey, balance, buttonStyle, history, qrSize, c
             onClick={() => setPrivateKeyQr(!privateKeyQr)}
           >
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-              <i className='fas fa-key' /> {i18n.t('show')}
+              <i className='fas fa-key' /> {i18n.t('advanced.show')}
             </Scaler>
           </button>
         </div>
@@ -41,7 +41,7 @@ const PrivateKeyViewer = ({ privateKey, balance, buttonStyle, history, qrSize, c
           >
             <button className='btn btn-large w-100' style={buttonStyle.secondary}>
               <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-                <i className='fas fa-key' /> {i18n.t('copy')}
+                <i className='fas fa-key' /> {i18n.t('advanced.copy')}
               </Scaler>
             </button>
           </div>
@@ -62,7 +62,7 @@ const PrivateKeyViewer = ({ privateKey, balance, buttonStyle, history, qrSize, c
             }}
           >
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-              <i className='fas fa-fire' /> {i18n.t('burn')}
+              <i className='fas fa-fire' /> {i18n.t('advanced.burn')}
             </Scaler>
           </button>
         </div>
@@ -118,7 +118,7 @@ const AccountCreator = ({ history, buttonStyle, changeAlert, setPossibleNewPriva
           }}
         >
           <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-            <i className='fas fa-plus-square' /> {i18n.t('create')}
+            <i className='fas fa-plus-square' /> {i18n.t('advanced.create')}
           </Scaler>
         </button>
       </div>
@@ -165,7 +165,7 @@ const AccountCreator = ({ history, buttonStyle, changeAlert, setPossibleNewPriva
           }}
         >
           <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-            <i className='fas fa-plus-square' /> {i18n.t('create')}
+            <i className='fas fa-plus-square' /> {i18n.t('advanced.create')}
           </Scaler>
         </button>
       </div>
@@ -232,7 +232,7 @@ export default (props) => {
         <a href='https://github.com/TomAFrench/liquidity-burner' style={{ color: '#FFFFFF' }} target='_blank' rel='noopener noreferrer'>
           <button className='btn btn-large w-100' style={buttonStyle.secondary}>
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-              <i className='fas fa-code' /> {i18n.t('code')}
+              <i className='fas fa-code' /> {i18n.t('advanced.code')}
             </Scaler>
           </button>
         </a>
@@ -241,7 +241,7 @@ export default (props) => {
         <a href='https://blog.liquidity.network/2018/11/21/nocust-101/' style={{ color: '#FFFFFF' }} target='_blank' rel='noopener noreferrer'>
           <button className='btn btn-large w-100' style={buttonStyle.secondary}>
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-              <i className='fas fa-info' /> {i18n.t('about')}
+              <i className='fas fa-info' /> {i18n.t('advanced.about')}
             </Scaler>
           </button>
         </a>
@@ -252,13 +252,13 @@ export default (props) => {
     <div style={{ marginTop: 20, marginBottom: 20 }}>
 
       <div>
-        <div style={{ width: '100%', textAlign: 'center' }}><h5>Learn More</h5></div>
+        <div style={{ width: '100%', textAlign: 'center' }}><h5>{i18n.t('advanced.learn_more')}</h5></div>
         {appInfo}
       </div>
 
       <hr style={{ paddingTop: 20 }} />
 
-      <div style={{ width: '100%', textAlign: 'center' }}><h5>Private Key</h5></div>
+      <div style={{ width: '100%', textAlign: 'center' }}><h5>{i18n.t('advanced.private_key')}</h5></div>
       <PrivateKeyViewer
         privateKey={privateKey}
         balance={balance}
@@ -268,7 +268,7 @@ export default (props) => {
         changeAlert={changeAlert}
       />
 
-      <div style={{ width: '100%', textAlign: 'center' }}><h5>Create Account</h5></div>
+      <div style={{ width: '100%', textAlign: 'center' }}><h5>{i18n.t('advanced.create_account')}</h5></div>
 
       <AccountCreator
         history={props.history}
@@ -279,7 +279,7 @@ export default (props) => {
 
       <hr style={{ paddingTop: 20 }} />
 
-      <div style={{ width: '100%', textAlign: 'center' }}><h5>Extra Tools</h5></div>
+      <div style={{ width: '100%', textAlign: 'center' }}><h5>{i18n.t('advanced.extra_tools')}</h5></div>
       <CustomQrEncoder buttonStyle={buttonStyle} qrSize={qrSize} />
     </div>
   )

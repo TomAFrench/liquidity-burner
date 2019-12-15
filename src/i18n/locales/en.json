@@ -1,14 +1,8 @@
 {
   "en": {
     "app_name": "Burner",
-    "about": "About",
-    "code": "Code",
-    "burn": "Burn PK",
-    "show": "Show PK",
-    "copy": "Copy PK",
     "create": "Create",
     "receive_title": "Receive",
-    "send_to_address_title": "Send to Address",
     "advance": "Advanced",
     "advance_title": "Advanced",
     "loading": "Loading...",
@@ -19,17 +13,19 @@
     "send": "Send",
     "withdraw": "Withdraw",
     "confirm_withdraw": "Confirm Withdrawal",
-    "request_funds_title": "Request funds",
-    "request": "Request",
     "main_card": {
       "receive": "Receive",
       "send": "Send",
-      "share": "Share"
+      "share": "Share",
+      "bridge": "Bridge",
+      "exchange": "Exchange",
+      "request": "Request"
     },
     "share": {
       "copied": "URL copied to clipboard"
     },
     "send_to_address": {
+      "title": "Send",
       "to_address": "To Address",
       "send_amount": "Send Amount",
       "notice": "You can only send ",
@@ -58,11 +54,22 @@
       "insufficient_funds": "Insufficient funds"
     },
     "request_funds": {
+      "title": "Request",
       "button": "Request",
       "amount": "Request Amount"
     },
     "advanced": {
-      "to_qr": "To QR"
+      "to_qr": "To QR",
+      "about": "About",
+      "code": "Code",
+      "burn": "Burn PK",
+      "show": "Show PK",
+      "copy": "Copy PK",
+      "create": "Create",
+      "private_key": "Private Key",
+      "create_account": "Create Account",
+      "learn_more": "Learn More",
+      "extra_tools": "Extra Tools"
     },
     "burn_wallet": {
       "burn_private_key_question": "Are you sure you want to burn this private key?",
