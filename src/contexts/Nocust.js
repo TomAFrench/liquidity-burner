@@ -118,14 +118,11 @@ export function getBlocksPerEon () {
   const [state, { updateBlocksPerEon }] = useNocustContext()
   const { nocust, blocksPerEon } = state
 
-  useEffect(async () => {
+  useEffect(() => {
     if (nocust) {
-      try {
-        const blocksPerEon = await nocust.getBlocksPerEon()
-        updateBlocksPerEon(blocksPerEon)
-      } catch (e) {
-        updateBlocksPerEon(null)
-      }
+      nocust.getBlocksPerEon()
+        .then((blocksPerEon) => updateBlocksPerEon(blocksPerEon))
+        .catch(() => updateBlocksPerEon(null))
     }
   }, [nocust])
   console.log(state)
@@ -159,18 +156,15 @@ export function useNocustClient () {
 
 export function useIsRecovery () {
   const [state, { updateIsRecovery }] = useNocustContext()
-  const { nocust, isRecovery } = state
+  const { nocust, isRecovery, eraNumber } = state
 
-  useEffect(async () => {
+  useEffect(() => {
     if (nocust) {
-      try {
-        const isRecovery = await nocust.isRecovery()
-        updateIsRecovery(isRecovery)
-      } catch (e) {
-        updateIsRecovery(false)
-      }
+      nocust.isRecovery()
+        .then(isRecovery => updateIsRecovery(isRecovery))
+        .catch(() => updateIsRecovery(false))
     }
-  })
+  }, [eraNumber])
 
   return isRecovery
 }
@@ -182,20 +176,17 @@ export function useEraNumber () {
   return eraNumber
 }
 
-export function useSlaDetail () {
+export function useSlaDetail (address) {
   const [state, { updateSlaDetail }] = useNocustContext()
-  const { nocust, slaDetail } = state
+  const { nocust, eraNumber, slaDetail } = state
 
-  useEffect(async () => {
+  useEffect(() => {
     if (nocust) {
-      try {
-        const slaDetail = await nocust.getSLADetail()
-        updateSlaDetail(slaDetail)
-      } catch (e) {
-        updateSlaDetail({})
-      }
+      nocust.getSLADetail()
+        .then((slaDetail) => updateSlaDetail(slaDetail))
+        .catch((slaDetail) => updateSlaDetail({}))
     }
-  })
+  }, [address, eraNumber])
 
   return slaDetail
 }
