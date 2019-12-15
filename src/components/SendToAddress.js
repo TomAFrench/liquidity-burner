@@ -65,7 +65,6 @@ export default class SendToAddress extends React.Component {
       ensName: ''
     }
 
-    this.updateENSOrAddress(this.state.toAddress)
     this.attemptSend = (toAddress, amount) => attemptSend(this.props.address, this.props.token, this.props.offchainBalance, this.props.sendTransaction, toAddress, amount)
   }
 
@@ -102,15 +101,18 @@ export default class SendToAddress extends React.Component {
   }
 
   componentDidMount () {
-    const { amount, toAddress } = this.state
-    setTimeout(() => {
-      if (!isAddress(toAddress) && this.addressInput) {
-        this.addressInput.focus()
-      } else if (!amount && this.amountInput) {
-        this.amountInput.focus()
-        scrollToBottom()
+    this.updateENSOrAddress(this.state.toAddress)
+      .then(() => {
+        setTimeout(() => {
+          if (!isAddress(this.state.toAddress) && this.addressInput) {
+            this.addressInput.focus()
+          } else if (!this.state.amount && this.amountInput) {
+            this.amountInput.focus()
+            scrollToBottom()
+          }
+        }, 350)
       }
-    }, 350)
+      )
   }
 
   render () {
