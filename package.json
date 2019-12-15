@@ -8,6 +8,7 @@
     "dapparatus": "1.0.96",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-mnemonic-privatekey-utils": "^1.0.5",
+    "humanize-duration": "3.21.0",
     "i18next": "14.0.1",
     "i18next-browser-languagedetector": "^2.2.4",
     "nocust-client": "^3.0.0-rc47",

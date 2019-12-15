@@ -6,19 +6,10 @@ import i18n from '../i18n'
 import { useTokenTransactions } from '../contexts/Transactions'
 
 const { fromWei } = require('web3-utils')
-
-const cleanTime = (s) => {
-  if (s < 60) {
-    return s + 's'
-  } else if (s / 60 < 60) {
-    return Math.round(s / 6) / 10 + 'm'
-  } else {
-    return Math.round((s / 60 / 6) / 24) / 10 + 'd'
-  }
-}
+const humanizeDuration = require('humanize-duration')
 
 const TransactionEntry = ({ tx, changeAlert, token }) => {
-  const blockAge = (Date.now() - tx.timestamp) / 1000
+  const txAge = humanizeDuration(Date.now() - tx.timestamp, { largest: 1 })
 
   const transactionAmount = (
     <span>
@@ -71,7 +62,7 @@ const TransactionEntry = ({ tx, changeAlert, token }) => {
       </div>
       <div className='col-2 p-1' style={{ textAlign: 'center', whiteSpace: 'nowrap', letterSpacing: -1 }}>
         <Scaler config={{ startZoomAt: 600, origin: '25% 50%', adjustedZoom: 1 }}>
-          <span style={{ marginLeft: 5, marginTop: -5, opacity: 0.4, fontSize: 12 }}>{cleanTime((blockAge))} ago</span>
+          <span style={{ marginLeft: 5, marginTop: -5, opacity: 0.4, fontSize: 12 }}>{txAge} ago</span>
         </Scaler>
       </div>
 
