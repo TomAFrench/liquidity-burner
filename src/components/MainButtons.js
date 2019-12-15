@@ -9,6 +9,7 @@ import { useNocustClient } from '../contexts/Nocust'
 import { useButtonStyle } from '../contexts/Theme'
 
 const { toWei } = require('web3-utils')
+const humanizeDuration = require('humanize-duration')
 
 async function confirmWithdrawal (nocust, address, gwei, tokenAddress) {
   const gasLimit = '300000'
@@ -16,6 +17,8 @@ async function confirmWithdrawal (nocust, address, gwei, tokenAddress) {
   const txhash = await nocust.withdrawalConfirmation(address, toWei(gwei.toString(), 'gwei'), gasLimit, tokenAddress)
   console.log('withdrawal', txhash)
 }
+
+const BLOCK_TIME = 15 * 1000
 
 export default (props) => {
   const nocust = useNocustClient()
@@ -33,7 +36,7 @@ export default (props) => {
         <div className='col-12 p-1' onClick={() => { if (blocksToWithdrawal === 0) confirmWithdrawal(nocust, props.address, props.gwei, tokenAddress) }}>
           <button className={`btn btn-large w-100 ${blocksToWithdrawal === 0 ? '' : 'disabled'}`} style={buttonStyle.primary}>
             <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-              <i className={`fas ${blocksToWithdrawal === 0 ? 'fa-check' : 'fa-clock'}`} /> {blocksToWithdrawal === 0 ? i18next.t('confirm_withdraw') : blocksToWithdrawal + ' blocks until confirmation'}
+              <i className={`fas ${blocksToWithdrawal === 0 ? 'fa-check' : 'fa-clock'}`} /> {blocksToWithdrawal === 0 ? i18next.t('confirm_withdraw') : blocksToWithdrawal + ' blocks (' + timeToWithdrawal + ') until confirmation'}
             </Scaler>
           </button>
         </div>
