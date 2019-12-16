@@ -162,7 +162,6 @@ export function useAddressBalance (address, tokenAddress) {
         nocust.getOnChainBalance(address, tokenAddress),
         nocust.getNOCUSTBalance(address, tokenAddress)])
         .then(([onchainBalance, offchainBalance]) => {
-          console.log('Balance', tokenAddress, { onchainBalance: onchainBalance.toString(10), offchainBalance: offchainBalance.toString(10) })
           update(address, tokenAddress, { onchainBalance, offchainBalance })
         })
         .catch(err => {

@@ -194,17 +194,6 @@ const App = (props) => {
     detectContext(address, update)
   }, [])
 
-  // useEffect(() => {
-  //   const { network, web3 } = props
-  //   if (web3 && network !== prevProps.network) {
-  //     console.log('WEB3 DETECTED BUT NOT RIGHT NETWORK', web3, network, prevProps.network)
-  //   // this.changeAlert({
-  //   //  type: 'danger',
-  //   //  message: 'Wrong Network. Please use Custom RPC endpoint: https://dai.poa.network or turn off MetaMask.'
-  //   // }, false)
-  //   }
-  // })
-
   const [alert, setAlert] = useState()
 
   const changeAlert = (alert, hide = true) => {

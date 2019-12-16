@@ -30,10 +30,10 @@ class KeyManager extends React.Component {
     if (this.state) {
       if (this.state.metaAccount && this.state.metaAccount.privateKey.replace('0x', '') === this.state.possibleNewPrivateKey.replace('0x', '')) {
         this.setState({ possibleNewPrivateKey: false })
-        this.changeAlert({
-          type: 'warning',
-          message: 'Imported identical private key.'
-        })
+        // this.changeAlert({
+        //   type: 'warning',
+        //   message: 'Imported identical private key.'
+        // })
       } else {
         console.log('Checking on pk import...')
         console.log('this.state.metaAccount', this.state.metaAccount)
