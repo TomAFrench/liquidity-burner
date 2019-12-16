@@ -19,8 +19,8 @@ import { useIsRecovery } from '../contexts/Nocust'
 const TOKEN = process.env.REACT_APP_TOKEN
 
 export default (props) => {
-  const eth = props.tokens.ETH
-  const token = props.tokens[TOKEN]
+  const eth = safeAccess(props.tokens, ['ETH']) || {}
+  const token = safeAccess(props.tokens, [TOKEN]) || {}
   const ethBalance = useAddressBalance(props.address, safeAccess(eth, ['tokenAddress']))
   const tokenBalance = useAddressBalance(props.address, safeAccess(token, ['tokenAddress']))
 

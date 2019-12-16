@@ -6,12 +6,6 @@ import ethImg from '../images/ethereum.png'
 import daiImg from '../images/dai.jpg'
 import lqdImg from '../images/liquidity.png'
 
-const INITIAL_TOKENS = {
-  ETH: {},
-  DAI: {},
-  LQD: {}
-}
-
 const UPDATE = 'UPDATE'
 
 export const TokensContext = createContext()
@@ -36,7 +30,7 @@ function reducer (state, { type, payload }) {
 }
 
 export default function Provider ({ children }) {
-  const [state, dispatch] = useReducer(reducer, { tokens: INITIAL_TOKENS })
+  const [state, dispatch] = useReducer(reducer, {})
 
   const update = useCallback((tokens) => {
     dispatch({ type: UPDATE, payload: { tokens } })
@@ -88,16 +82,18 @@ export function registerTokens (address) {
   const tokens = useTokens()
 
   useEffect(() => {
-    Object.values(tokens).map(async token => {
-      if (nocust) {
-        const addressRegistered = await nocust.isAddressRegistered(address, token.tokenAddress)
-        // explicitly test for false-ness as endpoint returns undefined for true
-        if (addressRegistered === false) {
-          return registerToken(nocust, address, token.tokenAddress)
+    if (tokens) {
+      Object.values(tokens).map(async token => {
+        if (nocust) {
+          const addressRegistered = await nocust.isAddressRegistered(address, token.tokenAddress)
+          // explicitly test for false-ness as endpoint returns undefined for true
+          if (addressRegistered === false) {
+            return registerToken(nocust, address, token.tokenAddress)
+          }
         }
-      }
-      return null
-    })
+        return null
+      })
+    }
   }, [nocust, address, tokens])
 }
 
