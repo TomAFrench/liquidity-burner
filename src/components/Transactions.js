@@ -9,7 +9,7 @@ const { fromWei } = require('web3-utils')
 const humanizeDuration = require('humanize-duration')
 
 const TransactionEntry = ({ tx, changeAlert, token }) => {
-  const txAge = humanizeDuration(Date.now() - tx.timestamp, { largest: 1 })
+  const txAge = humanizeDuration(Date.now() - tx.timestamp, { largest: 2, round: true })
 
   const transactionAmount = (
     <span>
