@@ -35,7 +35,7 @@ export default (props) => {
       <div className='content ops row'>
         <div className='col-12 p-1' onClick={() => { if (blocksToWithdrawal === 0) confirmWithdrawal(nocust, props.address, props.gwei, tokenAddress) }}>
           <button className={`btn btn-large w-100 ${blocksToWithdrawal === 0 ? '' : 'disabled'}`} style={buttonStyle.primary}>
-            <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
+            <Scaler config={{ startZoomAt: 500, origin: '0% 50%' }}>
               <i className={`fas ${blocksToWithdrawal === 0 ? 'fa-check' : 'fa-clock'}`} /> {blocksToWithdrawal === 0 ? i18next.t('confirm_withdraw') : blocksToWithdrawal + ' blocks (' + timeToWithdrawal + ') until confirmation'}
             </Scaler>
           </button>
