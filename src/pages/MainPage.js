@@ -14,6 +14,7 @@ import { registerTokens } from '../contexts/Tokens'
 import { safeAccess } from '../utils'
 import { useAddressBalance } from '../contexts/Balances'
 import MainButtons from '../components/MainButtons'
+import { useIsRecovery } from '../contexts/Nocust'
 
 const TOKEN = process.env.REACT_APP_TOKEN
 
@@ -23,10 +24,13 @@ export default (props) => {
   const ethBalance = useAddressBalance(props.address, safeAccess(eth, ['tokenAddress']))
   const tokenBalance = useAddressBalance(props.address, safeAccess(token, ['tokenAddress']))
 
+  const isRecovery = useIsRecovery()
+  if (isRecovery) console.log('HUB IS IN RECOVERY!!!!!')
   registerTokens(props.address)
   return (
     <div>
       <div className='send-to-address card w-100' style={{ zIndex: 1 }}>
+        {isRecovery && <NavCard title='HUB IS IN RECOVERY!!!!!' />}
         <div className='form-group w-100'>
 
           <div style={{ width: '100%', textAlign: 'center' }}>
