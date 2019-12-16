@@ -24,7 +24,7 @@ export default (props) => {
   const nocust = useNocustClient()
   const buttonStyle = useButtonStyle()
   const { tokenAddress, blocksToWithdrawal } = getNextAvailableConfirmation(props.address)
-  console.log('NEXT CONFIRMATION', tokenAddress, blocksToWithdrawal)
+  // console.log('NEXT CONFIRMATION', tokenAddress, blocksToWithdrawal)
   const timeToWithdrawal = humanizeDuration(BLOCK_TIME * blocksToWithdrawal, { largest: 2, units: ['h', 'm', 's'] })
 
   const withdrawalInProgess = (typeof blocksToWithdrawal !== 'undefined' && blocksToWithdrawal !== -1)
