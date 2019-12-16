@@ -28,7 +28,7 @@ export default ({ address, gwei, changeAlert, backButton }) => {
         <Ruler />
         <Bridge
           address={address}
-          token='ETH'
+          token={TOKEN}
           gasPrice={toWei(gwei.toString(10), 'gwei')}
           changeAlert={changeAlert}
           onSend={(txHash) => { console.log(txHash) }}
@@ -36,7 +36,7 @@ export default ({ address, gwei, changeAlert, backButton }) => {
         <Ruler />
         <Bridge
           address={address}
-          token={TOKEN}
+          token='ETH'
           gasPrice={toWei(gwei.toString(10), 'gwei')}
           changeAlert={changeAlert}
           onSend={(txHash) => { console.log(txHash) }}

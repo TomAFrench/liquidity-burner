@@ -90,7 +90,7 @@ export default (props) => {
         </div>
         <div className='col-6 p-1'>
           <button className='btn btn-large w-100' style={buttonStyle.secondary}>
-            <Link to={`${props.url}/exchange/ETH/${props.token}`} style={{ textDecoration: 'none', color: buttonStyle.secondary.color }}>
+            <Link to={`${props.url}/exchange/${props.token}/ETH`} style={{ textDecoration: 'none', color: buttonStyle.secondary.color }}>
               <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
                 <i className='fas fa-random' /> {i18next.t('exchange_title')}
               </Scaler>
