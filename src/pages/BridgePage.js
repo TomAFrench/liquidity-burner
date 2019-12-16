@@ -22,14 +22,14 @@ export default ({ address, gwei, changeAlert, backButton }) => {
         <NavCard title={i18n.t('bridge.title')} />
         <div style={{ textAlign: 'center', width: '100%', fontSize: 16, marginTop: 10 }}>
           <Scaler config={{ startZoomAt: 400, origin: '50% 50%', adjustedZoom: 1 }}>
-            Withdrawal Fee: {typeof withdrawFee !== 'undefined' ? fromWei(withdrawFee.toString(), 'ether').toString() : 0} ETH
+            Withdrawal Fee: {typeof withdrawFee !== 'undefined' ? fromWei(withdrawFee.toString(10), 'ether').toString(10) : 0} ETH
           </Scaler>
         </div>
         <Ruler />
         <Bridge
           address={address}
           token='ETH'
-          gasPrice={toWei(gwei.toString(), 'gwei')}
+          gasPrice={toWei(gwei.toString(10), 'gwei')}
           changeAlert={changeAlert}
           onSend={(txHash) => { console.log(txHash) }}
         />
@@ -37,7 +37,7 @@ export default ({ address, gwei, changeAlert, backButton }) => {
         <Bridge
           address={address}
           token={TOKEN}
-          gasPrice={toWei(gwei.toString(), 'gwei')}
+          gasPrice={toWei(gwei.toString(10), 'gwei')}
           changeAlert={changeAlert}
           onSend={(txHash) => { console.log(txHash) }}
         />

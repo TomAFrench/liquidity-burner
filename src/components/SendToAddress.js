@@ -37,7 +37,7 @@ async function attemptSend (address, token, offchainBalance, sendTransaction, to
     const transaction = {
       to: toAddress,
       from: address,
-      amount: toBN(toWei(amount, 'ether')).toString(),
+      amount: toBN(toWei(amount, 'ether')).toString(10),
       tokenAddress: token.tokenAddress
     }
 
@@ -152,7 +152,7 @@ export default class SendToAddress extends React.Component {
                 cookie.save('sendStartAmount', amount, { path: '/', maxAge: 60 })
                 this.setState({ amount })
               }}
-              maxValue={typeof offchainBalance !== 'undefined' ? fromWei(offchainBalance.toString(), 'ether') : undefined}
+              maxValue={typeof offchainBalance !== 'undefined' ? fromWei(offchainBalance.toString(10), 'ether') : undefined}
               minValue='0'
             />
           </div>

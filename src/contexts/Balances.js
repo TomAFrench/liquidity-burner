@@ -138,7 +138,7 @@ export function useOnchainAddressBalance (address, tokenAddress) {
 }
 
 export function getDisplayValue (value, decimals = 4) {
-  const displayVal = fromWei(value.toString(), 'ether')
+  const displayVal = fromWei(value.toString(10), 'ether')
   if (displayVal.indexOf('.') >= 0) {
     if (displayVal.charAt(0) === '0') {
       return displayVal.substr(0, displayVal.search(/[1-9]/) + decimals + 1)

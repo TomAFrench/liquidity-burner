@@ -54,7 +54,7 @@ const TEXSwapper = (props) => {
           setSellAmount(fromWei(getAmountIn(props.orders, toWei(amount, 'ether')), 'ether'))
         }
       }}
-      maxValue={fromWei(maxOutput.toString(), 'ether')}
+      maxValue={fromWei(maxOutput.toString(10), 'ether')}
       minValue='0'
     />
   )
@@ -70,7 +70,7 @@ const TEXSwapper = (props) => {
           setBuyAmount(fromWei(getAmountOut(props.orders, toWei(amount, 'ether')), 'ether'))
         }
       }}
-      maxValue={fromWei(maxInput.toString(), 'ether')}
+      maxValue={fromWei(maxInput.toString(10), 'ether')}
       minValue='0'
     />
   )

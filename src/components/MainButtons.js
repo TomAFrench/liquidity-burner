@@ -14,7 +14,7 @@ const humanizeDuration = require('humanize-duration')
 async function confirmWithdrawal (nocust, address, gwei, tokenAddress) {
   const gasLimit = '300000'
 
-  const txhash = await nocust.withdrawalConfirmation(address, toWei(gwei.toString(), 'gwei'), gasLimit, tokenAddress)
+  const txhash = await nocust.withdrawalConfirmation(address, toWei(gwei.toString(10), 'gwei'), gasLimit, tokenAddress)
   console.log('withdrawal', txhash)
 }
 
