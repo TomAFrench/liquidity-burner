@@ -2,13 +2,12 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 // import cookie from 'react-cookies'
 
-import Ruler from '../components/Ruler'
 import i18n from '../i18n'
 
+import Ruler from '../components/Ruler'
+import NavCard from '../components/NavCard'
 import Bottom from '../components/Bottom'
-
 import Transactions from '../components/Transactions'
-
 import Balance from '../components/Balance'
 
 import { registerTokens } from '../contexts/Tokens'
