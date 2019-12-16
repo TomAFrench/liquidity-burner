@@ -34,10 +34,10 @@ export default ({ address, token, selected, offchain }) => {
       </div>
     )
   } else {
-    iconDisplay = <img src={token && token.image} alt={i18n.t('loading')} style={{ maxWidth: 50, maxHeight: 50 }} />
+    iconDisplay = <img src={token && token.image} alt='' style={{ maxWidth: 50, maxHeight: 50 }} />
   }
 
-  if (token) {
+  if (token && token.shortName) {
     tokenName = (
       <div style={{ position: 'absolute', left: 60, top: 12, fontSize: 14, opacity: 0.77, whiteSpace: 'nowrap' }}>
         {offchain ? 'f' + token.shortName : token.shortName}
@@ -46,7 +46,7 @@ export default ({ address, token, selected, offchain }) => {
   } else {
     tokenName = (
       <div style={{ position: 'absolute', left: 60, top: 12, fontSize: 14, opacity: 0.77, whiteSpace: 'nowrap' }}>
-        i18n.t('loading')
+        {i18n.t('loading')}
       </div>
     )
   }
