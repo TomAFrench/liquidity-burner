@@ -89,12 +89,12 @@ export default (props) => {
           </button>
         </div>
         <div className='col-6 p-1'>
-          <button className='btn btn-large w-100' style={buttonStyle.secondary}>
-            <Link to={`${props.url}/exchange/${props.token}/ETH`} style={{ textDecoration: 'none', color: buttonStyle.secondary.color }}>
-              <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
-                <i className='fas fa-random' /> {i18next.t('exchange_title')}
-              </Scaler>
-            </Link>
+          <button className='btn btn-large w-100 disabled' style={buttonStyle.secondary} onClick={() => props.changeAlert({ type: 'success', message: 'Coming Soon!' })}>
+            {/* <Link to={`${props.url}/exchange/${props.token}/ETH`} style={{ textDecoration: 'none', color: buttonStyle.secondary.color }}> */}
+            <Scaler config={{ startZoomAt: 400, origin: '50% 50%' }}>
+              <i className='fas fa-random' /> {i18next.t('exchange_title')}
+            </Scaler>
+            {/* </Link> */}
           </button>
         </div>
       </div>

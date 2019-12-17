@@ -73,6 +73,7 @@ export default (props) => {
               tokenAddress={token.tokenAddress}
               gwei={props.gwei}
               token={TOKEN}
+              changeAlert={props.changeAlert}
             />
 
           </div>

@@ -18,7 +18,7 @@ import { useTokens } from '../contexts/Tokens'
 
 import {
   SendPage,
-  ExchangePage,
+  // ExchangePage,
   BridgePage,
   MainPage,
   RequestPage,
@@ -111,7 +111,7 @@ export default (props) => {
         }}
       />
 
-      <Route
+      {/* <Route
         path={`${props.match.url}/exchange/:assetA/:assetB`}
         render={({ history, match }) =>
           <ExchangePage
@@ -121,7 +121,7 @@ export default (props) => {
             address={props.address}
             backButton={backButton}
           />}
-      />
+      /> */}
 
       <Route
         path={`${props.match.url}/request/:token`}
