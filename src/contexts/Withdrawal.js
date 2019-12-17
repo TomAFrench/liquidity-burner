@@ -150,7 +150,7 @@ export function useAllBlocksToWithdrawal (address) {
   const withdrawalObject = safeAccess(state, [address]) || {}
 
   useEffect(() => {
-    if (nocust && tokens && tokens.length > 0 && isAddress(address)) {
+    if (nocust && tokens && Object.keys(tokens).length > 0 && isAddress(address)) {
       Promise.all(Object.values(tokens).map(async ({ tokenAddress }) => {
         return { tokenAddress: tokenAddress, blocksToWithdrawal: await nocust.getBlocksToWithdrawalConfirmation(address, undefined, tokenAddress) }
       }))
