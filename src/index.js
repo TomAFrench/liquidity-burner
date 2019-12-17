@@ -5,7 +5,7 @@ import './index.scss'
 import Web3 from 'web3'
 
 import App from './App'
-import { Dapparatus } from 'dapparatus'
+import Dapparatus from './components/dapparatus'
 
 import ThemeContext from './contexts/Theme'
 
@@ -56,7 +56,6 @@ class KeyManager extends React.Component {
             DEBUG: false,
             hide: true,
             requiredNetwork: ['Unknown', 'Rinkeby'],
-            metatxAccountGenerator: false,
             POLLINTERVAL: 5000 // responsible for slow load times
           }}
           // used to pass a private key into Dapparatus
