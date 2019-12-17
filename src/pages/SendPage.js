@@ -26,11 +26,11 @@ export default (props) => {
   // First look up token address.
   // May have been given the token's shortname so perform lookup if that fails
   // Finally default to main token.
-  let token = props.tokens.ETH
+  let token
   if (isAddress(query.token)) {
     token = lookupTokenAddress(props.tokens, query.token)
   } else {
-    token = safeAccess(props.tokens, [query.token]) || props.tokens[process.env.REACT_APP_TOKEN]
+    token = safeAccess(props.tokens, [query.token]) || safeAccess(props.tokens, [process.env.REACT_APP_TOKEN]) || {}
   }
 
   const tokenBalance = useOffchainAddressBalance(props.address, token.tokenAddress)
