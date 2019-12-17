@@ -13,14 +13,17 @@ import { useAddressBalance, useOnchainAddressBalance } from '../contexts/Balance
 import { useNocustClient } from '../contexts/Nocust'
 import { useButtonStyle } from '../contexts/Theme'
 
+import { safeAccess } from '../utils'
+
 export default (props) => {
   const buttonStyle = useButtonStyle()
   const nocust = useNocustClient()
   const history = useHistory()
   const tokens = useTokens()
-  const token = tokens[props.token]
+  const eth = safeAccess(tokens, ['ETH']) || {}
+  const token = safeAccess(tokens, [props.token]) || {}
   const balance = useAddressBalance(props.address, token.tokenAddress)
-  const ethBalance = useOnchainAddressBalance(props.address, tokens.ETH.tokenAddress)
+  const ethBalance = useOnchainAddressBalance(props.address, eth.tokenAddress)
 
   const withdrawLimit = useWithdrawalLimit(props.address, token.tokenAddress)
 
