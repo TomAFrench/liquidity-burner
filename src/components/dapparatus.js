@@ -17,8 +17,7 @@ defaultConfig.requiredNetwork = [
 
 const burnMetaAccount = (skipReload) => {
   if (window.localStorage && typeof window.localStorage.setItem === 'function') {
-    window.localStorage.setItem(this.state.account + 'loadedBlocksTop', '')
-    window.localStorage.setItem(this.state.account + 'metaPrivateKey', '')
+    // window.localStorage.setItem(this.state.account + 'metaPrivateKey', '')
     window.localStorage.setItem('metaPrivateKey', '')
   } else {
     const expires = new Date()
