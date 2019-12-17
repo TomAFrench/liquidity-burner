@@ -107,10 +107,12 @@ async function registerToken (nocust, address, tokenAddress) {
 }
 
 export function isValidToken (tokens, tokenShortName) {
+  if (!tokens) return false
   return Object.keys(tokens).includes(tokenShortName)
 }
 
 export function lookupTokenAddress (tokens, tokenAddress) {
+  if (!tokens) return false
   return Object.values(tokens).find((token) => {
     return tokenAddress === token.tokenAddress
   })
@@ -118,6 +120,7 @@ export function lookupTokenAddress (tokens, tokenAddress) {
 
 export function lookupTokenName (tokenName) {
   const tokens = useTokens()
+  if (!tokens) return false
   return Object.values(tokens).find((token) => {
     return tokenName === token.shortName
   })
