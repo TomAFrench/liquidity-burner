@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Update Docker hub metadata
       uses: docker://mpepping/docker-hub-metadata-github-action
-      env:
+      with:
         IMAGE: tomfrench/liquidityburner
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
