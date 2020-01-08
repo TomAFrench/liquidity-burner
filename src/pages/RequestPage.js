@@ -9,10 +9,9 @@ import Balance from '../components/Balance'
 
 import { useTokens } from '../contexts/Tokens'
 
-export default ({ address, history, match, changeAlert, backButton }) => {
+export default ({ address, networkId, history, match, changeAlert, backButton }) => {
   const tokens = useTokens()
   const token = tokens[match.params.token]
-  const netId = 4
 
   return (
     <div>
@@ -28,7 +27,7 @@ export default ({ address, history, match, changeAlert, backButton }) => {
         <Request
           token={token}
           address={address}
-          networkId={netId}
+          networkId={networkId}
           changeAlert={changeAlert}
         />
       </div>

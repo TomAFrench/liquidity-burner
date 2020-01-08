@@ -3,13 +3,11 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import i18n from '../i18n'
 
 import NavCard from '../components/NavCard'
-import { useNocustHubInfo } from '../contexts/Nocust'
 
 const QRCode = require('qrcode.react')
 
 export default (props) => {
-  const { address, changeAlert } = props
-  const { hubContract, hubApiUrl } = useNocustHubInfo()
+  const { address, network, changeAlert } = props
 
   const qrSize = Math.min(document.documentElement.clientWidth, 512) - 90
   return (
@@ -35,7 +33,7 @@ export default (props) => {
               </div>
             </CopyToClipboard>
             <div style={{ width: '100%', textAlign: 'center', padding: 20 }}>
-              <a href={'https://explorer.liquidity.network/?#/explorer?token=' + hubContract + '&address=' + address + '&url=' + hubApiUrl.replace(/\/$/, '')} target='_blank' rel='noopener noreferrer'>
+              <a href={'https://explorer.liquidity.network/details/' + network + '/' + address} target='_blank' rel='noopener noreferrer'>
                 View on Explorer
               </a>
             </div>

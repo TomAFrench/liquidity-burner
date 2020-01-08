@@ -149,6 +149,7 @@ const Interface = (props) => {
                   address={toChecksumAddress(props.address)}
 
                   network={props.network}
+                  networkId={props.networkId}
 
                   gwei={props.gwei || 1.001}
 
@@ -208,7 +209,7 @@ const App = (props) => {
 
   const [gwei, setGwei] = useState()
 
-  const { web3, network, address, burnMetaAccount, privateKey, setPossibleNewPrivateKey } = props
+  const { web3, network, networkId, address, burnMetaAccount, privateKey, setPossibleNewPrivateKey } = props
 
   if (document.getElementById('main')) {
     document.getElementById('main').style.backgroundImage = backgroundStyle[currentBackground].image
@@ -229,6 +230,7 @@ const App = (props) => {
                   burnMetaAccount={burnMetaAccount}
                   setPossibleNewPrivateKey={setPossibleNewPrivateKey}
                   network={network}
+                  networkId={networkId}
                   gwei={gwei}
                   changeAlert={changeAlert}
                 />

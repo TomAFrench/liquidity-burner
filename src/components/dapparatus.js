@@ -42,6 +42,7 @@ function translateNetwork (id) {
     42: 'Kovan',
     99: 'POA',
     100: 'xDai',
+    1337: 'Limbo',
     5777: 'Private'
   }
   return networks[id] || 'Unknown'
@@ -63,7 +64,7 @@ class Dapparatus extends Component {
 
     this.state = {
       status: 'loading',
-      network: 0,
+      networkId: 0,
       account: false,
       etherscan: '',
       config: config,
@@ -139,14 +140,14 @@ class Dapparatus extends Component {
       }
       if (typeof window.web3.version === 'undefined' || typeof window.web3.version.getNetwork !== 'function') {
         // console.log("cant use version to get network, trying web3.eth.net ...")
-        window.web3.eth.net.getId((err, network) => {
-          if (this.state.config.DEBUG) console.log('NETWORK GETID', err, network)
-          this.inspectNetwork(network)
+        window.web3.eth.net.getId((err, networkId) => {
+          if (this.state.config.DEBUG) console.log('NETWORK GETID', err, networkId)
+          this.inspectNetwork(networkId)
         })
       } else {
-        window.web3.version.getNetwork((err, network) => {
-          if (this.state.config.DEBUG) console.log('NETWORK GETNET', err, network)
-          this.inspectNetwork(network)
+        window.web3.version.getNetwork((err, networkId) => {
+          if (this.state.config.DEBUG) console.log('NETWORK GETNET', err, networkId)
+          this.inspectNetwork(networkId)
         })
       }
     }
@@ -224,10 +225,9 @@ class Dapparatus extends Component {
     }
   }
 
-  inspectNetwork (network) {
-    if (this.state.config.DEBUG) console.log('DAPPARATUS - network', network)
-    network = translateNetwork(network)
-    if (this.state.config.DEBUG) console.log('DAPPARATUS - translated network', network)
+  inspectNetwork (networkId) {
+    if (this.state.config.DEBUG) console.log('DAPPARATUS - network', networkId)
+    if (this.state.config.DEBUG) console.log('DAPPARATUS - translated network', translateNetwork(networkId))
     try {
       if (this.state.config.DEBUG) console.log('DAPPARATUS - getting accounts...')
       window.web3.eth.getAccounts((err, _accounts) => {
@@ -277,11 +277,11 @@ class Dapparatus extends Component {
             // console.log("generated account",this.state.metaAccount)
             currentAccounts.push(this.state.metaAccount.address)
             // console.log("currentAccounts",currentAccounts)
-            this.inspectAccounts(currentAccounts, network)
+            this.inspectAccounts(currentAccounts, networkId)
           }
           if (this.state.metaAccount) {
             // console.log("metaAccount",this.state.metaAccount)
-            this.updateInfo(this.state.metaAccount.address, network)
+            this.updateInfo(this.state.metaAccount.address, networkId)
           } else {
             // console.lob("no metaAccount")
           }
@@ -294,17 +294,17 @@ class Dapparatus extends Component {
           // What I want to do here is clear any window.localStorage if web3 is injected
           // burnMetaAccount(true)
 
-          this.inspectAccounts(_accounts, network)
+          this.inspectAccounts(_accounts, networkId)
           this.setState({ metaAccount: false })
         }
       })
     } catch (e) {
       console.log(e)
-      if (this.state.metamask !== -1) { this.setState({ metamask: -1, network: network, web3: window.web3 }) }
+      if (this.state.metamask !== -1) { this.setState({ metamask: -1, networkId: networkId, network: translateNetwork(networkId), web3: window.web3 }) }
     }
   }
 
-  inspectAccounts (currentAccounts, network) {
+  inspectAccounts (currentAccounts, networkId) {
     if (this.state.config.DEBUG) {
       console.log(
         'DAPPARATUS - accounts:',
@@ -321,13 +321,14 @@ class Dapparatus extends Component {
         console.log('RELOAD BECAUSE DIFFERENT ACCOUNTS?')
       }
     } else {
-      this.updateInfo(currentAccounts[0].toLowerCase(), network)
+      this.updateInfo(currentAccounts[0].toLowerCase(), networkId)
     }
   }
 
-  updateInfo (account, network) {
+  updateInfo (account, networkId) {
     // if (this.state.config.DEBUG) console.log("Adjusted balance",balance)
     let etherscan = 'https://etherscan.io/'
+    const network = translateNetwork(networkId)
     if (network !== 'Mainnet') {
       etherscan = 'https://' + network.toLowerCase() + '.etherscan.io/'
     }
@@ -335,6 +336,7 @@ class Dapparatus extends Component {
     if (this.state.status !== 'ready') {
       const update = {
         status: 'ready',
+        networkId: networkId,
         network: network,
         web3Provider: window.web3.currentProvider,
         etherscan: etherscan,

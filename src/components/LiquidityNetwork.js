@@ -45,6 +45,7 @@ export default (props) => {
         render={() =>
           <ReceivePage
             address={props.address}
+            network={props.network ? props.network.toLowerCase() : ''}
             changeAlert={props.changeAlert}
             backButton={backButton}
           />}
@@ -128,6 +129,7 @@ export default (props) => {
         render={({ history, match }) =>
           <RequestPage
             address={props.address}
+            networkId={props.networkId}
             history={history}
             match={match}
             changeAlert={props.changeAlert}

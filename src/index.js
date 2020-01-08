@@ -84,6 +84,7 @@ class KeyManager extends React.Component {
           address={this.state.account}
           privateKey={this.state.metaAccount && this.state.metaAccount.privateKey}
           network={this.state.network}
+          networkId={this.state.networkId}
           burnMetaAccount={this.state.burnMetaAccount}
           setPossibleNewPrivateKey={this.setPossibleNewPrivateKey.bind(this)}
         />
